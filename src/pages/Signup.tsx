@@ -116,7 +116,7 @@ const Signup = () => {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <div>
             <form onSubmit={handleSubmit} className={formContainer}>
                 <h2 className="text-2xl font-bold mb-6 text-center">회원가입</h2>
 
