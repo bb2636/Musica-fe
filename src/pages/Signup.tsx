@@ -30,8 +30,9 @@ const Signup = () => {
         axiosInstance
             .get('/levels')
             .then(res => {
+                const sorted = res.data.sort((a: Level, b: Level) => a.name.localeCompare(b.name));
                 console.log('레벨 불러오기 성공:', res.data);
-                setLevels(res.data);
+                setLevels(sorted);
             })
             .catch((error) => {
                 console.error('레벨 불러오기 실패:', error);
