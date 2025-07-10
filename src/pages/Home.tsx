@@ -1,4 +1,4 @@
-import {useUserStore} from "../stores/userStroe.ts";
+import {useUserStore} from "../stores/userStore.ts";
 
 export default function Home() {
     const { username, setUser, logout } = useUserStore();
