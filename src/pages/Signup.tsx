@@ -25,13 +25,21 @@ const Signup = () => {
 
     const [levels, setLevels] = useState<Level[]>([]);
     const [isDuplicate, setIsDuplicate] = useState<boolean | null>(null);
-
+    const [isEmailChecked, setIsEmailChecked] = useState(false); // 중복 확인 성공 여부
+    const isValidEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
     useEffect(() => {
         axiosInstance
             .get('/levels')
             .then(res => {
-                const sorted = res.data.sort((a: Level, b: Level) => a.name.localeCompare(b.name));
-                console.log('레벨 불러오기 성공:', res.data);
+                const desiredOrder = ['Beginner', 'Intermediate', 'Advanced'];
+                const sorted = res.data.sort(
+                    (a: Level, b: Level) =>
+                        desiredOrder.indexOf(a.name) - desiredOrder.indexOf(b.name)
+                );
+                console.log('레벨 불러오기 성공:', sorted);
                 setLevels(sorted);
             })
             .catch((error) => {
@@ -51,19 +59,33 @@ const Signup = () => {
         }));
 
         if (name === 'email') {
-            setIsDuplicate(null); // 이메일 변경 시 중복확인 초기화
+            setIsDuplicate(null);
+            setIsEmailChecked(false); // 다시 확인해야 함
         }
     };
 
     const checkEmail = async () => {
+        if (!form.email.trim()) {
+            return alert('이메일을 입력해주세요');
+        }
+
+        if (!isValidEmail(form.email)) {
+            return alert('유효한 이메일 형식을 입력해주세요');
+        }
+
         try {
-            const res = await fetch(`/api/users/check-email?email=${encodeURIComponent(form.email)}`);
-            if (!res.ok) throw new Error('이메일 확인 실패');
-            const isExist = await res.json();
+            const res = await axiosInstance.get('/users/check-email', {
+                params: { email: form.email },
+            });
+            const isExist = res.data;
             setIsDuplicate(isExist);
+            setIsEmailChecked(!isExist); // 중복이 아니면 true, 중복이면 false
         } catch (err) {
-            console.error(err);
-            alert('이메일 중복 확인 중 오류가 발생했습니다');
+            const error = err as AxiosError<{ message?: string }>;
+            const msg = error.response?.data?.message || '이메일 중복 확인 중 오류가 발생했습니다';
+            alert(msg);
+            setIsDuplicate(null);
+            setIsEmailChecked(false);
         }
     };
 
@@ -71,6 +93,9 @@ const Signup = () => {
         e.preventDefault();
         if (!form.agree) return alert('약관에 동의해주세요');
         if (isDuplicate) return alert('이미 사용 중인 이메일입니다');
+        if (!isEmailChecked) {
+            return alert('이메일 중복 확인을 완료해주세요');
+        }
 
         try {
             const { name, email, password, role, levelId } = form;
@@ -119,9 +144,12 @@ const Signup = () => {
                         <button
                             type="button"
                             onClick={checkEmail}
-                            className="px-3 py-2 text-sm bg-blue-500 text-white rounded whitespace-nowrap"
+                            disabled={isEmailChecked} // 중복 확인 완료 시 비활성화
+                            className={`px-3 py-2 text-sm rounded whitespace-nowrap ${
+                                isEmailChecked ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white'
+                            }`}
                         >
-                            중복 확인
+                            {isEmailChecked ? '확인 완료' : '중복 확인'}
                         </button>
                     </div>
                     {isDuplicate !== null && (
