@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../apis/axiosInstance';
-import type { Level } from '../types/level';
 import type { AxiosError } from 'axios';
+import useSortedLevels from '../hooks/useSortedLevels';
 import {
     inputStyle,
     labelStyle,
@@ -13,6 +13,7 @@ import {
 
 const Signup = () => {
     const navigate = useNavigate();
+    const { levels } = useSortedLevels();
 
     const [form, setForm] = useState({
         name: '',
@@ -23,35 +24,14 @@ const Signup = () => {
         agree: false,
     });
 
-    const [levels, setLevels] = useState<Level[]>([]);
     const [isDuplicate, setIsDuplicate] = useState<boolean | null>(null);
-    const [isEmailChecked, setIsEmailChecked] = useState(false); // 중복 확인 성공 여부
-    const isValidEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    };
-    useEffect(() => {
-        axiosInstance
-            .get('/levels')
-            .then(res => {
-                const desiredOrder = ['Beginner', 'Intermediate', 'Advanced'];
-                const sorted = res.data.sort(
-                    (a: Level, b: Level) =>
-                        desiredOrder.indexOf(a.name) - desiredOrder.indexOf(b.name)
-                );
-                console.log('레벨 불러오기 성공:', sorted);
-                setLevels(sorted);
-            })
-            .catch((error) => {
-                console.error('레벨 불러오기 실패:', error);
-                alert('레벨 목록 불러오기 실패');
-            });
-    }, []);
+    const [isEmailChecked, setIsEmailChecked] = useState(false);
+
+    const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const target = e.target as HTMLInputElement | HTMLSelectElement;
-        const { name, value, type } = target;
-        const checked = (target as HTMLInputElement).checked;
+        const { name, value, type } = e.target;
+        const checked = (e.target as HTMLInputElement).checked;
 
         setForm(prev => ({
             ...prev,
@@ -60,18 +40,13 @@ const Signup = () => {
 
         if (name === 'email') {
             setIsDuplicate(null);
-            setIsEmailChecked(false); // 다시 확인해야 함
+            setIsEmailChecked(false);
         }
     };
 
     const checkEmail = async () => {
-        if (!form.email.trim()) {
-            return alert('이메일을 입력해주세요');
-        }
-
-        if (!isValidEmail(form.email)) {
-            return alert('유효한 이메일 형식을 입력해주세요');
-        }
+        if (!form.email.trim()) return alert('이메일을 입력해주세요');
+        if (!isValidEmail(form.email)) return alert('유효한 이메일 형식을 입력해주세요');
 
         try {
             const res = await axiosInstance.get('/users/check-email', {
@@ -79,11 +54,10 @@ const Signup = () => {
             });
             const isExist = res.data;
             setIsDuplicate(isExist);
-            setIsEmailChecked(!isExist); // 중복이 아니면 true, 중복이면 false
+            setIsEmailChecked(!isExist);
         } catch (err) {
             const error = err as AxiosError<{ message?: string }>;
-            const msg = error.response?.data?.message || '이메일 중복 확인 중 오류가 발생했습니다';
-            alert(msg);
+            alert(error.response?.data?.message || '이메일 중복 확인 중 오류 발생');
             setIsDuplicate(null);
             setIsEmailChecked(false);
         }
@@ -93,9 +67,7 @@ const Signup = () => {
         e.preventDefault();
         if (!form.agree) return alert('약관에 동의해주세요');
         if (isDuplicate) return alert('이미 사용 중인 이메일입니다');
-        if (!isEmailChecked) {
-            return alert('이메일 중복 확인을 완료해주세요');
-        }
+        if (!isEmailChecked) return alert('이메일 중복 확인을 완료해주세요');
 
         try {
             const { name, email, password, role, levelId } = form;
@@ -110,8 +82,7 @@ const Signup = () => {
             navigate('/auth/login');
         } catch (err) {
             const error = err as AxiosError<{ message: string }>;
-            const msg = error.response?.data?.message || '회원가입 실패';
-            alert(msg);
+            alert(error.response?.data?.message || '회원가입 실패');
         }
     };
 
@@ -122,32 +93,18 @@ const Signup = () => {
 
                 <div className="mb-4">
                     <label className={labelStyle}>이름</label>
-                    <input
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        placeholder="이름"
-                        className={inputStyle}
-                    />
+                    <input name="name" value={form.name} onChange={handleChange} className={inputStyle} />
                 </div>
 
                 <div className="mb-4">
                     <label className={labelStyle}>이메일</label>
                     <div className="flex gap-2">
-                        <input
-                            name="email"
-                            value={form.email}
-                            onChange={handleChange}
-                            placeholder="이메일"
-                            className={`${inputStyle} flex-1`} // 입력창이 버튼과 높이 맞도록
-                        />
+                        <input name="email" value={form.email} onChange={handleChange} className={`${inputStyle} flex-1`} />
                         <button
                             type="button"
                             onClick={checkEmail}
-                            disabled={isEmailChecked} // 중복 확인 완료 시 비활성화
-                            className={`px-3 py-2 text-sm rounded whitespace-nowrap ${
-                                isEmailChecked ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 text-white'
-                            }`}
+                            disabled={isEmailChecked}
+                            className={`px-3 py-2 text-sm rounded ${isEmailChecked ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
                         >
                             {isEmailChecked ? '확인 완료' : '중복 확인'}
                         </button>
@@ -161,40 +118,17 @@ const Signup = () => {
 
                 <div className="mb-4">
                     <label className={labelStyle}>비밀번호</label>
-                    <input
-                        name="password"
-                        type="password"
-                        value={form.password}
-                        onChange={handleChange}
-                        placeholder="비밀번호"
-                        className={inputStyle}
-                    />
+                    <input name="password" type="password" value={form.password} onChange={handleChange} className={inputStyle} />
                 </div>
 
                 <div className="mb-4">
                     <span className={labelStyle}>역할 선택</span>
                     <div className="flex gap-4">
                         <label>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="USER"
-                                checked={form.role === 'USER'}
-                                onChange={handleChange}
-                                className="mr-1"
-                            />
-                            수강생
+                            <input type="radio" name="role" value="USER" checked={form.role === 'USER'} onChange={handleChange} /> 수강생
                         </label>
                         <label>
-                            <input
-                                type="radio"
-                                name="role"
-                                value="INSTRUCTOR"
-                                checked={form.role === 'INSTRUCTOR'}
-                                onChange={handleChange}
-                                className="mr-1"
-                            />
-                            강사
+                            <input type="radio" name="role" value="INSTRUCTOR" checked={form.role === 'INSTRUCTOR'} onChange={handleChange} /> 강사
                         </label>
                     </div>
                 </div>
@@ -202,38 +136,29 @@ const Signup = () => {
                 {form.role === 'USER' && (
                     <div className="mb-4">
                         <label className={labelStyle}>레벨 선택</label>
-                        <select
-                            name="levelId"
-                            value={form.levelId}
-                            onChange={handleChange}
-                            className={inputStyle}
-                        >
+                        <select name="levelId" value={form.levelId} onChange={handleChange} className={inputStyle}>
                             <option value="">레벨을 선택하세요</option>
-                            {levels.map((level: Level) => (
-                                <option key={level.id} value={level.id}>
-                                    {level.name}
-                                </option>
+                            {levels.map(level => (
+                                <option key={level.id} value={level.id}>{level.name}</option>
                             ))}
                         </select>
                     </div>
                 )}
 
                 <div className="mb-6 flex items-center">
-                    <input
-                        type="checkbox"
-                        id="agree"
-                        name="agree"
-                        checked={form.agree}
-                        onChange={handleChange}
-                        className={checkboxStyle}
-                    />
-                    <label htmlFor="agree" className="text-sm text-gray-600">
-                        이용약관에 동의합니다
-                    </label>
+                    <input type="checkbox" id="agree" name="agree" checked={form.agree} onChange={handleChange} className={checkboxStyle} />
+                    <label htmlFor="agree" className="text-sm text-gray-600">이용약관에 동의합니다</label>
                 </div>
 
-                <button type="submit" className={buttonStyle}>
-                    회원가입
+                <button type="submit" className={buttonStyle}>회원가입</button>
+
+                <p className="text-center text-sm text-gray-600 mt-4">또는 소셜 미디어로 회원가입</p>
+                <button
+                    type="button"
+                    onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/kakao"}
+                    className="mt-2 w-full bg-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:bg-yellow-300 transition"
+                >
+                    Kakao로 회원가입
                 </button>
             </form>
         </div>
