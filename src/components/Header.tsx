@@ -7,7 +7,6 @@ const Header: React.FC = () => {
     const navigate = useNavigate();
 
     const isLoggedIn = !!localStorage.getItem('accessToken');
-    const userName = localStorage.getItem('userName') || 'Guest';
 
     const handleLogout = () => {
         localStorage.removeItem('accessToken');
@@ -45,10 +44,10 @@ const Header: React.FC = () => {
                             🛒
                         </button>
                         <div
-                            className="cursor-pointer w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center"
+                            className="cursor-pointer w-11 h-11 rounded-full bg-gray-200 flex items-center justify-center"
                             onClick={() => navigate('/mypage')}
                         >
-                            <span className="text-gray-700 text-sm">{userName}</span>
+                            <span className="text-2xl font-bold">MY</span>
                         </div>
                         <button
                             onClick={handleLogout}
