@@ -32,6 +32,7 @@ const Login = () => {
             if (accessToken && refreshToken) {
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
+                localStorage.setItem('userName', res.data?.name || '사용자');
                 alert('로그인 성공');
                 navigate('/main');
             } else {
