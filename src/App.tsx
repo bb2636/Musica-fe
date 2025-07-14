@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import MainPage from './pages/MainPage';
+import CartPage from './pages/CartPage';
 import {OAuthSuccessPage} from './pages/OAuthSuccessPage';
 
 function App() {
@@ -10,6 +11,7 @@ function App() {
                 <Routes>
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/main" element={<MainPage />} />
+                    <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
                 </Routes>
             </main>
