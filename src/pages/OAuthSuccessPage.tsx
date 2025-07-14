@@ -42,7 +42,7 @@ export const OAuthSuccessPage = () => {
                 levelId
             });
             alert("회원가입 완료!");
-            navigate("/");
+            navigate("/main");
         } catch {
             alert("추가 정보 등록 실패");
         }

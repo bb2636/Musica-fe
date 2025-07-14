@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import SearchBar from '../components/SearchBar';
+import Header from '../components/Header';
 import ClassCard from '../components/ClassCard';
 import CategoryCard from '../components/CategoryCard';
 import Footer from '../components/Footer';
+import type { CategoryItem } from '../types/CategoryItem.ts';
+import type { ClassItem } from '../types/ClassItem.ts';
 // import axiosInstance from '../apis/axiosInstance';
 
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
@@ -135,9 +137,9 @@ const MOCK_RECENT_CLASSES = [
 ];
 
 const MainPage: React.FC = () => {
-  const [recommendedClasses, setRecommendedClasses] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [recentClasses, setRecentClasses] = useState<any[]>([]);
+  const [recommendedClasses, setRecommendedClasses] = useState<ClassItem[]>([]);
+  const [categories, setCategories] = useState<CategoryItem[]>([]);
+  const [recentClasses, setRecentClasses] = useState<ClassItem[]>([]);
 
   useEffect(() => {
     // 실제 API 연동 코드 (서버 403 등으로 인해 현재는 주석 처리)
@@ -154,22 +156,10 @@ const MainPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* 헤더 */}
-      <header className="w-full bg-white shadow">
-        <div className="container mx-auto flex items-center justify-between py-4 px-4">
-          <div className="font-bold text-blue-600 text-xl">InstruConnect</div>
-          <div className="flex-1 flex justify-center">
-            <SearchBar />
-          </div>
-          <div className="flex items-center">
-            <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center ml-4">
-              <span className="text-gray-500 text-lg">김민수</span>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       {/* 본문 */}
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}
         <section>
           <div className="flex items-center justify-between mb-4">

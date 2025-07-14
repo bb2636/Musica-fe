@@ -26,11 +26,15 @@ const Login = () => {
         e.preventDefault();
         try {
             const res = await axiosInstance.post('/auth/login', form);
-            const token = res.data?.token;
-            if (token) {
-                localStorage.setItem('accessToken', token);
+            const accessToken = res.data?.accessToken;
+            const refreshToken = res.data?.refreshToken;
+
+            if (accessToken && refreshToken) {
+                localStorage.setItem('accessToken', accessToken);
+                localStorage.setItem('refreshToken', refreshToken);
+                localStorage.setItem('userName', res.data?.name || '사용자');
                 alert('로그인 성공');
-                navigate('/home'); // 홈 또는 대시보드로 이동
+                navigate('/main');
             } else {
                 alert('로그인 실패: 토큰이 없습니다');
             }
@@ -40,6 +44,7 @@ const Login = () => {
             alert(msg);
         }
     };
+
 
     return (
         <div>
