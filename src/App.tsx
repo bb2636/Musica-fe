@@ -13,6 +13,9 @@ import MyQuestionsPage from "./pages/Mypage/USER/MyQuestionsPage.tsx";
 import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
 import Login from "./pages/Login.tsx";
+import InstructorApprovalPage from "./pages/Mypage/ADMIN/InstructorApprovalPage.tsx";
+import CategoryManagePage from './pages/Mypage/ADMIN/CategoryManagePage.tsx';
+import AdminDashboardWrapper from "./pages/Mypage/ADMIN/AdminDashboardWrapper.tsx";
 
 function App() {
     return (
@@ -26,22 +29,26 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
 
-                    {/*마이페이지*/}
-                    <Route path="/mypage" element={<MyPage/>} />
-                    <Route path="/users/mypage" element={<UserMyPage/>} />
-                    <Route path="/instructors/mypage" element={<InstructorMyPage/>} />
-                    <Route path="/admin/mypage" element={<AdminMyPage/>} />
+                    {/* 마이페이지 */}
+                    <Route path="/mypage" element={<MyPage />} />
 
-                    {/*유저 마이페이지 내용*/}
-                    <Route path="/mypage/users/profile" element={<ProfileEditPage />} />
-                    <Route path="/mypage/users/questions" element={<MyQuestionsPage />} />
-                    <Route path="/mypage/users/reviews" element={<MyReviewsPage />} />
-                    <Route path="/mypage/users/wishlist" element={<MyWishlistPage />} />
+                    {/* 유저 마이페이지 - Outlet */}
+                    <Route path="/mypage/users" element={<UserMyPage />}>
+                        <Route path="profile" element={<ProfileEditPage />} />
+                        <Route path="questions" element={<MyQuestionsPage />} />
+                        <Route path="reviews" element={<MyReviewsPage />} />
+                        <Route path="wishlist" element={<MyWishlistPage />} />
+                    </Route>
 
-                    {/*강사 마이페이지 내용*/}
+                    {/* 강사 마이페이지 */}
+                    <Route path="/instructors/mypage" element={<InstructorMyPage />} />
 
-                    {/*관리자 마이페이지 내용*/}
-
+                    {/* 관리자 마이페이지 - Outlet */}
+                    <Route path="/mypage/admin" element={<AdminMyPage />}>
+                        <Route index element={<AdminDashboardWrapper />} />
+                        <Route path="instructors" element={<InstructorApprovalPage />} />
+                        <Route path="categories" element={<CategoryManagePage />} />
+                    </Route>
                 </Routes>
             </main>
         </BrowserRouter>

@@ -19,9 +19,17 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // ✅ 401 - AccessToken 만료 → 자동 재발급 시도
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
+
+            // ✅ refresh 자체가 실패하면 무한루프 방지
+            if (originalRequest.url.includes('/auth/refresh')) {
+                localStorage.removeItem('accessToken');
+                localStorage.removeItem('refreshToken');
+                window.location.href = '/auth';
+                return Promise.reject(error);
+            }
+
             try {
                 const res = await axiosInstance.post('/auth/refresh', {
                     refreshToken: localStorage.getItem('refreshToken'),

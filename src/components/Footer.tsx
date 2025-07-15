@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-gray-200 py-8 mt-12">
+    <footer className="bg-gray-900 text-gray-200 py-8 mt-auto w-full">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
         <div>
           <div className="font-bold text-lg text-blue-400 mb-2">InstruConnect</div>
