@@ -20,7 +20,6 @@ const ClassCard: React.FC<ClassCardProps> = ({
   rating,
   ratingCount,
   tag,
-  thumbnailUrl,
 }) => {
   return (
     <div className="w-64 bg-white rounded-xl shadow p-4 flex flex-col justify-between min-h-[260px]">

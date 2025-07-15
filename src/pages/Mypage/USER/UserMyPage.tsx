@@ -6,6 +6,7 @@ import {
     fetchMyQuestions,
     fetchMyReviews,
 } from '../../../apis/user.ts';
+import Header from "../../../components/Header.tsx";
 
 interface MyWishlistItem {
     id: number;
@@ -42,6 +43,7 @@ export default function UserMyPage() {
 
     return (
         <div className="max-w-5xl mx-auto p-8 space-y-8">
+            <Header />
             <Card
                 emoji="👤"
                 title="내 정보"
