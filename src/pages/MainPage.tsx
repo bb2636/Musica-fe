@@ -6,6 +6,7 @@ import Footer from '../components/Footer';
 import type { CategoryItem } from '../types/CategoryItem.ts';
 import type { ClassItem } from '../types/ClassItem.ts';
 // import axiosInstance from '../apis/axiosInstance';
+import SearchBar from '../components/SearchBar.tsx'; // 이미 import 되어 있다면 생략
 
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
 const categoryIcons = [
@@ -157,6 +158,13 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* 헤더 */}
       <Header />
+
+      {/* 검색창 */}
+      <div className="w-full flex justify-center py-6 bg-white shadow">
+        <div className="w-full max-w-2xl mx-auto">
+          <SearchBar />
+        </div>
+      </div>
 
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
