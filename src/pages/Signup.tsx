@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../apis/axiosInstance';
+import { registerUser } from '../apis/user';
 import type { AxiosError } from 'axios';
 import useSortedLevels from '../hooks/useSortedLevels';
 import {
     inputStyle,
     labelStyle,
     checkboxStyle,
-    buttonStyle,
     formContainer,
 } from '../styles/formStyles';
+import axiosInstance from "../apis/axiosInstance.ts";
 
 const Signup = () => {
     const navigate = useNavigate();
@@ -71,12 +71,12 @@ const Signup = () => {
 
         try {
             const { name, email, password, role, levelId } = form;
-            await axiosInstance.post('/users/register', {
+            await registerUser({
                 name,
                 email,
                 password,
-                role,
-                levelId: role === 'USER' ? levelId : null,
+                role: role as "USER" | "INSTRUCTOR",
+                levelId: role === 'USER' ? Number(levelId) : null,
             });
             alert('회원가입 성공');
             navigate('/auth/login');
@@ -104,7 +104,7 @@ const Signup = () => {
                             type="button"
                             onClick={checkEmail}
                             disabled={isEmailChecked}
-                            className={`px-3 py-2 text-sm rounded ${isEmailChecked ? 'bg-gray-400' : 'bg-blue-500 text-white'}`}
+                            className={`px-3 py-2 text-sm rounded ${isEmailChecked ? 'bg-gray-400' : 'bg-black text-white'}`}
                         >
                             {isEmailChecked ? '확인 완료' : '중복 확인'}
                         </button>
@@ -150,7 +150,9 @@ const Signup = () => {
                     <label htmlFor="agree" className="text-sm text-gray-600">이용약관에 동의합니다</label>
                 </div>
 
-                <button type="submit" className={buttonStyle}>회원가입</button>
+                <button type="submit" className="w-full bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800 transition">
+                    회원가입
+                </button>
 
                 <p className="text-center text-sm text-gray-600 mt-4">또는 소셜 미디어로 회원가입</p>
                 <button

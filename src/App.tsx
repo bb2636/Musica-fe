@@ -12,6 +12,7 @@ import ProfileEditPage from "./pages/Mypage/USER/ProfileEditPage.tsx";
 import MyQuestionsPage from "./pages/Mypage/USER/MyQuestionsPage.tsx";
 import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
+import Login from "./pages/Login.tsx";
 
 function App() {
     return (
@@ -20,6 +21,7 @@ function App() {
                 <Routes>
                     {/*공통*/}
                     <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/auth/login" element={<Login />} />
                     <Route path="/main" element={<MainPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
