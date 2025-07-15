@@ -32,6 +32,7 @@ const Header: React.FC = () => {
                     <div className="flex-1 flex justify-center mx-8">
                         <div className="max-w-lg w-full">
                             <SearchBar />
+
                         </div>
                     </div>
 

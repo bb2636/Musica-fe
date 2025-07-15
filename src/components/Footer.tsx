@@ -1,29 +1,31 @@
 import React from 'react';
+import logo from '../assets/musica-logo.png';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-900 text-gray-200 py-8 mt-auto w-full">
-      <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between gap-8">
-        <div>
-          <div className="font-bold text-lg text-blue-400 mb-2">InstruConnect</div>
-          <div className="text-xs mb-2">음악 교육의 새로운 기준을 제시합니다.<br />
-            전문가들의 노하우를 언제 어디서나 배울 수 있는 플랫폼입니다.</div>
-          <div className="text-xs text-gray-400">© 2023 InstruConnect. All rights reserved.</div>
+    <footer className="bg-black text-gray-300 py-10 mt-16">
+      <div className="flex flex-col items-center justify-center">
+        {/* 로고 - 중앙 정렬 */}
+        <img
+          src={logo}
+          alt="Musica Logo"
+          className="h-16 md:h-24 w-auto mb-4 select-none pointer-events-none"
+          style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))' }}
+        />
+        {/* 슬로건 */}
+        <div className="text-lg md:text-xl font-light italic mb-2 text-gray-200 text-center">
+          음악, 그 이상의 경험을 Musica와 함께
         </div>
-        <div className="flex flex-col gap-2 text-xs">
-          <div className="font-semibold text-gray-100 mb-1">회사 정보</div>
-          <div>소개</div>
-          <div>강사 지원</div>
-          <div>채용 정보</div>
-          <div>블로그</div>
+        {/* 링크 */}
+        <div className="flex gap-6 mt-2 mb-4 text-sm text-gray-400">
+          <a href="#" className="hover:text-white transition">회사소개</a>
+          <a href="#" className="hover:text-white transition">이용약관</a>
+          <a href="#" className="hover:text-white transition">개인정보처리방침</a>
+          <a href="#" className="hover:text-white transition">고객센터</a>
         </div>
-        <div className="flex flex-col gap-2 text-xs">
-          <div className="font-semibold text-gray-100 mb-1">고객 지원</div>
-          <div>자주 묻는 질문</div>
-          <div>문의하기</div>
-          <div>환불 정책</div>
-          <div>이용약관</div>
-          <div>개인정보처리방침</div>
+        {/* 저작권 */}
+        <div className="text-xs text-gray-500 mt-2 text-center">
+          © 2023 Musica. All rights reserved.
         </div>
       </div>
     </footer>
