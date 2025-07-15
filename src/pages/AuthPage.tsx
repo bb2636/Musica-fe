@@ -20,7 +20,7 @@ const AuthPage = () => {
                         onClick={() => setMode('login')}
                         className={`flex-1 py-2 text-sm font-semibold transition ${
                             mode === 'login'
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-black text-white'
                                 : 'bg-white text-gray-600'
                         }`}
                     >
@@ -30,7 +30,7 @@ const AuthPage = () => {
                         onClick={() => setMode('signup')}
                         className={`flex-1 py-2 text-sm font-semibold transition ${
                             mode === 'signup'
-                                ? 'bg-blue-500 text-white'
+                                ? 'bg-black text-white'
                                 : 'bg-white text-gray-600'
                         }`}
                     >
