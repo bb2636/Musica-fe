@@ -16,19 +16,18 @@ const Header: React.FC = () => {
     };
 
     return (
-        <header className="bg-black w-full flex flex-col items-center shadow-lg sticky top-0 z-30">
-            {/* 로고 영역 */}
-            <div className="w-full flex flex-col items-center pt-6 pb-2">
+        <header className="bg-black w-full flex flex-row items-center shadow-lg sticky top-0 z-30 px-8" style={{ minHeight: '56px', height: '60px' }}>
+            {/* 로고 영역 - 왼쪽 정렬 */}
+            <div className="flex items-center cursor-pointer select-none" onClick={() => navigate('/main')}>
                 <img
                     src={logo}
                     alt="Musica Logo"
-                    className="h-24 md:h-32 w-auto object-contain drop-shadow-xl cursor-pointer select-none"
-                    style={{ maxWidth: '90vw' }}
-                    onClick={() => navigate('/main')}
+                    className="h-10 md:h-12 w-auto object-contain drop-shadow-xl"
+                    style={{ maxWidth: '170px' }}
                 />
             </div>
-            {/* 우측 버튼 영역 */}
-            <div className="absolute right-6 top-8 flex items-center gap-0 z-40">
+            <div className="flex-1" />
+            <div className="flex items-center gap-0">
                 {isLoggedIn ? (
                     <>
                         <button
@@ -70,7 +69,6 @@ const Header: React.FC = () => {
                     </>
                 )}
             </div>
-            {/* 검색창 영역 제거됨 */}
         </header>
     );
 };
