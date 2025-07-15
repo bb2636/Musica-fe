@@ -1,3 +1,4 @@
+// src/types/ClassItem.ts
 export interface ClassItem {
   id: number;
   title: string;

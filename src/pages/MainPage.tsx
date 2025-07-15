@@ -2,11 +2,18 @@ import React, { useEffect, useState } from 'react';
 import ClassCard from '../components/ClassCard';
 import CategoryCard from '../components/CategoryCard';
 import type { CategoryItem } from '../types/CategoryItem.ts';
+<<<<<<< Updated upstream
 import type { ClassItem } from '../types/ClassItem.ts';
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 // import axiosInstance from '../apis/axiosInstance';
 
+=======
+import type { MainpageClassItem } from '../types/MainpageClassItem';
+import axiosInstance from '../apis/axiosInstance';
+import SearchBar from '../components/SearchBar.tsx';
+import RecommendedSection from '../components/RecommendedSection';
+>>>>>>> Stashed changes
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
 const categoryIcons = [
   <span role="img" aria-label="기타">🎸</span>,
@@ -137,40 +144,57 @@ const MOCK_RECENT_CLASSES = [
 ];
 
 const MainPage: React.FC = () => {
-  const [recommendedClasses, setRecommendedClasses] = useState<ClassItem[]>([]);
+  const [recommendedClasses, setRecommendedClasses] = useState<MainpageClassItem[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
-  const [recentClasses, setRecentClasses] = useState<ClassItem[]>([]);
+  const [recentClasses, setRecentClasses] = useState<MainpageClassItem[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    // 실제 API 연동 코드 (서버 403 등으로 인해 현재는 주석 처리)
-    // axiosInstance.get('/api/main/recommended').then(res => setRecommendedClasses(res.data));
-    // axiosInstance.get('/api/main/categories').then(res => setCategories(res.data));
-    // axiosInstance.get('/api/main/recent').then(res => setRecentClasses(res.data));
-
-    // MOCK 데이터로만 세팅
-    setRecommendedClasses(MOCK_RECOMMENDED_CLASSES);
-    setCategories(MOCK_CATEGORIES);
-    setRecentClasses(MOCK_RECENT_CLASSES);
+    const token = localStorage.getItem('accessToken');
+    setIsLoggedIn(!!token);
+    if (token) {
+      axiosInstance.get('/api/main/recommend')
+        .then(res => {
+          console.log('✅ 추천 클래스 응답:', res.data);
+          const data = res.data.map((item: any) => ({
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            rating: item.rating,
+            tag: item.categoryName, // ★ 반드시 추가
+            thumbnailUrl: item.thumbnailUrl,
+            instructor: item.instructor, // 없으면 undefined
+            ratingCount: item.ratingCount,
+            originalPrice: item.originalPrice,
+          }));
+          console.log('매핑 후 recommendedClasses:', data);
+          setRecommendedClasses(data);
+        })
+        .catch(() => setRecommendedClasses([]));
+    } else {
+      setRecommendedClasses([]);
+    }
+    // 카테고리, 최근 클래스 등은 기존대로 유지
   }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+<<<<<<< Updated upstream
       <Header/>
+=======
+      {/* 헤더 */}
+      <Header />
+      {/* 검색창 */}
+      <div className="w-full flex justify-center py-6 bg-white shadow">
+        <div className="w-full max-w-2xl mx-auto">
+          <SearchBar />
+        </div>
+      </div>
+>>>>>>> Stashed changes
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}
-        <section>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold">추천 클래스</h2>
-            <button className="text-xs text-gray-500 border px-2 py-1 rounded">정렬: 인기순</button>
-          </div>
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {recommendedClasses.map(item => (
-              <ClassCard key={item.id} {...item} />
-            ))}
-          </div>
-        </section>
-
+        {isLoggedIn && <RecommendedSection classes={recommendedClasses} />}
         {/* 인기 카테고리 */}
         <section className="mt-10">
           <h2 className="text-xl font-bold mb-4">인기 카테고리</h2>
@@ -180,7 +204,6 @@ const MainPage: React.FC = () => {
             ))}
           </div>
         </section>
-
         {/* 최근 추가된 클래스 */}
         <section className="mt-10">
           <div className="flex items-center justify-between mb-4">
@@ -189,7 +212,18 @@ const MainPage: React.FC = () => {
           </div>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {recentClasses.map(item => (
-              <ClassCard key={item.id} {...item} />
+              <ClassCard
+                key={item.id}
+                id={item.id}
+                title={item.title}
+                instructor={item.instructor || '미정'}
+                price={item.price}
+                originalPrice={item.originalPrice}
+                rating={item.rating}
+                ratingCount={item.ratingCount ?? 0}
+                tag={item.categoryName}
+                thumbnailUrl={item.thumbnailUrl || undefined}
+              />
             ))}
           </div>
         </section>
