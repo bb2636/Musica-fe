@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axiosInstance from '../apis/axiosInstance';
+import { loginUser } from '../apis/user';
 import type { AxiosError } from 'axios';
 import {
     inputStyle,
     labelStyle,
-    buttonStyle,
     formContainer,
 } from '../styles/formStyles';
 
@@ -25,7 +24,7 @@ const Login = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            const res = await axiosInstance.post('/auth/login', form);
+            const res = await loginUser(form.email, form.password);
             const accessToken = res.data?.accessToken;
             const refreshToken = res.data?.refreshToken;
 
@@ -44,7 +43,6 @@ const Login = () => {
             alert(msg);
         }
     };
-
 
     return (
         <div>
@@ -75,7 +73,7 @@ const Login = () => {
                     />
                 </div>
 
-                <button type="submit" className={buttonStyle}>
+                <button type="submit" className="w-full bg-black text-white font-bold py-2 px-4 rounded hover:bg-gray-800 transition">
                     로그인
                 </button>
 
