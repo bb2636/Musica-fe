@@ -38,9 +38,15 @@ const Login = () => {
                 alert('로그인 실패: 토큰이 없습니다');
             }
         } catch (err) {
-            const error = err as AxiosError<{ message: string }>;
-            const msg = error.response?.data?.message || '로그인 실패';
-            alert(msg);
+            const error = err as AxiosError<{ message: string; code?: string }>;
+            const code = error.response?.data?.code;
+
+            if (code === 'INSTRUCTOR_NOT_APPROVED') {
+                alert('강사 계정은 관리자의 승인 후 로그인할 수 있습니다.');
+                return;
+            }
+
+            alert(error.response?.data?.message || '로그인 실패');
         }
     };
 
