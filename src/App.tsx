@@ -1,9 +1,8 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import MainPage from './pages/MainPage';
 import CartPage from './pages/CartPage';
-import {OAuthSuccessPage} from './pages/OAuthSuccessPage';
-
+import { OAuthSuccessPage } from './pages/OAuthSuccessPage';
 import MyPage from "./pages/Mypage/MyPage.tsx";
 import UserMyPage from "./pages/Mypage/USER/UserMyPage.tsx";
 import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
@@ -16,10 +15,14 @@ import Login from "./pages/Login.tsx";
 import InstructorApprovalPage from "./pages/Mypage/ADMIN/InstructorApprovalPage.tsx";
 import CategoryManagePage from './pages/Mypage/ADMIN/CategoryManagePage.tsx';
 import AdminDashboardWrapper from "./pages/Mypage/ADMIN/AdminDashboardWrapper.tsx";
+import InstructorDashboard from './pages/Mypage/INSTRUCTOR/InstructorDashboard';
+import InstructorMyClasses from './pages/Mypage/INSTRUCTOR/InstructorMyClasses';
+import InstructorQnA from './pages/Mypage/INSTRUCTOR/InstructorQnA';
+import InstructorReviews from './pages/Mypage/INSTRUCTOR/InstructorReviews';
+import InstructorSettlement from './pages/Mypage/INSTRUCTOR/InstructorSettlement';
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import InstructorRevenuePage from './pages/InstructorRevenuePage';
-
 
 function App() {
     return (
@@ -51,7 +54,15 @@ function App() {
                     </Route>
 
                     {/* 강사 마이페이지 */}
-                    <Route path="/instructors/mypage" element={<InstructorMyPage />} />
+                    <Route path="/instructor" element={<InstructorMyPage />}>
+                        <Route index element={<Navigate to="dashboard" />} />
+                        <Route path="dashboard" element={<InstructorDashboard />} />
+                        <Route path="classes" element={<InstructorMyClasses />} />
+                        <Route path="qna" element={<InstructorQnA />} />
+                        <Route path="reviews" element={<InstructorReviews />} />
+                        <Route path="settlements" element={<InstructorSettlement />} />
+                        <Route path="settings" element={<div>설정 페이지 준비중</div>} />
+                    </Route>
 
                     {/* 관리자 마이페이지 - Outlet */}
                     <Route path="/mypage/admin" element={<AdminMyPage />}>
