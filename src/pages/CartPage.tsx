@@ -73,9 +73,13 @@ const CartPage: React.FC = () => {
   };
 
   const toggleSelect = (cartItemId: number) => {
-    setSelected(prev =>
-      prev.includes(cartItemId) ? prev.filter(id => id !== cartItemId) : [...prev, cartItemId]
-    );
+    setSelected(prev => {
+      const newSelected = prev.includes(cartItemId)
+        ? prev.filter(id => id !== cartItemId)
+        : [...prev, cartItemId];
+      console.log('체크박스 클릭 후 selected:', newSelected);
+      return newSelected;
+    });
   };
 
   // 선택된 아이템의 합계 금액 계산
@@ -91,7 +95,7 @@ const CartPage: React.FC = () => {
       return;
     }
     // 선택된 cartItemsId 콘솔 출력
-    console.log('선택된 cartItemsId:', selected);
+    console.log('결제 버튼 클릭 시 selected:', selected);
 
     const clientKey = 'test_ck_P9BRQmyarYyYDXA9p2mWrJ07KzLN';
 
@@ -99,8 +103,9 @@ const CartPage: React.FC = () => {
 
     // 선택된 cartItem만 결제
     const amount = selectedAmount;
-    // cartItemIds를 여러 개의 쿼리 파라미터로 전달
-    const cartItemIdsParam = selected.map(id => `cartItemIds=${id}`).join('&');
+    // cartItemIds를 하나의 쿼리 파라미터로 전달
+    const cartItemIdsParam = `cartItemIds=${selected.join(',')}`;
+    console.log('cartItemIdsParam:', cartItemIdsParam);
 
     const orderId = new Date().getTime().toString();
     const orderName = selectedItems.length > 1
@@ -165,6 +170,8 @@ const CartPage: React.FC = () => {
                   <div className="flex-1">
                     <div className="font-semibold">{item.title}</div>
                     <div className="text-sm text-gray-500">강사: {item.instructorName}</div>
+                    <div className="text-xs text-gray-400">클래스 ID: {item.classId}</div>
+                    <div className="text-xs text-gray-400">카트 아이템 ID: {item.cartItemId}</div>
                   </div>
                   <div className="text-lg font-bold">
                     {typeof item.price === 'number' ? item.price.toLocaleString() + '원' : '-'}
