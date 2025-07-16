@@ -25,28 +25,69 @@ const Login = () => {
         e.preventDefault();
         try {
             const res = await loginUser(form.email, form.password);
-            const accessToken = res.data?.accessToken;
-            const refreshToken = res.data?.refreshToken;
+            const { accessToken, refreshToken, role, name, email } = res.data;
 
             if (accessToken && refreshToken) {
+                // ✅ 토큰 저장
                 localStorage.setItem('accessToken', accessToken);
                 localStorage.setItem('refreshToken', refreshToken);
-                localStorage.setItem('userName', res.data?.name || '사용자');
+
+                // ✅ 사용자 정보 저장 (role 포함)
+                localStorage.setItem('userName', name || '사용자');
+                localStorage.setItem('userEmail', email || form.email);
+
+                // ✅ role 정보 저장 (중요!)
+                if (role) {
+                    localStorage.setItem('userRole', role);
+                    console.log('🔍 로그인 성공 - Role 저장:', role);
+                }
+
                 alert('로그인 성공');
-                navigate('/main');
+
+                // ✅ role에 따른 페이지 이동
+                if (role === 'ADMIN') {
+                    navigate('/mypage/admin');
+                } else if (role === 'INSTRUCTOR') {
+                    navigate('/mypage/instructor');
+                } else {
+                    navigate('/main');
+                }
             } else {
                 alert('로그인 실패: 토큰이 없습니다');
             }
         } catch (err) {
-            const error = err as AxiosError<{ message: string; code?: string }>;
-            const code = error.response?.data?.code;
+            const error = err as AxiosError<{ message: string; errorCode?: string }>;
+            const errorMessage = error.response?.data?.message;
+            const errorCode = error.response?.data?.errorCode;
 
-            if (code === 'INSTRUCTOR_NOT_APPROVED') {
+            console.error('로그인 에러:', error);
+
+            // 🔍 CustomAuthException 에러 코드 체크
+            if (errorCode === 'INSTRUCTOR_NOT_APPROVED') {
                 alert('강사 계정은 관리자의 승인 후 로그인할 수 있습니다.');
                 return;
             }
 
-            alert(error.response?.data?.message || '로그인 실패');
+            if (errorCode === 'USER_NOT_FOUND') {
+                alert('등록되지 않은 이메일입니다.');
+                return;
+            }
+
+            if (errorCode === 'INVALID_PASSWORD') {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            // 🔍 메시지 기반 에러 처리 (fallback)
+            if (errorMessage?.includes('존재하지 않는')) {
+                alert('등록되지 않은 이메일입니다.');
+            } else if (errorMessage?.includes('비밀번호')) {
+                alert('비밀번호가 일치하지 않습니다.');
+            } else if (errorMessage?.includes('승인')) {
+                alert('강사 계정은 관리자의 승인 후 로그인할 수 있습니다.');
+            } else {
+                alert(errorMessage || '로그인에 실패했습니다.');
+            }
         }
     };
 
@@ -64,6 +105,7 @@ const Login = () => {
                         onChange={handleChange}
                         placeholder="이메일"
                         className={inputStyle}
+                        required
                     />
                 </div>
 
@@ -76,6 +118,7 @@ const Login = () => {
                         onChange={handleChange}
                         placeholder="비밀번호"
                         className={inputStyle}
+                        required
                     />
                 </div>
 
