@@ -79,7 +79,7 @@ const Signup = () => {
                 levelId: role === 'USER' ? Number(levelId) : null,
             });
             alert('회원가입 성공');
-            navigate('/auth/login');
+            navigate('/auth');
         } catch (err) {
             const error = err as AxiosError<{ message: string }>;
             alert(error.response?.data?.message || '회원가입 실패');
