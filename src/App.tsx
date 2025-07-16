@@ -20,6 +20,9 @@ import InstructorMyClasses from './pages/Mypage/INSTRUCTOR/InstructorMyClasses';
 import InstructorQnA from './pages/Mypage/INSTRUCTOR/InstructorQnA';
 import InstructorReviews from './pages/Mypage/INSTRUCTOR/InstructorReviews';
 import InstructorSettlement from './pages/Mypage/INSTRUCTOR/InstructorSettlement';
+import PaymentHistoryPage from './pages/PaymentHistoryPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
+import InstructorRevenuePage from './pages/InstructorRevenuePage';
 
 function App() {
     return (
@@ -33,8 +36,14 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
 
-                    {/* 마이페이지 */}
-                    <Route path="/mypage" element={<MyPage />} />
+                    {/* 결제 내역 페이지 */}
+                    <Route path="/payment-history" element={<PaymentHistoryPage />} />
+                    <Route path="/payment-success" element={<PaymentSuccessPage />} />
+
+                    {/* 정산 내역(매출 통계) 페이지 */}
+                    <Route path="/instructor/revenue" element={<InstructorRevenuePage />} />
+
+                
 
                     {/* 유저 마이페이지 - Outlet */}
                     <Route path="/mypage/users" element={<UserMyPage />}>
