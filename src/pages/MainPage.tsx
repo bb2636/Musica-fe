@@ -47,7 +47,7 @@ const MainPage: React.FC = () => {
 
     // 추천클래스(로그인유저만)
     if (token) {
-      axiosInstance.get('/api/main/recommend')
+      axiosInstance.get('/main/recommend')
         .then(res => {
           // console.log('✅ 추천 클래스 응답:', res.data);
           const data = res.data.map((item: any) => ({
@@ -70,7 +70,7 @@ const MainPage: React.FC = () => {
     }
 
     // ✅ 인기 클래스 (로그인 상관없이 항상)
-    axiosInstance.get('/api/main/popular')
+    axiosInstance.get('/main/popular')
       .then(res => {
         const data = res.data.map((item: any) => ({
           id: item.id,
@@ -87,24 +87,24 @@ const MainPage: React.FC = () => {
       })
       .catch(() => setPopularClasses([]));
 
-      // ✅ 최신 클래스
-      axiosInstance.get('/api/main/latest')
-      .then(res => {
-        const data = res.data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          rating: item.rating,
-          tag: item.categoryName, // alias
-          categoryName: item.categoryName, // 타입 충족
-          thumbnailUrl: item.thumbnailUrl,
-          instructor: item.instructor,
-          ratingCount: item.ratingCount,
-          originalPrice: item.originalPrice,
-        }));
-        setRecentClasses(data);
-      })
-      .catch(() => setRecentClasses([]));
+    // ✅ 최신 클래스
+    axiosInstance.get('/main/latest')
+    .then(res => {
+      const data = res.data.map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        rating: item.rating,
+        tag: item.categoryName, // alias
+        categoryName: item.categoryName, // 타입 충족
+        thumbnailUrl: item.thumbnailUrl,
+        instructor: item.instructor,
+        ratingCount: item.ratingCount,
+        originalPrice: item.originalPrice,
+      }));
+      setRecentClasses(data);
+    })
+    .catch(() => setRecentClasses([]));
     
     //나중에 추가: 최근 클래스, 무료 클래스 등도 여기서 fetch 가능
 

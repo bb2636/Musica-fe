@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthPage from './pages/AuthPage';
 import MainPage from './pages/MainPage';
 import CartPage from './pages/CartPage';
@@ -23,6 +23,7 @@ function App() {
             <main className="p-4">
                 <Routes>
                     {/*공통*/}
+                    <Route path="/" element={<Navigate to="/main" />} />
                     <Route path="/auth" element={<AuthPage />} />
                     <Route path="/auth/login" element={<Login />} />
                     <Route path="/main" element={<MainPage />} />
