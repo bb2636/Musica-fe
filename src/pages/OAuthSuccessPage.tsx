@@ -1,6 +1,6 @@
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import axios, {type AxiosError} from 'axios';
 import useSortedLevels from '../hooks/useSortedLevels';
 import useJwtPayload from "../hooks/useJwtPayload";
 import type { JwtPayload } from "../hooks/useJwtPayload";
@@ -20,7 +20,8 @@ export const OAuthSuccessPage = () => {
     const [profile, setProfile] = useState<{
         name: string;
         email: string;
-        level?: { id: number; name: string }
+        role: string;
+        level?: { id: number; name: string };
     } | null>(null);
 
     useEffect(() => {
@@ -29,26 +30,36 @@ export const OAuthSuccessPage = () => {
         }
     }, [token]);
 
-    // ✅ DB에 추가 정보 있는지 확인 후 바로 /main 으로 이동
     useEffect(() => {
         (async () => {
             try {
                 const res = await axios.get('/api/users/mypage');
-                console.log("유저 마이페이지:", res.data);
                 setProfile(res.data);
 
+                // ✅ 승인되지 않은 강사일 경우 로그인 막기
+                if (res.data.role === "INSTRUCTOR" && !res.data.isApproved) {
+                    alert("강사 계정은 관리자의 승인 후 로그인할 수 있습니다.");
+                    return;
+                }
+
+                // ✅ 조건 충족 시 /main 이동
                 if (res.data.role === "INSTRUCTOR" || (res.data.role === "USER" && res.data.level)) {
                     navigate("/main");
                 }
             } catch (err) {
-                console.error("유저 정보 확인 실패:", err);
+                const error = err as AxiosError<{ message: string; code?: string }>;
+                const errorData = error.response?.data;
+                if (errorData?.code === "INSTRUCTOR_NOT_APPROVED") {
+                    alert("강사 계정은 관리자의 승인 후 로그인할 수 있습니다.");
+                } else {
+                    console.error("유저 정보 확인 실패:", err);
+                }
             }
         })();
     }, [navigate]);
 
     useEffect(() => {
         if (payload) {
-            console.log("Parsed payload:", payload);
             setEmail(payload.email || "");
             setName(payload.name || "");
             setRole(payload.role || "USER");
@@ -57,7 +68,6 @@ export const OAuthSuccessPage = () => {
 
     const handleSubmit = async () => {
         try {
-            // DB에 이미 level 이 없다면 (=입력 안했다면)
             if (role === "USER" && !profile?.level) {
                 if (!levelId) {
                     alert("레벨을 선택해주세요.");
@@ -117,5 +127,3 @@ export const OAuthSuccessPage = () => {
         </div>
     );
 };
-
-
