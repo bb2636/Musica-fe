@@ -3,8 +3,8 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
-import ClassCard from './ClassCard';
-import type { MainpageClassItem } from '../types/MainpageClassItem';
+import ClassCard from '../ClassCard';
+import type { MainpageClassItem } from '../../types/MainpageClassItem';
 
 interface RecommendedSectionProps {
   classes: MainpageClassItem[];
