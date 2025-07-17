@@ -18,7 +18,7 @@ import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
 import InstructorMyClasses from "./pages/Mypage/INSTRUCTOR/InstructorMyClasses";
 import InstructorQnA from "./pages/Mypage/INSTRUCTOR/InstructorQnA";
 import InstructorReviews from "./pages/Mypage/INSTRUCTOR/InstructorReviews.tsx";
-import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
+// import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
 import InstructorSettings from "./pages/Mypage/INSTRUCTOR/InstructorSettings.tsx";
 
 import AdminMyPage from "./pages/Mypage/ADMIN/AdminMyPage.tsx";
@@ -77,7 +77,7 @@ function App() {
             <Route path="classes" element={<InstructorMyClasses />} />
             <Route path="qna" element={<InstructorQnA />} />
             <Route path="reviews" element={<InstructorReviews />} />
-            <Route path="settlements" element={<InstructorSettlement />} />
+            {/* <Route path="settlements" element={<InstructorSettlement />} /> */}
             <Route path="settings" element={<InstructorSettings />} />
           </Route>
 

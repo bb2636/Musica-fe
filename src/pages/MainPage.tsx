@@ -9,6 +9,7 @@ import PopularSection from '../components/mainpage/PopularSection.tsx';
 import RecentSection from '../components/mainpage/RecentSection.tsx';
 import ReviewSummarySection from '../components/mainpage/ReviewSummarySection';
 import type { ReviewSummaryCard } from '../types/ReviewSummaryCard';
+import FreeClassSection from '../components/mainpage/FreeClassSection';
 
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
 // const categoryIcons = [
@@ -27,6 +28,7 @@ const MainPage: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [wishedClassIds, setWishedClassIds] = useState<number[]>([]);
   const [reviewSummaryCards, setReviewSummaryCards] = useState<ReviewSummaryCard[]>([]);
+  const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
 
   // ✅ 공통 헬퍼 함수 정의
   const mapClassData = (data: any[]): MainpageClassItem[] => {
@@ -94,7 +96,15 @@ const MainPage: React.FC = () => {
       setRecentClasses(mapped);
     })
     .catch(() => setRecentClasses([]));
-    //나중에 추가: 최근 클래스, 무료 클래스 등도 여기서 fetch 가능
+
+    // 무료 클래스
+    axiosInstance.get('/main/classes/free')
+      .then(res => {
+        const mapped = mapClassData(res.data);
+        setFreeClasses(mapped);
+      })
+      .catch(() => setFreeClasses([]));
+    
   }, []);
     
     
@@ -133,6 +143,14 @@ const MainPage: React.FC = () => {
 
         {/* AI 요약 후기 섹션 (항상 렌더링) */}
         <ReviewSummarySection reviews={reviewSummaryCards} />
+
+        {/* 무료 클래스 섹션 */}
+        <FreeClassSection
+          classes={freeClasses}
+          onToggleWish={onToggleWish}
+          onAddToCart={onAddToCart}
+          wishedClassIds={wishedClassIds}
+        />
 
         {/* 빠른 링크 (와이어프레임 참고, 간단한 예시) */}
         <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
