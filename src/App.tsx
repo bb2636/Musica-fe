@@ -23,6 +23,7 @@ import InstructorSettlement from './pages/Mypage/INSTRUCTOR/InstructorSettlement
 import PaymentHistoryPage from './pages/PaymentHistoryPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import InstructorRevenuePage from './pages/InstructorRevenuePage';
+import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
 
 function App() {
     return (
@@ -53,6 +54,7 @@ function App() {
                         <Route path="questions" element={<MyQuestionsPage />} />
                         <Route path="reviews" element={<MyReviewsPage />} />
                         <Route path="wishlist" element={<MyWishlistPage />} />
+                        <Route path="tuner" element={<AITunerPage />} />
                     </Route>
 
                     {/* 강사 마이페이지 - Outlet 방식 */}
