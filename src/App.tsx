@@ -37,6 +37,9 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
 
+                    {/* ✅ 마이페이지 메인 - 역할 감지 후 리디렉션 - 지우지 마시요 */}
+                    <Route path="/mypage" element={<MyPage />} />
+
                     {/* 결제 내역 페이지 */}
                     <Route path="/payment-history" element={<PaymentHistoryPage />} />
                     <Route path="/payment-success" element={<PaymentSuccessPage />} />
@@ -44,9 +47,7 @@ function App() {
                     {/* 정산 내역(매출 통계) 페이지 */}
                     <Route path="/instructor/revenue" element={<InstructorRevenuePage />} />
 
-                
-
-                    {/* 유저 마이페이지 - Outlet */}
+                    {/* ✅ 유저 마이페이지 - Outlet 방식 */}
                     <Route path="/mypage/users" element={<UserMyPage />}>
                         <Route path="profile" element={<ProfileEditPage />} />
                         <Route path="questions" element={<MyQuestionsPage />} />
@@ -54,8 +55,8 @@ function App() {
                         <Route path="wishlist" element={<MyWishlistPage />} />
                     </Route>
 
-                    {/* 강사 마이페이지 */}
-                    <Route path="/instructor" element={<InstructorMyPage />}>
+                    {/* 강사 마이페이지 - Outlet 방식 */}
+                    <Route path="/mypage/instructor" element={<InstructorMyPage />}>
                         <Route index element={<Navigate to="dashboard" />} />
                         <Route path="dashboard" element={<InstructorDashboard />} />
                         <Route path="classes" element={<InstructorMyClasses />} />
@@ -65,7 +66,7 @@ function App() {
                         <Route path="settings" element={<div>설정 페이지 준비중</div>} />
                     </Route>
 
-                    {/* 관리자 마이페이지 - Outlet */}
+                    {/* 관리자 마이페이지 - Outlet 방식 */}
                     <Route path="/mypage/admin" element={<AdminMyPage />}>
                         <Route index element={<AdminDashboardWrapper />} />
                         <Route path="instructors" element={<InstructorApprovalPage />} />
@@ -76,4 +77,5 @@ function App() {
         </BrowserRouter>
     );
 }
+
 export default App;

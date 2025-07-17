@@ -114,12 +114,6 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* 헤더 */}
       <Header />
-      {/* 검색창 */}
-      <div className="w-full flex justify-center py-6 bg-white shadow">
-        <div className="w-full max-w-2xl mx-auto">
-          <SearchBar />
-        </div>
-      </div>
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}
