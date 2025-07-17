@@ -1,10 +1,12 @@
-import React from 'react';
+import React from "react";
 
 const SearchBar: React.FC = () => {
   return (
     <form
       className="flex items-center w-full max-w-xl mx-auto border border-gray-300 rounded-full bg-white shadow-md px-5 py-3"
-      onSubmit={e => { e.preventDefault(); /* 검색 로직 추가 */ }}
+      onSubmit={(e) => {
+        e.preventDefault(); /* 검색 로직 추가 */
+      }}
     >
       {/* 돋보기 아이콘 */}
       <svg
@@ -34,4 +36,4 @@ const SearchBar: React.FC = () => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

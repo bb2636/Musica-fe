@@ -20,7 +20,13 @@ export interface LectureCreateReq {
   duration?: number;
 }
 
-export interface LectureUpdateReq extends LectureCreateReq {}
+export interface LectureCreateDto {
+  title: string;
+  videoUrl?: string;
+  fileUrl?: string;
+  lectureOrder: number;
+  duration?: number;
+}
 
 export interface LectureProgressSaveReq {
   watchedSeconds: number;
