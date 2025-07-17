@@ -9,5 +9,6 @@ export interface MainpageClassItem {
     thumbnailUrl: string | null;
     instructor?: string;
     ratingCount?: number;
+    studentCount: number;
     originalPrice?: number;
   }
