@@ -3,71 +3,71 @@ import AuthPage from "./pages/AuthPage";
 import MainPage from "./pages/MainPage";
 import CartPage from "./pages/CartPage";
 import { OAuthSuccessPage } from "./pages/OAuthSuccessPage";
+import Login from "./pages/Login.tsx";
+
+import MyPage from "./pages/Mypage/MyPage";
 import UserMyPage from "./pages/Mypage/USER/UserMyPage.tsx";
-import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
-import AdminMyPage from "./pages/Mypage/ADMIN/AdminMyPage.tsx";
 import ProfileEditPage from "./pages/Mypage/USER/ProfileEditPage.tsx";
 import MyQuestionsPage from "./pages/Mypage/USER/MyQuestionsPage.tsx";
 import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
-import Login from "./pages/Login.tsx";
-import MyPage from "./pages/Mypage/MyPage";
-import InstructorApprovalPage from "./pages/Mypage/ADMIN/InstructorApprovalPage.tsx";
-import CategoryManagePage from "./pages/Mypage/ADMIN/CategoryManagePage.tsx";
-import AdminDashboardWrapper from "./pages/Mypage/ADMIN/AdminDashboardWrapper.tsx";
+import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
+
+import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
 import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
 import InstructorMyClasses from "./pages/Mypage/INSTRUCTOR/InstructorMyClasses";
 import InstructorQnA from "./pages/Mypage/INSTRUCTOR/InstructorQnA";
 import InstructorReviews from "./pages/Mypage/INSTRUCTOR/InstructorReviews.tsx";
-// import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
+import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
+import InstructorSettings from "./pages/Mypage/INSTRUCTOR/InstructorSettings.tsx";
+
+import AdminMyPage from "./pages/Mypage/ADMIN/AdminMyPage.tsx";
+import AdminDashboardWrapper from "./pages/Mypage/ADMIN/AdminDashboardWrapper.tsx";
+import InstructorApprovalPage from "./pages/Mypage/ADMIN/InstructorApprovalPage.tsx";
+import CategoryManagePage from "./pages/Mypage/ADMIN/CategoryManagePage.tsx";
+
 import PaymentHistoryPage from "./pages/PaymentHistoryPage";
 import PaymentSuccessPage from "./pages/PaymentSuccessPage";
 import InstructorRevenuePage from "./pages/InstructorRevenuePage";
-import InstructorSettings from "./pages/Mypage/INSTRUCTOR/InstructorSettings.tsx";
+
 import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
-// import ClassDetailPage from './pages/Classes/ClassDetailPage';
-// import ClassFormPage from './pages/Classes/ClassFormPage';
+// import ClassDetailPage from "./pages/Classes/ClassDetailPage";
+// import ClassFormPage from "./pages/Classes/ClassFormPage";
 
 function App() {
   return (
     <BrowserRouter>
       <main className="p-4">
         <Routes>
-          {/*공통*/}
+          {/* 공통 */}
+          <Route path="/" element={<Navigate to="/main" />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/main" element={<MainPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/oauth-success" element={<OAuthSuccessPage />} />
-          <Route path="/mypage" element={<MyPage />} />
 
-          {/* 결제 내역 페이지 */}
+          {/* 결제 */}
           <Route path="/payment-history" element={<PaymentHistoryPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
+          <Route path="/instructor/revenue" element={<InstructorRevenuePage />} />
 
-          {/* 정산 내역(매출 통계) 페이지 */}
-          <Route
-            path="/instructor/revenue"
-            element={<InstructorRevenuePage />}
-          />
-
-          {/* 클래스 상세 페이지 */}
+          {/* 클래스 등록 */}
+          <Route path="/instructor/classes/new" element={<CreateClassPage />} />
+          <Route path="/instructor/classes/:classId/lectures/create" element={<CreateLecturePage />} />
           {/* <Route path="/classes/:classId" element={<ClassDetailPage />} /> */}
 
-          {/* 강사 클래스 등록/수정 페이지 */}
-          <Route path="/instructor/classes/new" element={<CreateClassPage />} />
-          <Route
-            path="/instructor/classes/:classId/lectures/create"
-            element={<CreateLecturePage />}
-          />
+          {/* 마이페이지 메인 - 리디렉션 분기 */}
+          <Route path="/mypage" element={<MyPage />} />
 
-          {/* 유저 마이페이지 - Outlet */}
+          {/* 유저 마이페이지 */}
           <Route path="/mypage/users" element={<UserMyPage />}>
             <Route path="profile" element={<ProfileEditPage />} />
             <Route path="questions" element={<MyQuestionsPage />} />
             <Route path="reviews" element={<MyReviewsPage />} />
             <Route path="wishlist" element={<MyWishlistPage />} />
+            <Route path="tuner" element={<AITunerPage />} />
           </Route>
 
           {/* 강사 마이페이지 */}
@@ -77,11 +77,11 @@ function App() {
             <Route path="classes" element={<InstructorMyClasses />} />
             <Route path="qna" element={<InstructorQnA />} />
             <Route path="reviews" element={<InstructorReviews />} />
-            {/* <Route path="settlements" element={<InstructorSettlement />} /> */}
+            <Route path="settlements" element={<InstructorSettlement />} />
             <Route path="settings" element={<InstructorSettings />} />
           </Route>
 
-          {/* 관리자 마이페이지 - Outlet */}
+          {/* 관리자 마이페이지 */}
           <Route path="/mypage/admin" element={<AdminMyPage />}>
             <Route index element={<AdminDashboardWrapper />} />
             <Route path="instructors" element={<InstructorApprovalPage />} />
@@ -92,4 +92,5 @@ function App() {
     </BrowserRouter>
   );
 }
+
 export default App;
