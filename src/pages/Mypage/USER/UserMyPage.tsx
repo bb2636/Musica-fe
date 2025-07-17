@@ -110,6 +110,16 @@ export default function UserMyPage() {
                             >
                                 내 후기 전체보기
                             </Link>
+                            <Link
+                                to="/mypage/users/tuner"
+                                className={`block hover:underline transition-colors ${
+                                    location.pathname === '/mypage/users/tuner'
+                                        ? 'text-blue-800 font-semibold'
+                                        : 'text-blue-600 hover:text-blue-800'
+                                }`}
+                            >
+                                AI 튜너 바로가기
+                            </Link>
                         </nav>
                     </aside>
 
@@ -206,6 +216,16 @@ export default function UserMyPage() {
                                     ) : (
                                         <p className="text-gray-500">작성한 후기가 없습니다.</p>
                                     )}
+                                </Card>
+
+                                <Card
+                                    emoji="🎵"
+                                    title="AI 튜너"
+                                    desc="마이크로 조율하는 AI 튜너"
+                                    link="/mypage/users/tuner"
+                                >
+                                    <p>실시간 음정 분석</p>
+                                    <p>마이크만 있으면 OK!</p>
                                 </Card>
                             </div>
                         )}
