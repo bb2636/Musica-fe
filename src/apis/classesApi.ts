@@ -1,5 +1,5 @@
 // apis/classApi.ts
-import axiosInstance from "../../../../apis/axiosInstance";
+import axiosInstance from "../apis/axiosInstance";
 
 export const classApi = {
   // 클래스 상세 조회 (공용)
@@ -25,5 +25,17 @@ export const classApi = {
   getStudentClasses: async () => {
     const res = await axiosInstance.get("/users/classes");
     return res.data;
-  }
+  },
+
+  getInstructorClasses: async (params: {
+    keyword?: string;
+    categoryId?: number;
+    difficultyId?: number;
+    sort?: string;
+    page?: number;
+    size?: number;
+  }) => {
+    const res = await axiosInstance.get("/instructors/classes", { params });
+    return res.data;
+  },
 };

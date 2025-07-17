@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import axiosInstance from '../apis/axiosInstance';
+import React, { useEffect, useState } from "react";
+import axiosInstance from "../apis/axiosInstance";
 
 interface MonthlyRevenueResponse {
   year: number;
@@ -26,18 +26,24 @@ const InstructorRevenueStats: React.FC = () => {
       setError(null);
       try {
         // 전체 매출
-        const totalRes = await axiosInstance.get<RevenueResponse>('/instructors/statistics/revenue');
+        const totalRes = await axiosInstance.get<RevenueResponse>(
+          "/instructors/statistics/revenue"
+        );
         setTotalRevenue(totalRes.data.totalRevenue);
 
         // 월별 매출
-        const monthRes = await axiosInstance.get<MonthlyRevenueResponse>(`/instructors/statistics/revenue?year=${year}`);
+        const monthRes = await axiosInstance.get<MonthlyRevenueResponse>(
+          `/instructors/statistics/revenue?year=${year}`
+        );
         setMonthlyRevenue(monthRes.data.monthlyRevenue);
 
         // 이번달 예상 매출
-        const expectedRes = await axiosInstance.get<ExpectedRevenueResponse>('/instructors/revenue/expected/current-month');
+        const expectedRes = await axiosInstance.get<ExpectedRevenueResponse>(
+          "/instructors/revenue/expected/current-month"
+        );
         setExpectedRevenue(expectedRes.data.expectedRevenue);
       } catch (err: any) {
-        setError('매출 정보를 불러오지 못했습니다.');
+        setError("매출 정보를 불러오지 못했습니다.");
       } finally {
         setLoading(false);
       }
@@ -57,12 +63,16 @@ const InstructorRevenueStats: React.FC = () => {
       {/* 전체 매출 */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="text-lg font-semibold mb-2">총 누적 매출</div>
-        <div className="text-3xl font-bold text-blue-700">{totalRevenue?.toLocaleString()}원</div>
+        <div className="text-3xl font-bold text-blue-700">
+          {totalRevenue?.toLocaleString()}원
+        </div>
       </div>
       {/* 이번달 예상 매출 */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <div className="text-lg font-semibold mb-2">이번달 예상 매출</div>
-        <div className="text-2xl font-bold text-green-600">{expectedRevenue?.toLocaleString()}원</div>
+        <div className="text-2xl font-bold text-green-600">
+          {expectedRevenue?.toLocaleString()}원
+        </div>
       </div>
       {/* 월별 매출 */}
       <div className="bg-white rounded-lg shadow p-6 mb-6">
@@ -71,12 +81,14 @@ const InstructorRevenueStats: React.FC = () => {
           <select
             className="border rounded px-2 py-1 text-sm"
             value={year}
-            onChange={e => setYear(Number(e.target.value))}
+            onChange={(e) => setYear(Number(e.target.value))}
           >
             {Array.from({ length: 5 }).map((_, idx) => {
               const y = new Date().getFullYear() - idx;
               return (
-                <option key={y} value={y}>{y}년</option>
+                <option key={y} value={y}>
+                  {y}년
+                </option>
               );
             })}
           </select>
@@ -94,4 +106,4 @@ const InstructorRevenueStats: React.FC = () => {
   );
 };
 
-export default InstructorRevenueStats; 
+export default InstructorRevenueStats;
