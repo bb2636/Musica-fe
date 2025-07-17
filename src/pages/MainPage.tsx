@@ -103,7 +103,6 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* 헤더 */}
       <Header />
-      
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}

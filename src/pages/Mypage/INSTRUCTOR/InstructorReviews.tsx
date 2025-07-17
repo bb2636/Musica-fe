@@ -1,138 +1,159 @@
-// InstructorReviews.tsx
-import React, { useState, useEffect } from 'react';
-import { instructorApi } from './services/instructorApi';
+import { useEffect, useState } from "react";
+import { getInstructorReviews } from "../../../apis/reviewApi";
+import type { InstructorReview } from "../../../types/review";
 
-interface Review {
-    id: number;
-    studentName: string;
-    className: string;
-    rating: number;
-    comment: string;
-    createdAt: string;
-}
+const PAGE_SIZE = 10;
 
-interface ReviewStats {
-    averageRating: number;
-    totalReviews: number;
-    ratingDistribution: { [key: string]: number };
-}
+const calculateStats = (reviews: InstructorReview[]) => {
+  const totalReviews = reviews.length;
 
-const InstructorReviews = () => {
-    const [reviews, setReviews] = useState<Review[]>([]);
-    const [stats, setStats] = useState<ReviewStats | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchReviews();
-        fetchStats();
-    }, []);
-
-    const fetchReviews = async () => {
-        try {
-            const data = await instructorApi.getReviews();
-            setReviews(data.content || data);
-        } catch (error) {
-            console.error('리뷰 목록 로드 실패:', error);
-        }
-    };
-
-    const fetchStats = async () => {
-        try {
-            const data = await instructorApi.getReviewStats();
-            setStats(data);
-        } catch (error) {
-            console.error('리뷰 통계 로드 실패:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, i) => (
-            <span key={i} className={`text-lg ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}>
-                ⭐
-            </span>
-        ));
-    };
-
-    if (loading) {
-        return (
-            <div className="p-6 text-center">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 mx-auto"></div>
-                <p className="mt-2 text-gray-600">로딩 중...</p>
-            </div>
+  const averageRating =
+    totalReviews === 0
+      ? 0
+      : parseFloat(
+          (
+            reviews.reduce((sum, r) => sum + r.rating, 0) / totalReviews
+          ).toFixed(1)
         );
-    }
 
-    return (
-        <div className="p-6">
-            <h2 className="text-xl font-semibold mb-6">리뷰 관리</h2>
+  const classCountMap: Record<string, number> = {};
+  reviews.forEach((r) => {
+    classCountMap[r.classTitle] = (classCountMap[r.classTitle] || 0) + 1;
+  });
 
-            {/* 리뷰 통계 */}
-            {stats && (
-                <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white rounded-lg p-6 mb-6">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h3 className="text-lg font-semibold mb-2">리뷰 통계</h3>
-                            <div className="flex items-center space-x-4">
-                                <div className="text-2xl font-bold">
-                                    {stats.averageRating.toFixed(1)}
-                                </div>
-                                <div className="flex">
-                                    {renderStars(Math.round(stats.averageRating))}
-                                </div>
-                                <div className="text-yellow-100">
-                                    ({stats.totalReviews}개 리뷰)
-                                </div>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-yellow-100 mb-1">평점 분포</p>
-                            {Object.entries(stats.ratingDistribution)
-                                .sort(([a], [b]) => parseInt(b) - parseInt(a))
-                                .map(([rating, count]) => (
-                                    <div key={rating} className="text-sm">
-                                        {rating}점: {count}개
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-                </div>
-            )}
+  const mostReviewedClass = Object.entries(classCountMap).sort(
+    (a, b) => b[1] - a[1]
+  )[0]?.[0];
 
-            {/* 리뷰 목록 */}
-            <div className="space-y-4">
-                {reviews.map((review) => (
-                    <div key={review.id} className="border border-gray-200 rounded-lg p-6">
-                        <div className="flex justify-between items-start mb-4">
-                            <div>
-                                <h3 className="font-semibold text-lg">{review.className}</h3>
-                                <p className="text-sm text-gray-600">
-                                    {review.studentName} • {review.createdAt}
-                                </p>
-                            </div>
-                            <div className="flex items-center">
-                                {renderStars(review.rating)}
-                                <span className="ml-2 text-sm text-gray-600">
-                                    {review.rating}/5
-                                </span>
-                            </div>
-                        </div>
+  const latestReviewDate = reviews
+    .map((r) => r.createdAt)
+    .sort()
+    .slice(-1)[0];
 
-                        <div className="bg-gray-50 rounded-lg p-4">
-                            <p className="text-gray-700">{review.comment}</p>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {reviews.length === 0 && (
-                <div className="text-center py-12">
-                    <p className="text-gray-500">리뷰가 없습니다.</p>
-                </div>
-            )}
-        </div>
-    );
+  return { totalReviews, averageRating, mostReviewedClass, latestReviewDate };
 };
 
-export default InstructorReviews;
+const ReviewSummary = ({ reviews }: { reviews: InstructorReview[] }) => {
+  const { totalReviews, averageRating, mostReviewedClass, latestReviewDate } =
+    calculateStats(reviews);
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div className="bg-blue-500 text-white rounded-lg p-4 shadow">
+        <p className="text-lg font-semibold">총 후기 수</p>
+        <p className="text-2xl">{totalReviews}개</p>
+      </div>
+      <div className="bg-purple-500 text-white rounded-lg p-4 shadow">
+        <p className="text-lg font-semibold">평균 평점</p>
+        <p className="text-2xl">{averageRating}</p>
+      </div>
+      <div className="bg-green-500 text-white rounded-lg p-4 shadow">
+        <p className="text-lg font-semibold">가장 많이 리뷰된 클래스</p>
+        <p className="text-base">{mostReviewedClass || "-"}</p>
+      </div>
+      <div className="bg-yellow-500 text-white rounded-lg p-4 shadow">
+        <p className="text-lg font-semibold">최근 후기 작성일</p>
+        <p className="text-base">{latestReviewDate?.slice(0, 10) || "-"}</p>
+      </div>
+    </div>
+  );
+};
+
+const InstructorReviewList = () => {
+  const [reviews, setReviews] = useState<InstructorReview[]>([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [classId, _setClassId] = useState<number | undefined>();
+  const [sort, setSort] = useState("createdAt,desc");
+
+  const fetchReviews = async (
+    pageNumber: number,
+    classId?: number,
+    sortType?: string
+  ) => {
+    try {
+      const res = await getInstructorReviews(
+        pageNumber,
+        PAGE_SIZE,
+        classId,
+        sortType
+      );
+      console.log("📦 후기 페이지 응답:", res);
+      setReviews(res.content);
+      setTotalPages(res.totalPages);
+    } catch (error) {
+      console.error("후기 조회 실패", error);
+    }
+  };
+
+  useEffect(() => {
+    setPage(0);
+    fetchReviews(0, classId, sort);
+  }, [classId, sort]);
+
+  useEffect(() => {
+    fetchReviews(page, classId, sort);
+  }, [page]);
+
+  return (
+    <div>
+      <h2 className="text-xl font-bold mb-4">강의 후기</h2>
+
+      {/* ✅ 요약 박스 */}
+      <ReviewSummary reviews={reviews} />
+
+      {/* 필터 */}
+      <div className="flex gap-2 mb-4">
+        <select
+          className="border px-2 py-1 rounded"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="createdAt,desc">최신순</option>
+          <option value="createdAt,asc">오래된순</option>
+          <option value="rating,desc">평점 높은순</option>
+          <option value="rating,asc">평점 낮은순</option>
+        </select>
+      </div>
+
+      {/* 후기 리스트 */}
+      {reviews.length === 0 ? (
+        <p>등록된 후기가 없습니다.</p>
+      ) : (
+        <ul className="space-y-2">
+          {reviews.map((review) => (
+            <li key={review.reviewId} className="border p-4 rounded">
+              <p className="font-semibold">
+                {review.classTitle} - {review.lectureTitle}
+              </p>
+              <p>
+                ⭐️ {review.rating}점 by {review.reviewerName}
+              </p>
+              <p className="text-gray-600 text-sm">{review.createdAt}</p>
+              <p>{review.comment}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* 페이지네이션 */}
+      {totalPages > 1 && (
+        <div className="mt-4 flex flex-wrap gap-2">
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={`page-${i}`}
+              onClick={() => setPage(i)}
+              className={`px-3 py-1 rounded ${
+                i === page ? "bg-black text-white" : "bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default InstructorReviewList;

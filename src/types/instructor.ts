@@ -22,7 +22,7 @@ export interface Statistics {
 }
 
 export interface Activity {
-  type: 'question' | 'review';
+  type: "question" | "review";
   message: string;
   timestamp: string;
 }
@@ -39,7 +39,7 @@ export interface Question {
   answeredAt?: string;
 }
 
-export type QuestionStatus = 'PENDING' | 'ANSWERED';
+export type QuestionStatus = "PENDING" | "ANSWERED";
 
 // ✅ 리뷰 (선택적)
 export interface Review {
@@ -59,4 +59,15 @@ export interface Settlement {
   commissionRate: number; // 0~100 (%)
   netAmount: number;
   settledAt: string;
+}
+
+// 강사 개인 정보
+export interface InstructorInfo {
+  id: number;
+  name: string;
+  email: string;
+  isApproved: boolean;
+  approvalStatus: "PENDING" | "APPROVED" | "REJECTED";
+  levelName?: string;
+  createdAt: string;
 }

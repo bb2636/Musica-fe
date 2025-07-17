@@ -3,12 +3,12 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 
 const menus = [
-  { label: '대시보드', path: '/instructor/dashboard' },
-  { label: '클래스 관리', path: '/instructor/classes' },
-  { label: '질의응답 관리', path: '/instructor/qna' },
-  { label: '리뷰 관리', path: '/instructor/reviews' },
-  { label: '정산 내역', path: '/instructor/settlements' },
-  { label: '설정', path: '/instructor/settings' },
+  { label: '대시보드', path: '/mypage/instructor/dashboard' },
+  { label: '클래스 관리', path: '/mypage/instructor/classes' },
+  { label: '질의응답 관리', path: '/mypage/instructor/qna' },
+  { label: '리뷰 관리', path: '/mypage/instructor/reviews' },
+  { label: '정산 내역', path: '/mypage/instructor/settlements' },
+  { label: '설정', path: '/mypage/instructor/settings' },
 ];
 
 const InstructorSidebar = () => {
