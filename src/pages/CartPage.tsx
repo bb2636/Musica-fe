@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import axiosInstance from '../apis/axiosInstance';
+import { getCart, clearCart, deleteCartItems } from '../apis/cart';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 
 interface CartItem {
@@ -33,7 +33,7 @@ const CartPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.get<CartResponse>('/users/carts');
+      const res = await getCart();
       setCart(res.data);
       setSelected([]);
       // 카트 아이템들 콘솔 출력
@@ -52,7 +52,7 @@ const CartPage: React.FC = () => {
   const handleClearCart = async () => {
     if (!window.confirm('장바구니를 모두 비우시겠습니까?')) return;
     try {
-      await axiosInstance.delete('/users/carts');
+      await clearCart();
       setActionMsg('장바구니가 비워졌습니다.');
       fetchCart();
     } catch {
@@ -64,7 +64,7 @@ const CartPage: React.FC = () => {
     if (selected.length === 0) return;
     if (!window.confirm('선택한 클래스를 삭제하시겠습니까?')) return;
     try {
-      await axiosInstance.delete('/users/carts', { data: { cartItemIds: selected } });
+      await deleteCartItems(selected);
       setActionMsg('선택한 클래스가 삭제되었습니다.');
       fetchCart();
     } catch {
