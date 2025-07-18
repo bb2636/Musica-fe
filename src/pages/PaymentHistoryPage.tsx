@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../apis/axiosInstance';
+import { getPayments, getPaymentDetail, cancelPayment } from '../apis/payment';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -65,9 +65,7 @@ const PaymentHistoryPage: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosInstance.get<PaymentItem[]>(`/users/me/payments`, {
-        params: selectedStatus === 'ALL' ? {} : { status: selectedStatus },
-      });
+      const res = await getPayments(selectedStatus);
       setPayments(res.data);
     } catch (err) {
       console.error(err);
@@ -87,9 +85,7 @@ const PaymentHistoryPage: React.FC = () => {
     setDetailError(null);
     setSelectedPayment(null);
     try {
-      const res = await axiosInstance.get<PaymentDetail[]>(`/users/me/payments`, {
-        params: { paymentId },
-      });
+      const res = await getPaymentDetail(paymentId);
       setSelectedPayment(res.data[0]);
     } catch (err) {
       setDetailError('결제 상세 정보를 불러올 수 없습니다.');
@@ -112,10 +108,7 @@ const PaymentHistoryPage: React.FC = () => {
     setCancelError(null);
     setCancelSuccess(null);
     try {
-      const res = await axiosInstance.post<CancelResponse>('users/payment/cancel', {
-        payment_id: selectedPayment.paymentId,
-        payment_item_ids: selectedCancelItems,
-      });
+      const res = await cancelPayment(selectedPayment.paymentId, selectedCancelItems);
       console.log('결제 취소 API 응답:', res);
       if (res.data.status === 'success' || res.data.status === 'CANCELED') {
         setCancelSuccess(res.data.message || '취소가 완료되었습니다.');
