@@ -11,18 +11,8 @@ import ProfileEditPage from "./pages/Mypage/USER/ProfileEditPage.tsx";
 import MyQuestionsPage from "./pages/Mypage/USER/MyQuestionsPage.tsx";
 import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
-<<<<<<< Updated upstream
 import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
-=======
-import Login from "./pages/Login.tsx";
-import InstructorApprovalPage from "./pages/Mypage/ADMIN/InstructorApprovalPage.tsx";
-import CategoryManagePage from './pages/Mypage/ADMIN/CategoryManagePage.tsx';
-import AdminDashboardWrapper from "./pages/Mypage/ADMIN/AdminDashboardWrapper.tsx";
-import PaymentHistoryPage from './pages/PaymentHistoryPage';
-import PaymentSuccessPage from './pages/PaymentSuccessPage';
-import InstructorRevenuePage from './pages/InstructorRevenuePage';
 import QnAPage from './pages/QnAPage';
->>>>>>> Stashed changes
 
 import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
 import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
@@ -43,23 +33,9 @@ import InstructorRevenuePage from "./pages/InstructorRevenuePage";
 
 import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
-// import ClassDetailPage from "./pages/Classes/ClassDetailPage";
-// import ClassFormPage from "./pages/Classes/ClassFormPage";
+
 
 function App() {
-<<<<<<< Updated upstream
-  return (
-    <BrowserRouter>
-      <main className="p-4">
-        <Routes>
-          {/* 공통 */}
-          <Route path="/" element={<Navigate to="/main" />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/main" element={<MainPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/oauth-success" element={<OAuthSuccessPage />} />
-=======
     return (
         <BrowserRouter>
             <main className="p-4">
@@ -71,7 +47,6 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
                     <Route path="/qna" element={<QnAPage />} />
->>>>>>> Stashed changes
 
           {/* 결제 */}
           <Route path="/payment-history" element={<PaymentHistoryPage />} />
