@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axiosInstance from '../apis/axiosInstance';
+import { approveCartPayment } from '../apis/payment';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
@@ -29,7 +29,7 @@ const PaymentSuccessPage: React.FC = () => {
         // cartItemIds를 여러 개의 쿼리 파라미터로 변환
         const cartItemIdParams = cartItemIdArray.map(id => `cartItemIds=${encodeURIComponent(id)}`).join('&');
         const params = `paymentKey=${encodeURIComponent(paymentKey)}&orderId=${encodeURIComponent(orderId)}&amount=${encodeURIComponent(amount)}&${cartItemIdParams}`;
-        const res = await axiosInstance.post(`/users/payment/cart/checkout?${params}`);
+        const res = await approveCartPayment(params);
         console.log('결제 승인 API 응답:', res);
         console.log('결제 승인 API status:', res.data.status);
         if (res.data.status === 'success' || res.data.status === 'CANCELED') {

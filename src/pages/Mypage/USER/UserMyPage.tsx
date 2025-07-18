@@ -24,7 +24,7 @@ interface MyReviewItem {
 interface Profile {
     name: string;
     email: string;
-    level?: { name: string };
+    level?: string;
 }
 
 export default function UserMyPage() {
@@ -139,7 +139,7 @@ export default function UserMyPage() {
                                         <div className="space-y-1">
                                             <p><strong>이름:</strong> {profile.name}</p>
                                             <p><strong>이메일:</strong> {profile.email}</p>
-                                            <p><strong>레벨:</strong> {profile.level?.name ?? '없음'}</p>
+                                            <p><strong>레벨:</strong> {profile.level ?? '없음'}</p>
                                         </div>
                                     ) : (
                                         <p>정보를 불러오는 중입니다...</p>
