@@ -64,7 +64,9 @@ export default function ProfileEditPage() {
         try {
             await updateMyProfile(userId, form);
             alert('수정되었습니다!');
-            navigate('/mypage/users');
+            //수정 후 리디렉션하면서 새로고침
+            navigate('/mypage/users', { replace: true });
+            window.location.reload();
         } catch {
             alert("수정에 실패했습니다. 다시 시도해주세요.");
         }

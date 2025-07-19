@@ -12,6 +12,7 @@ import MyQuestionsPage from "./pages/Mypage/USER/MyQuestionsPage.tsx";
 import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
 import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
+import QnAPage from './pages/QnAPage';
 
 import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
 import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
@@ -37,17 +38,17 @@ import InstructorLayout from "./components/layout/InstructorLayout";
 // import ClassFormPage from "./pages/Classes/ClassFormPage";
 
 function App() {
-  return (
-    <BrowserRouter>
-      <main className="p-4">
-        <Routes>
-          {/* 공통 */}
-          <Route path="/" element={<Navigate to="/main" />} />
-          <Route path="/auth" element={<AuthPage />} />
-          <Route path="/auth/login" element={<Login />} />
-          <Route path="/main" element={<MainPage />} />
-          <Route path="/cart" element={<CartPage />} />
-          <Route path="/oauth-success" element={<OAuthSuccessPage />} />
+    return (
+        <BrowserRouter>
+            <main className="p-4">
+                <Routes>
+                    {/*공통*/}
+                    <Route path="/auth" element={<AuthPage />} />
+                    <Route path="/auth/login" element={<Login />} />
+                    <Route path="/main" element={<MainPage />} />
+                    <Route path="/cart" element={<CartPage />} />
+                    <Route path="/oauth-success" element={<OAuthSuccessPage />} />
+                    <Route path="/qna" element={<QnAPage />} />
 
           {/* 결제 */}
           <Route path="/payment-history" element={<PaymentHistoryPage />} />

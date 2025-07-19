@@ -1,114 +1,113 @@
 import React, { useEffect, useState } from 'react';
-import CategoryCard from '../components/CategoryCard';
-import type { CategoryItem } from '../types/CategoryItem.ts';
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 // import axiosInstance from '../apis/axiosInstance';
 import type { MainpageClassItem } from '../types/MainpageClassItem';
 import axiosInstance from '../apis/axiosInstance';
-import SearchBar from '../components/SearchBar.tsx';
 import RecommendedSection from '../components/mainpage/RecommendedSection.tsx';
 import PopularSection from '../components/mainpage/PopularSection.tsx';
 import RecentSection from '../components/mainpage/RecentSection.tsx';
+import ReviewSummarySection from '../components/mainpage/ReviewSummarySection';
+import type { ReviewSummaryCard } from '../types/ReviewSummaryCard';
+import FreeClassSection from '../components/mainpage/FreeClassSection';
 
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
-const categoryIcons = [
-  <span role="img" aria-label="기타">🎸</span>,
-  <span role="img" aria-label="피아노">🎹</span>,
-  <span role="img" aria-label="드럼">🥁</span>,
-  <span role="img" aria-label="보컬">🎤</span>,
-  <span role="img" aria-label="바이올린">🎻</span>,
-  <span role="img" aria-label="작곡">🎼</span>,
-];
-
-
-
-const MOCK_CATEGORIES = [
-  { id: 1, name: '기타', icon: categoryIcons[0], classCount: 124 },
-  { id: 2, name: '피아노', icon: categoryIcons[1], classCount: 98 },
-  { id: 3, name: '드럼', icon: categoryIcons[2], classCount: 76 },
-  { id: 4, name: '보컬', icon: categoryIcons[3], classCount: 82 },
-  { id: 5, name: '바이올린', icon: categoryIcons[4], classCount: 65 },
-  { id: 6, name: '작곡', icon: categoryIcons[5], classCount: 54 },
-];
-
-
+// const categoryIcons = [
+//   <span role="img" aria-label="기타">🎸</span>,
+//   <span role="img" aria-label="피아노">🎹</span>,
+//   <span role="img" aria-label="드럼">🥁</span>,
+//   <span role="img" aria-label="보컬">🎤</span>,
+//   <span role="img" aria-label="바이올린">🎻</span>,
+//   <span role="img" aria-label="작곡">🎼</span>,
+// ];
 
 const MainPage: React.FC = () => {
   const [recommendedClasses, setRecommendedClasses] = useState<MainpageClassItem[]>([]);
   const [popularClasses, setPopularClasses] = useState<MainpageClassItem[]>([]);
   const [recentClasses, setRecentClasses] = useState<MainpageClassItem[]>([]);
-  const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [wishedClassIds, setWishedClassIds] = useState<number[]>([]);
+  const [reviewSummaryCards, setReviewSummaryCards] = useState<ReviewSummaryCard[]>([]);
+  const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
+
+  // ✅ 공통 헬퍼 함수 정의
+  const mapClassData = (data: any[]): MainpageClassItem[] => {
+    if (!Array.isArray(data)) return [];
+    return data.map((item) => ({
+      id: item.id,
+      title: item.title,
+      price: item.price,
+      rating: item.rating,
+      tag: item.categoryName,
+      categoryName: item.categoryName,
+      thumbnailUrl: item.thumbnailUrl,
+      instructor: item.instructor,
+      ratingCount: item.ratingCount,
+      originalPrice: item.originalPrice,
+      studentCount: item.studentCount ?? 0, // 서버에서 빠졌을 경우 대비
+    }));
+  };
+  // 찜 토글 핸들러
+  const onToggleWish = (id: number) => {
+    setWishedClassIds((prev) =>
+      prev.includes(id) ? prev.filter((cid) => cid !== id) : [...prev, id]
+    );
+  };
+  // 장바구니 추가 핸들러 (예시: alert)
+  const onAddToCart = (id: number) => {
+    alert('장바구니에 담았습니다! (id: ' + id + ')');
+  };
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken');
     setIsLoggedIn(!!token);
 
+    // 후기 요약 데이터 요청
+    axiosInstance.get('/main/reviews/summary')
+      .then(res => {
+        setReviewSummaryCards(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(() => setReviewSummaryCards([]));
+
     // 추천클래스(로그인유저만)
     if (token) {
       axiosInstance.get('/main/recommend')
-        .then(res => {
-          // console.log('✅ 추천 클래스 응답:', res.data);
-          const data = res.data.map((item: any) => ({
-            id: item.id,
-            title: item.title,
-            price: item.price,
-            rating: item.rating,
-            tag: item.categoryName, // alias로 추가
-            thumbnailUrl: item.thumbnailUrl,
-            instructor: item.instructor, // 없으면 undefined
-            ratingCount: item.ratingCount,
-            originalPrice: item.originalPrice,
-          }));
-          console.log('매핑 후 recommendedClasses:', data);
-          setRecommendedClasses(data);
-        })
-        .catch(() => setRecommendedClasses([]));
+      .then((res) => {
+        const mapped = mapClassData(res.data);
+        setRecommendedClasses(mapped);
+      })
+      .catch(() => setRecommendedClasses([]));
     } else {
       setRecommendedClasses([]);
     }
 
     // ✅ 인기 클래스 (로그인 상관없이 항상)
     axiosInstance.get('/main/popular')
-      .then(res => {
-        const data = res.data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          rating: item.rating,
-          tag: item.categoryName, // alias로 추가
-          thumbnailUrl: item.thumbnailUrl,
-          instructor: item.instructor,
-          ratingCount: item.ratingCount,
-          originalPrice: item.originalPrice,
-        }));
-        setPopularClasses(data);
-      })
-      .catch(() => setPopularClasses([]));
+    .then((res) => {
+      const mapped = mapClassData(res.data);
+      setPopularClasses(mapped);
+    })
+    .catch(() => setPopularClasses([]));
 
     // ✅ 최신 클래스
     axiosInstance.get('/main/latest')
-    .then(res => {
-      const data = res.data.map((item: any) => ({
-        id: item.id,
-        title: item.title,
-        price: item.price,
-        rating: item.rating,
-        tag: item.categoryName, // alias
-        categoryName: item.categoryName, // 타입 충족
-        thumbnailUrl: item.thumbnailUrl,
-        instructor: item.instructor,
-        ratingCount: item.ratingCount,
-        originalPrice: item.originalPrice,
-      }));
-      setRecentClasses(data);
+    .then((res) => {
+      const mapped = mapClassData(res.data);
+      setRecentClasses(mapped);
     })
     .catch(() => setRecentClasses([]));
-    
-    //나중에 추가: 최근 클래스, 무료 클래스 등도 여기서 fetch 가능
 
+    // 무료 클래스
+    axiosInstance.get('/main/classes/free')
+      .then(res => {
+        const mapped = mapClassData(res.data);
+        setFreeClasses(mapped);
+      })
+      .catch(() => setFreeClasses([]));
+    
   }, []);
+    
+    
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -117,22 +116,41 @@ const MainPage: React.FC = () => {
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}
-        {isLoggedIn && <RecommendedSection classes={recommendedClasses} />}
+        {isLoggedIn && (
+          <RecommendedSection
+            classes={recommendedClasses}
+            onToggleWish={onToggleWish}
+            onAddToCart={onAddToCart}
+            wishedClassIds={wishedClassIds}
+          />
+        )}
 
         {/* 인기 클래스 */}
-        <PopularSection classes={popularClasses} />
+        <PopularSection
+          classes={popularClasses}
+          onToggleWish={onToggleWish}
+          onAddToCart={onAddToCart}
+          wishedClassIds={wishedClassIds}
+        />
         
-        {/* 인기 카테고리 */}
-        <section className="mt-10">
-          <h2 className="text-xl font-bold mb-4">인기 카테고리</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
-            {categories.map(cat => (
-              <CategoryCard key={cat.id} {...cat} />
-            ))}
-          </div>
-        </section>
         {/* 최근 추가된 클래스 */}
-        <RecentSection classes={recentClasses} />
+        <RecentSection
+          classes={recentClasses}
+          onToggleWish={onToggleWish}
+          onAddToCart={onAddToCart}
+          wishedClassIds={wishedClassIds}
+        />
+
+        {/* AI 요약 후기 섹션 (항상 렌더링) */}
+        <ReviewSummarySection reviews={reviewSummaryCards} />
+
+        {/* 무료 클래스 섹션 */}
+        <FreeClassSection
+          classes={freeClasses}
+          onToggleWish={onToggleWish}
+          onAddToCart={onAddToCart}
+          wishedClassIds={wishedClassIds}
+        />
 
         {/* 빠른 링크 (와이어프레임 참고, 간단한 예시) */}
         <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">

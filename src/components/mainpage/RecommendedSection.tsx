@@ -1,46 +1,42 @@
+// src/components/mainpage/RecommendedSection.tsx
 import React from 'react';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import ClassCard from '../ClassCard';
+import SwiperSection from './SwiperSection';
+import ClassCard from './ClassCard';
 import type { MainpageClassItem } from '../../types/MainpageClassItem';
 
-interface RecommendedSectionProps {
+interface Props {
   classes: MainpageClassItem[];
+  onToggleWish: (id: number) => void;
+  onAddToCart: (id: number) => void;
+  wishedClassIds: number[];
 }
 
-const RecommendedSection: React.FC<RecommendedSectionProps> = ({ classes }) => {
+const RecommendedSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCart, wishedClassIds }) => {
+  const cardElements = classes
+    .filter(item => item && item.id)
+    .map((item, idx) => (
+      <ClassCard
+        key={`${item.id}-${idx}`}
+        id={item.id}
+        title={item.title ?? '제목 없음'}
+        instructor={item.instructor ?? '미정'}
+        price={item.price ?? 0}
+        originalPrice={item.originalPrice}
+        rating={item.rating ?? 5}
+        ratingCount={item.ratingCount ?? 0}
+        tag={item.tag ?? item.categoryName ?? '기타'}
+        thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+        onToggleWish={onToggleWish}
+        onAddToCart={onAddToCart}
+        isWished={wishedClassIds.includes(item.id)}
+      />
+    ));
+
   return (
-    <section className="my-10">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold">추천 클래스 🎉</h2>
-        <button className="text-blue-600 font-semibold hover:underline">더 보기</button>
-      </div>
-      <Swiper
-        modules={[Navigation]}
-        slidesPerView={4}
-        spaceBetween={16}
-        navigation
-      >
-        {classes.map((item) => (
-          <SwiperSlide key={item.id}>
-            <ClassCard
-              id={item.id}
-              title={item.title}
-              instructor={item.instructor || '미정'}
-              price={item.price}
-              originalPrice={item.originalPrice}
-              rating={item.rating}
-              ratingCount={item.ratingCount ?? 0}
-              tag={item.categoryName}
-              thumbnailUrl={item.thumbnailUrl || undefined}
-            />
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </section>
+    <SwiperSection title={<><span role="img" aria-label="추천">🎉</span> 추천 클래스</>} moreLink="/classes/recommend">
+      {cardElements}
+    </SwiperSection>
   );
 };
 
-export default RecommendedSection; 
+export default RecommendedSection;
