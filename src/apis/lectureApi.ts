@@ -1,9 +1,14 @@
 // apis/lectureApi.ts
 import axiosInstance from "../apis/axiosInstance";
+// src/apis/lectureApi.ts
+import type { LectureCreateResDto } from "../types/LectureCreateResDto"; // ✅ named import
 
 export const lectureApi = {
   // 강의 등록
-  createLecture: async (classId: number, data: any) => {
+  createLecture: async (
+    classId: number,
+    data: any
+  ): Promise<LectureCreateResDto> => {
     const res = await axiosInstance.post(
       `/instructors/classes/${classId}/lectures`,
       data

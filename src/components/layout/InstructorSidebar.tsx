@@ -1,14 +1,13 @@
 // components/layout/InstructorSidebar.tsx
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink } from "react-router-dom";
 
 const menus = [
-  { label: '대시보드', path: '/mypage/instructor/dashboard' },
-  { label: '클래스 관리', path: '/mypage/instructor/classes' },
-  { label: '질의응답 관리', path: '/mypage/instructor/qna' },
-  { label: '리뷰 관리', path: '/mypage/instructor/reviews' },
-  { label: '정산 내역', path: '/mypage/instructor/settlements' },
-  { label: '설정', path: '/mypage/instructor/settings' },
+  { label: "대시보드", path: "/mypage/instructor/dashboard" },
+  { label: "클래스 관리", path: "/mypage/instructor/classes" },
+  { label: "질의응답 관리", path: "/mypage/instructor/qna" },
+  { label: "리뷰 관리", path: "/mypage/instructor/reviews" },
+  { label: "정산 내역", path: "/mypage/instructor/settlements" },
+  { label: "설정", path: "/mypage/instructor/settings" },
 ];
 
 const InstructorSidebar = () => {
@@ -21,7 +20,9 @@ const InstructorSidebar = () => {
             key={menu.path}
             to={menu.path}
             className={({ isActive }) =>
-              `block px-3 py-2 rounded ${isActive ? 'bg-blue-500 text-white' : 'hover:bg-gray-100'}`
+              `block px-3 py-2 rounded ${
+                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+              }`
             }
           >
             {menu.label}
