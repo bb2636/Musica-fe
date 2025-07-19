@@ -91,10 +91,10 @@ const CreateClassPage = () => {
         headers: { "Content-Type": file.type },
       });
       setThumbnailUrl(fileUrl);
-      alert("썸네일 업로드 성공!");
+      // alert("썸네일 업로드 성공!");
     } catch (e) {
       console.error("썸네일 업로드 실패", e);
-      alert("썸네일 업로드 실패");
+      alert("썸네일 업로드 실패: 지원하지 않는 이미지 형식입니다.");
     }
   };
 
@@ -121,7 +121,7 @@ const CreateClassPage = () => {
       alert("클래스가 등록되었습니다.");
 
       // ✅ 강의 등록 페이지로 이동
-      navigate(`/instructor/classes/${classId}/lectures/create`);
+      navigate(`/mypage/instructor/classes/${classId}/lectures/create`);
     } catch (e) {
       console.error("클래스 등록 실패", e);
       alert("클래스 등록 실패");

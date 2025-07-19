@@ -91,7 +91,7 @@ const InstructorMyClasses = () => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-semibold">내가 등록한 클래스</h2>
         <button
-          onClick={() => navigate("/instructor/classes/new")}
+          onClick={() => navigate("/mypage/instructor/classes/new")}
           className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition"
         >
           + 클래스 등록
@@ -196,7 +196,9 @@ const InstructorMyClasses = () => {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    navigate(`/instructor/classes/${c.id}/lectures/create`);
+                    navigate(
+                      `/mypage/instructor/classes/${c.id}/lectures/create`
+                    );
                   }}
                   className="w-full bg-gray-100 hover:bg-gray-200 text-sm text-gray-800 py-1 rounded"
                 >

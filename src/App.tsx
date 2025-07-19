@@ -33,7 +33,9 @@ import InstructorRevenuePage from "./pages/InstructorRevenuePage";
 
 import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
-
+import InstructorLayout from "./components/layout/InstructorLayout";
+// import ClassDetailPage from "./pages/Classes/ClassDetailPage";
+// import ClassFormPage from "./pages/Classes/ClassFormPage";
 
 function App() {
     return (
@@ -51,12 +53,10 @@ function App() {
           {/* 결제 */}
           <Route path="/payment-history" element={<PaymentHistoryPage />} />
           <Route path="/payment-success" element={<PaymentSuccessPage />} />
-          <Route path="/instructor/revenue" element={<InstructorRevenuePage />} />
-
-          {/* 클래스 등록 */}
-          <Route path="/instructor/classes/new" element={<CreateClassPage />} />
-          <Route path="/instructor/classes/:classId/lectures/create" element={<CreateLecturePage />} />
-          {/* <Route path="/classes/:classId" element={<ClassDetailPage />} /> */}
+          <Route
+            path="/instructor/revenue"
+            element={<InstructorRevenuePage />}
+          />
 
           {/* 마이페이지 메인 - 리디렉션 분기 */}
           <Route path="/mypage" element={<MyPage />} />
@@ -75,6 +75,12 @@ function App() {
             <Route index element={<Navigate to="dashboard" />} />
             <Route path="dashboard" element={<InstructorDashboard />} />
             <Route path="classes" element={<InstructorMyClasses />} />
+            <Route path="classes/new" element={<CreateClassPage />} />
+            <Route
+              path="classes/:classId/lectures/create"
+              element={<CreateLecturePage />}
+            />
+            {/* <Route path="/classes/:classId" element={<ClassDetailPage />} /> */}
             <Route path="qna" element={<InstructorQnA />} />
             <Route path="reviews" element={<InstructorReviews />} />
             {/* <Route path="settlements" element={<InstructorSettlement />} /> */}
