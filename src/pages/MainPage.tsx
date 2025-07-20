@@ -168,8 +168,14 @@ const MainPage: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+
+      {/* 헤더 */}
       <Header />
+
+      {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
+
+        {/* 추천 클래스 */}
         {isLoggedIn && (
           <RecommendedSection
             classes={recommendedClasses}
@@ -180,6 +186,8 @@ const MainPage: React.FC = () => {
             cartItems={cartItems}
           />
         )}
+
+        {/* 인기 클래스 */}
         <PopularSection
           classes={popularClasses}
           onToggleWish={onToggleWish}
@@ -188,6 +196,8 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           cartItems={cartItems}
         />
+
+        {/* 최근 추가된 클래스 */}
         <RecentSection
           classes={recentClasses}
           onToggleWish={onToggleWish}
@@ -196,7 +206,11 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           cartItems={cartItems}
         />
+
+        {/* AI 요약 후기 섹션 (항상 렌더링) */}
         <ReviewSummarySection reviews={reviewSummaryCards} />
+
+        {/* 무료 클래스 섹션 */}
         <FreeClassSection
           classes={freeClasses}
           onToggleWish={onToggleWish}
@@ -205,6 +219,29 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           cartItems={cartItems}
         />
+        {/* 빠른 링크 (와이어프레임 참고, 간단한 예시) */}
+        <section className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+            <span className="text-2xl mb-2">💬</span>
+            <div className="font-semibold text-sm mb-1">메시지</div>
+            <div className="text-xs text-gray-400">강사와 학생들과 소통하기</div>
+          </div>
+          <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+            <span className="text-2xl mb-2">📚</span>
+            <div className="font-semibold text-sm mb-1">학습 자료</div>
+            <div className="text-xs text-gray-400">악보, 연습 가이드 및 이론 자료</div>
+          </div>
+          <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+            <span className="text-2xl mb-2">📈</span>
+            <div className="font-semibold text-sm mb-1">학습 진도</div>
+            <div className="text-xs text-gray-400">나의 학습 진도 상태 확인하기</div>
+          </div>
+          <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
+            <span className="text-2xl mb-2">⚙️</span>
+            <div className="font-semibold text-sm mb-1">설정</div>
+            <div className="text-xs text-gray-400">계정 및 알림 설정 관리하기</div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>
