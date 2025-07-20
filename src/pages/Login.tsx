@@ -28,7 +28,7 @@ const Login = () => {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
 
-        // ✅ 사용자 정보 저장 (role 포함)
+        // ✅ 사용자 정보 저장
         localStorage.setItem("userName", name || "사용자");
         localStorage.setItem("userEmail", email || form.email);
 
@@ -44,7 +44,7 @@ const Login = () => {
         if (role === "ADMIN") {
           navigate("/mypage/admin");
         } else if (role === "INSTRUCTOR") {
-          // navigate('/mypage/instructor');
+          // 승인 전 강사일 경우에는 아래에서 걸러짐
           navigate("/main");
         } else {
           navigate("/main");
