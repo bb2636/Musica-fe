@@ -46,11 +46,11 @@ const Login = () => {
 
                 // ✅ role에 따른 페이지 이동
                 if (role === 'ADMIN') {
-                    navigate('/mypage/admin');
+                    window.location.href = "/mypage/admin";
                 } else if (role === 'INSTRUCTOR') {
-                    navigate('/mypage/instructor');
+                    window.location.href = "/mypage/instructor";
                 } else {
-                    navigate('/main');
+                    window.location.href = "/main";
                 }
             } else {
                 alert('로그인 실패: 토큰이 없습니다');

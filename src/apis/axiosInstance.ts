@@ -31,7 +31,11 @@ axiosInstance.interceptors.request.use((config) => {
   console.log("🚨 interceptor에서 가져온 accessToken:", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
-  }
+    //console.log('[axiosInstance] Authorization 헤더 주입됨:', config.headers.Authorization); // 로그 4
+    }
+  //   else {
+  //     console.warn('[axiosInstance] 토큰 없음, Authorization 미주입됨');
+  // }
   return config;
 });
 
