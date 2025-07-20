@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header.tsx";
 import Footer from "../components/Footer.tsx";
 // import axiosInstance from '../apis/axiosInstance';
-import type { MainpageClassItem } from '../types/MainpageClassItem';
-import axiosInstance from '../apis/axiosInstance';
-import RecommendedSection from '../components/mainpage/RecommendedSection.tsx';
-import PopularSection from '../components/mainpage/PopularSection.tsx';
-import RecentSection from '../components/mainpage/RecentSection.tsx';
-import ReviewSummarySection from '../components/mainpage/ReviewSummarySection';
-import type { ReviewSummaryCard } from '../types/ReviewSummaryCard';
-import FreeClassSection from '../components/mainpage/FreeClassSection';
+import type { MainpageClassItem } from "../types/MainpageClassItem";
+import axiosInstance from "../apis/axiosInstance";
+import RecommendedSection from "../components/mainpage/RecommendedSection.tsx";
+import PopularSection from "../components/mainpage/PopularSection.tsx";
+import RecentSection from "../components/mainpage/RecentSection.tsx";
+import ReviewSummarySection from "../components/mainpage/ReviewSummarySection";
+import type { ReviewSummaryCard } from "../types/ReviewSummaryCard";
+import FreeClassSection from "../components/mainpage/FreeClassSection";
 
 // 카테고리 아이콘 예시 (실제 프로젝트에서는 아이콘 라이브러리 사용 권장)
 // const categoryIcons = [
@@ -21,13 +21,21 @@ import FreeClassSection from '../components/mainpage/FreeClassSection';
 //   <span role="img" aria-label="작곡">🎼</span>,
 // ];
 
+// 개인화 추천 클래스 api 호출 결과가 수강생에게만 표시되도록 하기 위해 사용하는 변수 (role, isUser)
+const role = localStorage.getItem("userRole") ?? "";
+const isUser = role.toUpperCase() === "USER";
+
 const MainPage: React.FC = () => {
-  const [recommendedClasses, setRecommendedClasses] = useState<MainpageClassItem[]>([]);
+  const [recommendedClasses, setRecommendedClasses] = useState<
+    MainpageClassItem[]
+  >([]);
   const [popularClasses, setPopularClasses] = useState<MainpageClassItem[]>([]);
   const [recentClasses, setRecentClasses] = useState<MainpageClassItem[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [wishedClassIds, setWishedClassIds] = useState<number[]>([]);
-  const [reviewSummaryCards, setReviewSummaryCards] = useState<ReviewSummaryCard[]>([]);
+  const [reviewSummaryCards, setReviewSummaryCards] = useState<
+    ReviewSummaryCard[]
+  >([]);
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
 
   // ✅ 공통 헬퍼 함수 정의
@@ -55,59 +63,72 @@ const MainPage: React.FC = () => {
   };
   // 장바구니 추가 핸들러 (예시: alert)
   const onAddToCart = (id: number) => {
-    alert('장바구니에 담았습니다! (id: ' + id + ')');
+    alert("장바구니에 담았습니다! (id: " + id + ")");
   };
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
+    const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
 
     // 후기 요약 데이터 요청
-    axiosInstance.get('/main/reviews/summary')
-      .then(res => {
+    axiosInstance
+      .get("/main/reviews/summary")
+      .then((res) => {
         setReviewSummaryCards(Array.isArray(res.data) ? res.data : []);
       })
       .catch(() => setReviewSummaryCards([]));
 
-    // 추천클래스(로그인유저만)
-    if (token) {
-      axiosInstance.get('/main/recommend')
-      .then((res) => {
-        const mapped = mapClassData(res.data);
-        setRecommendedClasses(mapped);
-      })
-      .catch(() => setRecommendedClasses([]));
+    // 추천클래스(로그인유저만) + 수강생만 (강사, 관리자 x)
+    if (token && role.toUpperCase() === "USER") {
+      axiosInstance
+        .get("/main/recommend")
+        .then((res) => {
+          const mapped = mapClassData(res.data);
+          setRecommendedClasses(mapped);
+        })
+        .catch(() => setRecommendedClasses([]));
     } else {
       setRecommendedClasses([]);
     }
+    // if (token) {
+    //   axiosInstance
+    //     .get("/main/recommend")
+    //     .then((res) => {
+    //       const mapped = mapClassData(res.data);
+    //       setRecommendedClasses(mapped);
+    //     })
+    //     .catch(() => setRecommendedClasses([]));
+    // } else {
+    //   setRecommendedClasses([]);
+    // }
 
     // ✅ 인기 클래스 (로그인 상관없이 항상)
-    axiosInstance.get('/main/popular')
-    .then((res) => {
-      const mapped = mapClassData(res.data);
-      setPopularClasses(mapped);
-    })
-    .catch(() => setPopularClasses([]));
+    axiosInstance
+      .get("/main/popular")
+      .then((res) => {
+        const mapped = mapClassData(res.data);
+        setPopularClasses(mapped);
+      })
+      .catch(() => setPopularClasses([]));
 
     // ✅ 최신 클래스
-    axiosInstance.get('/main/latest')
-    .then((res) => {
-      const mapped = mapClassData(res.data);
-      setRecentClasses(mapped);
-    })
-    .catch(() => setRecentClasses([]));
+    axiosInstance
+      .get("/main/latest")
+      .then((res) => {
+        const mapped = mapClassData(res.data);
+        setRecentClasses(mapped);
+      })
+      .catch(() => setRecentClasses([]));
 
     // 무료 클래스
-    axiosInstance.get('/main/classes/free')
-      .then(res => {
+    axiosInstance
+      .get("/main/classes/free")
+      .then((res) => {
         const mapped = mapClassData(res.data);
         setFreeClasses(mapped);
       })
       .catch(() => setFreeClasses([]));
-    
   }, []);
-    
-    
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -116,7 +137,7 @@ const MainPage: React.FC = () => {
       {/* 본문 */}
       <main className="flex-1 w-full mx-auto px-4 py-8">
         {/* 추천 클래스 */}
-        {isLoggedIn && (
+        {isLoggedIn && isUser && (
           <RecommendedSection
             classes={recommendedClasses}
             onToggleWish={onToggleWish}
@@ -132,7 +153,7 @@ const MainPage: React.FC = () => {
           onAddToCart={onAddToCart}
           wishedClassIds={wishedClassIds}
         />
-        
+
         {/* 최근 추가된 클래스 */}
         <RecentSection
           classes={recentClasses}
@@ -157,28 +178,36 @@ const MainPage: React.FC = () => {
           <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
             <span className="text-2xl mb-2">💬</span>
             <div className="font-semibold text-sm mb-1">메시지</div>
-            <div className="text-xs text-gray-400">강사와 학생들과 소통하기</div>
+            <div className="text-xs text-gray-400">
+              강사와 학생들과 소통하기
+            </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
             <span className="text-2xl mb-2">📚</span>
             <div className="font-semibold text-sm mb-1">학습 자료</div>
-            <div className="text-xs text-gray-400">악보, 연습 가이드 및 이론 자료</div>
+            <div className="text-xs text-gray-400">
+              악보, 연습 가이드 및 이론 자료
+            </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
             <span className="text-2xl mb-2">📈</span>
             <div className="font-semibold text-sm mb-1">학습 진도</div>
-            <div className="text-xs text-gray-400">나의 학습 진도 상태 확인하기</div>
+            <div className="text-xs text-gray-400">
+              나의 학습 진도 상태 확인하기
+            </div>
           </div>
           <div className="bg-white rounded-xl shadow p-4 flex flex-col items-center">
             <span className="text-2xl mb-2">⚙️</span>
             <div className="font-semibold text-sm mb-1">설정</div>
-            <div className="text-xs text-gray-400">계정 및 알림 설정 관리하기</div>
+            <div className="text-xs text-gray-400">
+              계정 및 알림 설정 관리하기
+            </div>
           </div>
         </section>
       </main>
-      <Footer/>
+      <Footer />
     </div>
   );
 };
 
-export default MainPage; 
+export default MainPage;
