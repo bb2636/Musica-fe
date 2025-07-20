@@ -29,11 +29,12 @@ const PopularSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCart, w
         onToggleWish={onToggleWish}
         onAddToCart={onAddToCart}
         isWished={wishedClassIds.includes(item.id)}
+        wishlistCount={item.wishlistCount ?? 0}
       />
     ));
 
   return (
-    <SwiperSection title={<><span role="img" aria-label="인기">🔥</span> 인기 클래스</>} moreLink="/classes/popular">
+    <SwiperSection title={<><span role="img" aria-label="인기"></span> 인기 클래스</>} moreLink="/classes/popular">
       {cardElements}
     </SwiperSection>
   );

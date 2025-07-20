@@ -29,11 +29,12 @@ const RecommendedSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCar
         onToggleWish={onToggleWish}
         onAddToCart={onAddToCart}
         isWished={wishedClassIds.includes(item.id)}
+        wishlistCount={item.wishlistCount ?? 0}
       />
     ));
 
   return (
-    <SwiperSection title={<><span role="img" aria-label="추천">🎉</span> 추천 클래스</>} moreLink="/classes/recommend">
+    <SwiperSection title={<><span role="img" aria-label="추천"></span> 추천 클래스</>} moreLink="/classes/recommend">
       {cardElements}
     </SwiperSection>
   );

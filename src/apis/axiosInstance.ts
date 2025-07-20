@@ -28,6 +28,7 @@ const onRefreshFailed = () => {
 
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
+  console.log("🚨 interceptor에서 가져온 accessToken:", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

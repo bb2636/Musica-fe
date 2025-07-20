@@ -12,7 +12,7 @@ interface Props {
 
 const FreeClassSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCart, wishedClassIds }) => {
   return (
-    <SwiperSection title={<><span role="img" aria-label="무료">🎁</span> 무료 클래스</>} moreLink="/classes/free">
+    <SwiperSection title={<><span role="img" aria-label="무료"></span> 무료 클래스</>} moreLink="/classes/free">
       {classes && classes.length > 0 ? (
         classes.map((item) => (
           <ClassCard
@@ -29,6 +29,7 @@ const FreeClassSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCart,
             onToggleWish={onToggleWish}
             onAddToCart={onAddToCart}
             isWished={wishedClassIds.includes(item.id)}
+            wishlistCount={item.wishlistCount ?? 0}
           />
         ))
       ) : null}

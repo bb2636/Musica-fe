@@ -29,11 +29,12 @@ const RecentSection: React.FC<Props> = ({ classes, onToggleWish, onAddToCart, wi
         onToggleWish={onToggleWish}
         onAddToCart={onAddToCart}
         isWished={wishedClassIds.includes(item.id)}
+        wishlistCount={item.wishlistCount ?? 0}
       />
     ));
 
   return (
-    <SwiperSection title={<><span role="img" aria-label="최근">🆕</span> 최신 클래스</>} moreLink="/classes/recent">
+    <SwiperSection title={<><span role="img" aria-label="최근"></span> 최신 클래스</>} moreLink="/classes/recent">
       {cardElements}
     </SwiperSection>
   );
