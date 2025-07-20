@@ -57,77 +57,88 @@ const InstructorSettingsPage = () => {
     }
   };
 
-  if (!info) return <div>로딩 중...</div>;
+  if (!info) return <div className="text-center mt-20">로딩 중...</div>;
 
   return (
-    <div className="p-8 max-w-xl">
-      <h2 className="text-2xl font-bold mb-6">강사 정보 수정</h2>
+    <div className="flex justify-center items-center min-h-screen bg-gray-50 px-4">
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-2xl">
+        <h2 className="text-3xl font-bold mb-8 text-center">강사 정보 수정</h2>
 
-      <div className="mb-4">
-        <label className="block mb-1">이름</label>
-        <input
-          type="text"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        />
-      </div>
+        {/* 이름 */}
+        <div className="mb-6">
+          <label className="block mb-2 text-gray-700 font-medium">이름</label>
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-      <div className="mb-4">
-        <label className="block mb-1">이메일</label>
-        <input
-          type="email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        />
-      </div>
+        {/* 이메일 */}
+        <div className="mb-6">
+          <label className="block mb-2 text-gray-700 font-medium">이메일</label>
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
 
-      <div className="mb-4 relative">
-        <label className="block mb-1">현재 비밀번호</label>
-        <input
-          type={showCurrentPassword ? "text" : "password"}
-          name="currentPassword"
-          value={form.currentPassword}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        />
+        {/* 현재 비밀번호 */}
+        <div className="mb-6 relative">
+          <label className="block mb-2 text-gray-700 font-medium">
+            현재 비밀번호
+          </label>
+          <input
+            type={showCurrentPassword ? "text" : "password"}
+            name="currentPassword"
+            value={form.currentPassword}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onClick={() => setShowCurrentPassword((prev) => !prev)}
+            className="absolute right-4 top-[42px] text-sm text-gray-500"
+          >
+            {showCurrentPassword ? "숨김" : "보기"}
+          </button>
+        </div>
+
+        {/* 새 비밀번호 */}
+        <div className="mb-8 relative">
+          <label className="block mb-2 text-gray-700 font-medium">
+            새 비밀번호
+          </label>
+          <input
+            type={showNewPassword ? "text" : "password"}
+            name="newPassword"
+            value={form.newPassword}
+            onChange={handleChange}
+            className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onClick={() => setShowNewPassword((prev) => !prev)}
+            className="absolute right-4 top-[42px] text-sm text-gray-500"
+          >
+            {showNewPassword ? "숨김" : "보기"}
+          </button>
+        </div>
+
+        {/* 저장 버튼 */}
         <button
-          type="button"
-          onClick={() => setShowCurrentPassword((prev) => !prev)}
-          className="absolute right-3 top-[38px] text-sm text-gray-500"
+          onClick={handleSubmit}
+          disabled={isSaving}
+          className="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 transition"
         >
-          {showCurrentPassword ? "숨김" : "보기"}
+          {isSaving ? "저장 중..." : "저장"}
         </button>
       </div>
-
-      <div className="mb-6 relative">
-        <label className="block mb-1">새 비밀번호</label>
-        <input
-          type={showNewPassword ? "text" : "password"}
-          name="newPassword"
-          value={form.newPassword}
-          onChange={handleChange}
-          className="w-full border px-3 py-2 rounded"
-        />
-        <button
-          type="button"
-          onClick={() => setShowNewPassword((prev) => !prev)}
-          className="absolute right-3 top-[38px] text-sm text-gray-500"
-        >
-          {showNewPassword ? "숨김" : "보기"}
-        </button>
-      </div>
-
-      <button
-        onClick={handleSubmit}
-        disabled={isSaving}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        {isSaving ? "저장 중..." : "저장"}
-      </button>
     </div>
   );
 };
