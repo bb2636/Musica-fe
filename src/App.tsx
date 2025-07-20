@@ -13,6 +13,8 @@ import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
 import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
 import QnAPage from './pages/QnAPage';
+import MyEnrollmentsPage from './pages/Mypage/USER/MyEnrollmentsPage';
+import LectureWatchPage from './pages/Classes/LectureWatchPage';
 
 import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
 import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
@@ -49,6 +51,7 @@ function App() {
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/oauth-success" element={<OAuthSuccessPage />} />
                     <Route path="/qna" element={<QnAPage />} />
+                    <Route path="/classes/:classId/lectures/:lectureId" element={<LectureWatchPage />} />
 
           {/* 결제 */}
           <Route path="/payment-history" element={<PaymentHistoryPage />} />
@@ -64,6 +67,7 @@ function App() {
           {/* 유저 마이페이지 */}
           <Route path="/mypage/users" element={<UserMyPage />}>
             <Route path="profile" element={<ProfileEditPage />} />
+            <Route path="enrollments" element={<MyEnrollmentsPage />} />
             <Route path="questions" element={<MyQuestionsPage />} />
             <Route path="reviews" element={<MyReviewsPage />} />
             <Route path="wishlist" element={<MyWishlistPage />} />

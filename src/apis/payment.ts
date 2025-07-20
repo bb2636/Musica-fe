@@ -21,4 +21,9 @@ export const cancelPayment = (payment_id: number, payment_item_ids: number[]) =>
   axiosInstance.post('users/payment/cancel', {
     payment_id,
     payment_item_ids,
-  }); 
+  });
+
+// 수강 중인 클래스 목록 조회 - PaymentController와 일치
+getEnrolledClasses: async (): Promise<EnrolledClassDto[]> => {
+    return apiClient.get('/users/me/classes');
+}
