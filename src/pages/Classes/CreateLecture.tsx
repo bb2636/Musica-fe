@@ -91,16 +91,19 @@ const CreateLecturePage = () => {
   const handleAddLecture = () =>
     setLectures([...lectures, { title: "", duration: "" }]);
 
-  const handleLectureChange = <
-      T extends keyof LectureForm
-  >(
+  const handleLectureChange = <T extends keyof LectureForm>(
       index: number,
       field: T,
       value: LectureForm[T]
   ) => {
-    const updated = [...lectures];
-    updated[index][field] = value;
-    setLectures(updated);
+    setLectures(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+      return updated;
+    });
   };
 
   const handleVideoDuration = (
