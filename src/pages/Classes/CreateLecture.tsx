@@ -4,29 +4,36 @@ import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
 
 interface LectureForm {
-  id?: number; // 기존 강의는 id 보유
+  id?: number;
   title: string;
   videoFile?: File;
   pdfFile?: File;
   duration: string;
+  rawDuration?: number;
+  existingTitle?: string;
   existingVideoUrl?: string;
   existingFileUrl?: string;
+  existingDuration?: string;
+  existingLectureOrder?: number;
+  existingRawDuration?: number;
+  existingVideoObjectKey?: string;
 }
 
-interface LectureResponse {
-  id: number;
+export interface LectureResponse {
+  lectureId: number;
   title: string;
+  duration: number;
+  order: number;
+  progressRate?: number | null;
+  isCompleted?: boolean | null;
   videoUrl?: string;
   fileUrl?: string;
-  duration: number; // 초 단위
+  videoObjectKey?: string;
 }
 
 const parseDurationToSeconds = (time: string): number => {
   const parts = time.split(":").map(Number);
-  if (parts.length === 2) {
-    return parts[0] * 60 + parts[1];
-  }
-  return Number(time);
+  return parts.length === 2 ? parts[0] * 60 + parts[1] : Number(time);
 };
 
 const formatDuration = (seconds: number): string => {
@@ -38,41 +45,51 @@ const CreateLecturePage = () => {
   const navigate = useNavigate();
 
   const [lectures, setLectures] = useState<LectureForm[]>([]);
+  const [recommendedMap, setRecommendedMap] = useState<
+    Record<number, string[]>
+  >({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDone, setIsDone] = useState(false);
+  const [activeSubmittingIndex, setActiveSubmittingIndex] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     if (!classId) return;
-
     const fetchExistingLectures = async () => {
       try {
         const data: LectureResponse[] = await lectureApi.getLectureList(
           Number(classId)
         );
-        const formatted: LectureForm[] = data.map((l) => ({
-          id: l.id,
+        const formatted = data.map((l) => ({
+          id: l.lectureId,
           title: l.title,
+          existingTitle: l.title,
           duration: formatDuration(l.duration),
+          existingDuration: formatDuration(l.duration),
+          existingRawDuration: l.duration,
           existingVideoUrl: l.videoUrl,
           existingFileUrl: l.fileUrl,
+          existingLectureOrder: l.order,
+          existingVideoObjectKey: l.videoObjectKey,
         }));
         setLectures(formatted);
       } catch (err) {
         console.error("기존 강의 불러오기 실패:", err);
       }
     };
-
     fetchExistingLectures();
   }, [classId]);
 
-  const handleAddLecture = () => {
-    setLectures([...lectures, { title: "", duration: "" }]);
+  const isModifiedLecture = (lecture: LectureForm): boolean => {
+    if (!lecture.id) return true;
+    const titleChanged = lecture.title.trim() !== lecture.existingTitle?.trim();
+    const fileChanged = !!lecture.videoFile || !!lecture.pdfFile;
+    return titleChanged || fileChanged;
   };
 
-  const handleRemoveLecture = (index: number) => {
-    const updated = [...lectures];
-    updated.splice(index, 1);
-    setLectures(updated);
-  };
+  const handleAddLecture = () =>
+    setLectures([...lectures, { title: "", duration: "" }]);
 
   const handleLectureChange = <
       T extends keyof LectureForm
@@ -98,6 +115,7 @@ const CreateLecturePage = () => {
         window.URL.revokeObjectURL(video.src);
         const seconds = Math.round(video.duration);
         handleLectureChange(index, "duration", formatDuration(seconds));
+        handleLectureChange(index, "rawDuration", seconds);
       };
       video.src = URL.createObjectURL(file);
       handleLectureChange(index, "videoFile", file);
@@ -105,7 +123,7 @@ const CreateLecturePage = () => {
   };
 
   const uploadFile = async (file: File) => {
-    const { uploadUrl, fileUrl } = await uploadApi.getPresignedUrl(
+    const { uploadUrl, fileUrl, objectKey } = await uploadApi.getPresignedUrl(
       file.name,
       file.type
     );
@@ -114,87 +132,147 @@ const CreateLecturePage = () => {
       body: file,
       headers: { "Content-Type": file.type },
     });
-    return fileUrl;
+    return { fileUrl, objectKey };
   };
 
   const registerLecture = async (lecture: LectureForm, index: number) => {
-    if (lecture.id) return; // 기존 강의는 등록 스킵
-
-    const videoUrl = lecture.videoFile
+    const { fileUrl: vUrl, objectKey: vKey } = lecture.videoFile
       ? await uploadFile(lecture.videoFile)
-      : undefined;
-    const fileUrl = lecture.pdfFile
+      : { fileUrl: lecture.existingVideoUrl, objectKey: undefined };
+    const { fileUrl: fUrl, objectKey: fKey } = lecture.pdfFile
       ? await uploadFile(lecture.pdfFile)
-      : undefined;
+      : { fileUrl: lecture.existingFileUrl, objectKey: undefined };
+    const payload = {
+      title: lecture.title.trim(),
+      videoUrl: vUrl ?? null,
+      fileUrl: fUrl ?? null,
+      videoObjectKey: vKey ?? lecture.existingVideoObjectKey ?? null,
+      fileObjectKey: fKey ?? null,
+      duration:
+        lecture.rawDuration ??
+        lecture.existingRawDuration ??
+        parseDurationToSeconds(lecture.duration || "0"),
+      lectureOrder: lecture.existingLectureOrder ?? index + 1,
+    };
 
-    const res = await lectureApi.createLecture(Number(classId), {
-      title: lecture.title,
-      videoUrl,
-      fileUrl,
-      duration: parseDurationToSeconds(lecture.duration),
-      lectureOrder: index + 1,
-    });
+    const titleChanged = lecture.title.trim() !== lecture.existingTitle?.trim();
+    const durationChanged = lecture.duration !== lecture.existingDuration;
+    const isModified =
+      !lecture.id ||
+      titleChanged ||
+      durationChanged ||
+      !!lecture.videoFile ||
+      !!lecture.pdfFile;
+    if (!isModified) return;
 
-    // ✅ 추천 카테고리 저장
-    setRecommendedMap((prev) => ({
-      ...prev,
-      [res.lectureId]: res.recommendedCategories,
-    }));
+    if (lecture.id) {
+      await lectureApi.updateLecture(lecture.id, payload);
+      const detail = await lectureApi.getLectureDetail(lecture.id);
+      const instruments = detail.detectedInstruments || {};
+      const recommended = Object.entries(instruments)
+        .filter(([, v]) => v === true)
+        .map(([k]) => k.toUpperCase());
+      setLectures((prev) => {
+        const updated = [...prev];
+        updated[index] = {
+          ...updated[index],
+          existingTitle: payload.title,
+          videoFile: undefined,
+          pdfFile: undefined,
+          existingVideoUrl: payload.videoUrl,
+          existingFileUrl: payload.fileUrl,
+        };
+        return updated;
+      });
+      setRecommendedMap((prev) => ({ ...prev, [lecture.id!]: recommended }));
+    } else {
+      const res = await lectureApi.createLecture(Number(classId), payload);
+      setLectures((prev) => {
+        const updated = [...prev];
+        updated[index] = {
+          ...updated[index],
+          id: res.lectureId,
+          existingTitle: payload.title,
+          videoFile: undefined,
+          pdfFile: undefined,
+          existingVideoUrl: payload.videoUrl,
+          existingFileUrl: payload.fileUrl,
+        };
+        return updated;
+      });
+      setRecommendedMap((prev) => ({
+        ...prev,
+        [res.lectureId]: res.recommendedCategories,
+      }));
+    }
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
     setIsSubmitting(true);
     try {
-      // 🔍 등록 대상 강의 필터링
-      const lecturesToRegister = lectures.filter(
-        (lecture) =>
-          !lecture.id && // 기존 강의는 제외
-          lecture.title.trim() !== "" && // 제목이 비어있으면 제외
-          (lecture.videoFile || lecture.pdfFile) // 영상이나 파일 둘 중 하나라도 있어야 등록
-      );
-
-      // ✅ 필터링된 강의만 등록 요청
-      for (let i = 0; i < lecturesToRegister.length; i++) {
-        await registerLecture(lecturesToRegister[i], i);
+      const updatedSet = new Set<string>();
+      for (let i = 0; i < lectures.length; i++) {
+        const lecture = lectures[i];
+        if (
+          lecture.title.trim() === "" ||
+          (!lecture.videoFile &&
+            !lecture.pdfFile &&
+            !lecture.existingVideoUrl &&
+            !lecture.existingFileUrl)
+        )
+          continue;
+        const key = `${lecture.title}-${lecture.duration}-${
+          lecture.videoFile?.name || ""
+        }-${lecture.pdfFile?.name || ""}`;
+        if (updatedSet.has(key)) continue;
+        updatedSet.add(key);
+        await registerLecture(lecture, i);
       }
-
-      // ✅ 완료 처리
-      setIsDone(true); // ✅ 이 위치!
-      alert("강의 등록 완료! 추천 악기를 확인하세요.");
-
-      // alert("강의 등록 완료!");
-      // navigate("/mypage/instructor/classes");
+      setIsDone(true);
+      alert("강의 등록 및 수정이 완료되었습니다!");
     } catch (err) {
-      console.error("강의 등록 실패:", err);
-      alert("강의 등록 실패");
+      console.error("강의 등록/수정 실패:", err);
+      alert("강의 등록 또는 수정 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const [recommendedMap, setRecommendedMap] = useState<
-    Record<number, string[]>
-  >({});
-
-  // 상태 추가
-  const [isDone, setIsDone] = useState(false);
+  const handleDeleteLecture = async (index: number) => {
+    const lecture = lectures[index];
+    if (!window.confirm("정말 이 강의를 삭제하시겠습니까?")) return;
+    try {
+      if (lecture.id) {
+        await lectureApi.deleteLecture(lecture.id);
+        setRecommendedMap((prev) => {
+          const copy = { ...prev };
+          delete copy[lecture.id!];
+          return copy;
+        });
+      }
+      setLectures((prev) => prev.filter((_, i) => i !== index));
+      alert("강의가 삭제되었습니다.");
+    } catch (err) {
+      console.error("강의 삭제 실패:", err);
+      alert("강의 삭제 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
       <h1 className="text-2xl font-bold">강의 등록</h1>
-
       {lectures.map((lecture, idx) => (
         <div key={idx} className="mb-6 border p-4 rounded space-y-2 bg-gray-50">
           <div className="flex justify-between items-center">
             <h3 className="font-semibold">강의 {idx + 1}</h3>
             <button
-              onClick={() => handleRemoveLecture(idx)}
+              onClick={() => handleDeleteLecture(idx)}
               className="text-red-500 text-sm"
             >
               삭제
             </button>
           </div>
-
           <input
             type="text"
             placeholder="강의 제목"
@@ -202,18 +280,13 @@ const CreateLecturePage = () => {
             onChange={(e) => handleLectureChange(idx, "title", e.target.value)}
             className="border p-2 rounded w-full"
           />
-
           <input
             type="text"
             readOnly
             placeholder="재생 시간 (예: 15:30)"
             value={lecture.duration}
-            onChange={(e) =>
-              handleLectureChange(idx, "duration", e.target.value)
-            }
             className="border p-2 rounded w-full"
           />
-
           <label className="block font-medium">강의 영상</label>
           <input
             type="file"
@@ -223,7 +296,6 @@ const CreateLecturePage = () => {
           {!lecture.videoFile && lecture.existingVideoUrl && (
             <p className="text-xs text-gray-400">* 기존 영상이 있습니다</p>
           )}
-
           <label className="block font-medium">강의 자료 (PDF)</label>
           <input
             type="file"
@@ -235,8 +307,6 @@ const CreateLecturePage = () => {
           {!lecture.pdfFile && lecture.existingFileUrl && (
             <p className="text-xs text-gray-400">* 기존 자료가 있습니다</p>
           )}
-
-          {/* ✅ 강의별 추천 악기 */}
           {lecture.id && recommendedMap[lecture.id] && (
             <div className="mt-2 p-2 bg-white border rounded">
               <p className="text-sm font-medium text-gray-700">추천 악기:</p>
@@ -247,9 +317,40 @@ const CreateLecturePage = () => {
               </ul>
             </div>
           )}
+          <div className="flex justify-end">
+            <button
+              onClick={async () => {
+                setActiveSubmittingIndex(idx);
+                try {
+                  await registerLecture(lecture, idx);
+                } finally {
+                  setActiveSubmittingIndex(null);
+                }
+              }}
+              className={`mt-2 text-white text-sm px-3 py-1 rounded ${
+                lecture.id ? "bg-blue-500" : "bg-green-500"
+              } ${
+                activeSubmittingIndex === idx
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              disabled={
+                isSubmitting ||
+                activeSubmittingIndex !== null ||
+                !isModifiedLecture(lecture)
+              }
+            >
+              {activeSubmittingIndex === idx
+                ? lecture.id
+                  ? "수정 중..."
+                  : "등록 중..."
+                : lecture.id
+                ? "수정하기"
+                : "등록하기"}
+            </button>
+          </div>
         </div>
       ))}
-
       <button
         type="button"
         onClick={handleAddLecture}
@@ -257,22 +358,17 @@ const CreateLecturePage = () => {
       >
         + 강의 추가
       </button>
-
-      {/* 등록 버튼 */}
-      <button
+      {/* <button
         onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
+        className={`bg-blue-600 text-white px-4 py-2 rounded w-full ${
+          isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+        }`}
         disabled={
-          isSubmitting ||
-          lectures.filter(
-            (l) => !l.id && l.title.trim() !== "" && (l.videoFile || l.pdfFile)
-          ).length === 0
+          isSubmitting || lectures.filter(isModifiedLecture).length === 0
         }
       >
         {isSubmitting ? "등록 중..." : "강의 등록하기"}
-      </button>
-
-      {/* ✅ 이 아래에 바로 추가하세요 */}
+      </button> */}
       {isDone && (
         <div className="mt-6 bg-green-100 border border-green-300 p-4 rounded">
           <p className="text-green-800 font-semibold">
@@ -285,25 +381,6 @@ const CreateLecturePage = () => {
           >
             클래스 목록으로 이동
           </button>
-        </div>
-      )}
-
-      {/* ✅ 여기에 추천 카테고리 출력 */}
-      {Object.entries(recommendedMap).length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-bold mb-4">AI 추천 악기</h3>
-          {Object.entries(recommendedMap).map(([lectureId, categories]) => (
-            <div key={lectureId} className="mt-4 p-4 border rounded bg-white">
-              <h4 className="font-semibold text-gray-700">
-                강의 {lectureId} 추천 악기:
-              </h4>
-              <ul className="list-disc pl-5 text-sm text-gray-600">
-                {categories.map((cat) => (
-                  <li key={cat}>{cat}</li>
-                ))}
-              </ul>
-            </div>
-          ))}
         </div>
       )}
 
