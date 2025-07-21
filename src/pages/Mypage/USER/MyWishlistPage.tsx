@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
-import { fetchMyWishlist } from '../../../apis/user';
+import { wishlistApi } from '../../../apis/WishlistApi';
 
 interface WishlistItem {
-    id: number;
+    classId: number; // ✅ 클래스 고유 ID
     title: string;
     thumbnailUrl?: string;
-    price?: number;
+    price: number;
+    instructorName: string;
+    categoryName: string;
 }
 
 export default function MyWishlistPage() {
@@ -16,8 +18,8 @@ export default function MyWishlistPage() {
     useEffect(() => {
         const loadWishlist = async () => {
             try {
-                const response = await fetchMyWishlist();
-                setWishlist(response?.data?.classes ?? []);
+                const response = await wishlistApi.getMyWishlist();
+                setWishlist(response); // 이미 가공된 배열
             } catch (err) {
                 setError('찜 목록을 불러오는데 실패했습니다.');
                 console.error('찜 목록 로딩 실패:', err);
@@ -69,7 +71,7 @@ export default function MyWishlistPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {wishlist.map((item) => (
                         <div
-                            key={item.id}
+                            key={item.classId}
                             className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
                         >
                             {item.thumbnailUrl && (

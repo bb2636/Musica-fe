@@ -4,18 +4,15 @@ import Header from '../../../components/Header';
 import Footer from '../../../components/Footer';
 import {
     fetchMyProfile,
-    fetchMyWishlist,
     fetchMyQuestions,
     fetchMyReviews,
 } from '../../../apis/user.ts';
+import { wishlistApi } from '../../../apis/WishlistApi';
+import type { WishlistItem } from '../../../types/WishlistItem';
 import { enrollmentApi } from '../../../apis/enrollmentApi';
 import type { Enrollment } from '../../../types/enrollment';
 import { getPayments } from "../../../apis/payment";
 
-interface MyWishlistItem {
-    id: number;
-    title: string;
-}
 interface MyQuestionItem {
     id: number;
     content: string;
@@ -42,7 +39,7 @@ interface PaymentItem {
 export default function UserMyPage() {
     const location = useLocation();
     const [profile, setProfile] = useState<Profile | null>(null);
-    const [wishlist, setWishlist] = useState<MyWishlistItem[]>([]);
+    const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
     const [questions, setQuestions] = useState<MyQuestionItem[]>([]);
     const [reviews, setReviews] = useState<MyReviewItem[]>([]);
     const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
@@ -63,14 +60,14 @@ export default function UserMyPage() {
                     enrollmentsRes
                 ] = await Promise.all([
                     fetchMyProfile(),
-                    fetchMyWishlist(),
+                    wishlistApi.getMyWishlist(),
                     fetchMyQuestions(),
                     fetchMyReviews(),
                     enrollmentApi.getMyEnrollments()
                 ]);
 
                 setProfile(profileRes?.data ?? null);
-                setWishlist(wishlistRes?.data?.classes ?? []);
+                setWishlist(wishlistRes ?? []);
                 setQuestions(questionsRes?.data ?? []);
                 setReviews(reviewsRes?.data ?? []);
                 setEnrollments(enrollmentsRes ?? []);
@@ -134,7 +131,7 @@ export default function UserMyPage() {
                                         {wishlist.length > 0 ? (
                                             <ul className="space-y-1">
                                                 {wishlist.slice(0, 3).map(w => (
-                                                    <li key={w.id} className="text-sm text-gray-600 truncate">• {w.title}</li>
+                                                    <li key={w.classId} className="text-sm text-gray-600 truncate">• {w.title}</li>
                                                 ))}
                                                 {wishlist.length > 3 && <li className="text-xs text-gray-500">외 {wishlist.length - 3}개 더...</li>}
                                             </ul>
