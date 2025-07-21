@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
@@ -91,14 +91,19 @@ const CreateLecturePage = () => {
   const handleAddLecture = () =>
     setLectures([...lectures, { title: "", duration: "" }]);
 
-  const handleLectureChange = (
-    index: number,
-    field: keyof LectureForm,
-    value: any
+  const handleLectureChange = <T extends keyof LectureForm>(
+      index: number,
+      field: T,
+      value: LectureForm[T]
   ) => {
-    const updated = [...lectures];
-    updated[index][field] = value;
-    setLectures(updated);
+    setLectures(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+      return updated;
+    });
   };
 
   const handleVideoDuration = (
