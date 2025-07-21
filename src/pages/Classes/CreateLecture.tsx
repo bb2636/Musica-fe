@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
+import { classApi } from "../../apis/classesApi";
 
 interface LectureForm {
   id?: number;
@@ -48,11 +49,14 @@ const CreateLecturePage = () => {
   const [recommendedMap, setRecommendedMap] = useState<
     Record<number, string[]>
   >({});
+
   const isSubmitting = false;
   const isDone = false;
+  
   const [activeSubmittingIndex, setActiveSubmittingIndex] = useState<
     number | null
   >(null);
+  const [classCategory, setClassCategory] = useState<string | null>(null);
 
   useEffect(() => {
     if (!classId) return;
@@ -74,6 +78,9 @@ const CreateLecturePage = () => {
           existingVideoObjectKey: l.videoObjectKey,
         }));
         setLectures(formatted);
+        // 👇 클래스 카테고리 추가 조회
+        const classDetail = await classApi.getClassDetail(Number(classId));
+        setClassCategory(classDetail.categoryName); // 예: "피아노"
       } catch (err) {
         console.error("기존 강의 불러오기 실패:", err);
       }
@@ -92,9 +99,9 @@ const CreateLecturePage = () => {
     setLectures([...lectures, { title: "", duration: "" }]);
 
   const handleLectureChange = <T extends keyof LectureForm>(
-      index: number,
-      field: T,
-      value: LectureForm[T]
+    index: number,
+    field: T,
+    value: LectureForm[T]
   ) => {
     setLectures(prev => {
       const updated = [...prev];
@@ -169,12 +176,24 @@ const CreateLecturePage = () => {
     if (!isModified) return;
 
     if (lecture.id) {
+      // 상단에 한글 매핑 추가
+      const INSTRUMENT_DISPLAY_MAP: Record<string, string> = {
+        bass: "베이스",
+        drums: "드럼",
+        guitars: "기타",
+        keys: "키보드",
+        percussion: "타악기",
+        piano: "피아노",
+        strings: "현악기",
+        vocals: "보컬",
+        wind: "관악기",
+      };
       await lectureApi.updateLecture(lecture.id, payload);
       const detail = await lectureApi.getLectureDetail(lecture.id);
       const instruments = detail.detectedInstruments || {};
       const recommended = Object.entries(instruments)
         .filter(([, v]) => v === true)
-        .map(([k]) => k.toUpperCase());
+        .map(([k]) => INSTRUMENT_DISPLAY_MAP[k] || k);
       setLectures((prev) => {
         const updated = [...prev];
         updated[index] = {
@@ -189,7 +208,25 @@ const CreateLecturePage = () => {
       });
       setRecommendedMap((prev) => ({ ...prev, [lecture.id!]: recommended }));
     } else {
+      const INSTRUMENT_DISPLAY_MAP: Record<string, string> = {
+        bass: "베이스",
+        drums: "드럼",
+        guitars: "기타",
+        keys: "키보드",
+        percussion: "타악기",
+        piano: "피아노",
+        strings: "현악기",
+        vocals: "보컬",
+        wind: "관악기",
+      };
+
       const res = await lectureApi.createLecture(Number(classId), payload);
+
+      // ✅ 한글 매핑 처리
+      const recommended = res.recommendedCategories.map((eng: string) => {
+        return INSTRUMENT_DISPLAY_MAP[eng.toLowerCase()] || eng;
+      });
+
       setLectures((prev) => {
         const updated = [...prev];
         updated[index] = {
@@ -203,12 +240,14 @@ const CreateLecturePage = () => {
         };
         return updated;
       });
+
       setRecommendedMap((prev) => ({
         ...prev,
-        [res.lectureId]: res.recommendedCategories,
+        [res.lectureId]: recommended, // ✅ 한글로 변환된 값 넣기
       }));
     }
   };
+
   const handleDeleteLecture = async (index: number) => {
     const lecture = lectures[index];
     if (!window.confirm("정말 이 강의를 삭제하시겠습니까?")) return;
@@ -285,6 +324,23 @@ const CreateLecturePage = () => {
                   <li key={cat}>{cat}</li>
                 ))}
               </ul>
+              {/* ✅ 분석 결과 요약 메시지 */}
+              {classCategory && (
+                <p className="text-sm mt-2 text-gray-800">
+                  이 클래스의 카테고리는{" "}
+                  <span className="font-semibold">{classCategory}</span>입니다.
+                  <br />
+                  영상 분석 결과{" "}
+                  <span className="font-semibold">
+                    {recommendedMap[lecture.id].join(", ")}
+                  </span>{" "}
+                  악기가 감지되었습니다.
+                  <br /> <span className="font-semibold">
+                    {classCategory}
+                  </span>{" "}
+                  카테고리에 적합한 영상인지 확인해 주세요.
+                </p>
+              )}
             </div>
           )}
           <div className="flex justify-end">
@@ -297,8 +353,10 @@ const CreateLecturePage = () => {
                   setActiveSubmittingIndex(null);
                 }
               }}
-              className={`mt-2 text-white text-sm px-3 py-1 rounded ${
-                lecture.id ? "bg-blue-500" : "bg-green-500"
+              className={`mt-2 text-sm px-3 py-1 rounded transition ${
+                lecture.id
+                  ? "bg-gray-300 hover:bg-gray-400 text-gray-800"
+                  : "bg-gradient-to-r from-neutral-900 to-gray-950 hover:brightness-110 text-white"
               } ${
                 activeSubmittingIndex === idx
                   ? "opacity-50 cursor-not-allowed"
@@ -328,17 +386,7 @@ const CreateLecturePage = () => {
       >
         + 강의 추가
       </button>
-      {/* <button
-        onClick={handleSubmit}
-        className={`bg-blue-600 text-white px-4 py-2 rounded w-full ${
-          isSubmitting ? "opacity-50 cursor-not-allowed" : ""
-        }`}
-        disabled={
-          isSubmitting || lectures.filter(isModifiedLecture).length === 0
-        }
-      >
-        {isSubmitting ? "등록 중..." : "강의 등록하기"}
-      </button> */}
+
       {isDone && (
         <div className="mt-6 bg-green-100 border border-green-300 p-4 rounded">
           <p className="text-green-800 font-semibold">
@@ -377,8 +425,8 @@ const CreateLecturePage = () => {
                 d="M4 12a8 8 0 018-8v8z"
               ></path>
             </svg>
-            <p className="text-sm">
-              강의를 등록하고 있습니다. 잠시만 기다려주세요...
+            <p className="text-sm font-medium">
+              강의를 등록/수정하고 있습니다. 잠시만 기다려주세요...
             </p>
           </div>
         </div>

@@ -20,8 +20,10 @@ const InstructorSidebar = () => {
             key={menu.path}
             to={menu.path}
             className={({ isActive }) =>
-              `block px-3 py-2 rounded ${
-                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+              `block px-3 py-2 rounded font-medium transition-colors ${
+                isActive
+                  ? "bg-gradient-to-r from-neutral-800 to-gray-950 text-white"
+                  : "hover:bg-gray-100"
               }`
             }
           >
