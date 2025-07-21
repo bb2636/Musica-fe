@@ -125,13 +125,19 @@ const CreateLecturePage = () => {
       ? await uploadFile(lecture.pdfFile)
       : undefined;
 
-    await lectureApi.createLecture(Number(classId), {
+    const res = await lectureApi.createLecture(Number(classId), {
       title: lecture.title,
       videoUrl,
       fileUrl,
       duration: parseDurationToSeconds(lecture.duration),
       lectureOrder: index + 1,
     });
+
+    // ✅ 추천 카테고리 저장
+    setRecommendedMap((prev) => ({
+      ...prev,
+      [res.lectureId]: res.recommendedCategories,
+    }));
   };
 
   const handleSubmit = async () => {
@@ -150,8 +156,12 @@ const CreateLecturePage = () => {
         await registerLecture(lecturesToRegister[i], i);
       }
 
-      alert("강의 등록 완료!");
-      navigate("/mypage/instructor/classes");
+      // ✅ 완료 처리
+      setIsDone(true); // ✅ 이 위치!
+      alert("강의 등록 완료! 추천 악기를 확인하세요.");
+
+      // alert("강의 등록 완료!");
+      // navigate("/mypage/instructor/classes");
     } catch (err) {
       console.error("강의 등록 실패:", err);
       alert("강의 등록 실패");
@@ -159,6 +169,13 @@ const CreateLecturePage = () => {
       setIsSubmitting(false);
     }
   };
+
+  const [recommendedMap, setRecommendedMap] = useState<
+    Record<number, string[]>
+  >({});
+
+  // 상태 추가
+  const [isDone, setIsDone] = useState(false);
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -186,6 +203,7 @@ const CreateLecturePage = () => {
 
           <input
             type="text"
+            readOnly
             placeholder="재생 시간 (예: 15:30)"
             value={lecture.duration}
             onChange={(e) =>
@@ -215,6 +233,18 @@ const CreateLecturePage = () => {
           {!lecture.pdfFile && lecture.existingFileUrl && (
             <p className="text-xs text-gray-400">* 기존 자료가 있습니다</p>
           )}
+
+          {/* ✅ 강의별 추천 악기 */}
+          {lecture.id && recommendedMap[lecture.id] && (
+            <div className="mt-2 p-2 bg-white border rounded">
+              <p className="text-sm font-medium text-gray-700">추천 악기:</p>
+              <ul className="list-disc pl-5 text-sm text-gray-600">
+                {recommendedMap[lecture.id].map((cat) => (
+                  <li key={cat}>{cat}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       ))}
 
@@ -226,6 +256,7 @@ const CreateLecturePage = () => {
         + 강의 추가
       </button>
 
+      {/* 등록 버튼 */}
       <button
         onClick={handleSubmit}
         className="bg-blue-600 text-white px-4 py-2 rounded w-full disabled:opacity-50"
@@ -238,6 +269,41 @@ const CreateLecturePage = () => {
       >
         {isSubmitting ? "등록 중..." : "강의 등록하기"}
       </button>
+
+      {/* ✅ 이 아래에 바로 추가하세요 */}
+      {isDone && (
+        <div className="mt-6 bg-green-100 border border-green-300 p-4 rounded">
+          <p className="text-green-800 font-semibold">
+            강의 등록이 완료되었습니다!
+          </p>
+          <p className="text-sm mt-1">아래 추천 악기를 확인해보세요.</p>
+          <button
+            onClick={() => navigate("/mypage/instructor/classes")}
+            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+          >
+            클래스 목록으로 이동
+          </button>
+        </div>
+      )}
+
+      {/* ✅ 여기에 추천 카테고리 출력 */}
+      {Object.entries(recommendedMap).length > 0 && (
+        <div className="mt-8">
+          <h3 className="text-lg font-bold mb-4">AI 추천 악기</h3>
+          {Object.entries(recommendedMap).map(([lectureId, categories]) => (
+            <div key={lectureId} className="mt-4 p-4 border rounded bg-white">
+              <h4 className="font-semibold text-gray-700">
+                강의 {lectureId} 추천 악기:
+              </h4>
+              <ul className="list-disc pl-5 text-sm text-gray-600">
+                {categories.map((cat) => (
+                  <li key={cat}>{cat}</li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
 
       {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">

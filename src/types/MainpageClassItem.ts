@@ -10,5 +10,6 @@ export interface MainpageClassItem {
     instructor?: string;
     ratingCount?: number;
     studentCount: number;
+    wishlistCount?: number;
     originalPrice?: number;
   }

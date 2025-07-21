@@ -34,39 +34,34 @@ const CreateClassPage = () => {
 
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [difficulties, setDifficulties] = useState<DifficultyOption[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
+        setLoading(true);
+
         const [catRes, diffRes] = await Promise.all([
-          commonApi.getCategories(),
-          commonApi.getDifficulties(),
+          commonApi.getCategories(), // CategoryOption[] 반환
+          commonApi.getDifficulties(), // DifficultyOption[] 반환
         ]);
+
+        // ✅ 이미 API에서 필터링된 카테고리를 받음 (name 필드 사용)
         setCategories(catRes);
 
-        const DIFFICULTY_ORDER: DifficultyOption["name"][] = [
-          "Beginner",
-          "Intermediate",
-          "Advanced",
-        ];
-
-        const diffWithDisplay: DifficultyOption[] = diffRes
-          .map((d: any) => ({
-            ...d,
-            displayName:
-              DIFFICULTY_DISPLAY_MAP[
-                d.name.charAt(0) + d.name.slice(1).toLowerCase()
-              ] ?? d.name,
-          }))
-          .sort(
-            (a, b) =>
-              DIFFICULTY_ORDER.indexOf(a.name) -
-              DIFFICULTY_ORDER.indexOf(b.name)
-          );
+        // 난이도에 displayName 추가
+        const diffWithDisplay: DifficultyOption[] = diffRes.map((d) => ({
+          id: d.id,
+          name: d.name as "Beginner" | "Intermediate" | "Advanced",
+          displayName: DIFFICULTY_DISPLAY_MAP[d.name] || d.name,
+        }));
 
         setDifficulties(diffWithDisplay);
       } catch (err) {
         console.error("옵션 목록 조회 실패", err);
+        alert("카테고리 및 난이도 정보를 불러오는데 실패했습니다.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -96,10 +91,10 @@ const CreateClassPage = () => {
         headers: { "Content-Type": file.type },
       });
       setThumbnailUrl(fileUrl);
-      alert("썸네일 업로드 성공!");
+      // alert("썸네일 업로드 성공!");
     } catch (e) {
       console.error("썸네일 업로드 실패", e);
-      alert("썸네일 업로드 실패");
+      alert("썸네일 업로드 실패: 지원하지 않는 이미지 형식입니다.");
     }
   };
 
@@ -126,12 +121,25 @@ const CreateClassPage = () => {
       alert("클래스가 등록되었습니다.");
 
       // ✅ 강의 등록 페이지로 이동
-      navigate(`/instructor/classes/${classId}/lectures/create`);
+      navigate(`/mypage/instructor/classes/${classId}/lectures/create`);
     } catch (e) {
       console.error("클래스 등록 실패", e);
       alert("클래스 등록 실패");
     }
   };
+
+  if (loading) {
+    return (
+        <div className="p-6 max-w-3xl mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center space-x-2">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+              <span className="text-gray-600">옵션 정보를 불러오는 중...</span>
+            </div>
+          </div>
+        </div>
+    );
+  }
 
   return (
     <div className="p-6 max-w-3xl mx-auto space-y-6">
@@ -163,6 +171,11 @@ const CreateClassPage = () => {
               </option>
             ))}
           </select>
+          {categories.length === 0 && (
+              <p className="text-xs text-orange-600 mt-1">
+                ⚠️ 활성화된 카테고리가 없습니다. 관리자에게 문의하세요.
+              </p>
+          )}
         </div>
 
         <div>

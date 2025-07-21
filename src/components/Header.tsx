@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/musica-logo.png";
 import SearchBar from "./SearchBar.tsx";
+import cartIcon from "../assets/cart.png";
+
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -39,44 +41,48 @@ const Header: React.FC = () => {
 
         {/* 오른쪽: 버튼들 */}
         <div className="flex-none flex items-center space-x-4">
+          {isLoggedIn && (
+            <button
+              onClick={() => navigate("/cart")}
+              className="hover:scale-110 transition"
+              title="장바구니"
+              style={{ marginRight: "5px" }}
+            >
+              <img src={cartIcon} alt="장바구니" className="w-7 h-7 inline" />
+            </button>
+          )}
           {isLoggedIn ? (
-            <>
-              <button
-                onClick={() => navigate("/cart")}
-                className="text-2xl hover:scale-110 transition text-white"
-                title="장바구니"
-              >
-                🛒
-              </button>
-              <button
+            <div className="flex items-center space-x-2">
+              <span
                 onClick={() => navigate("/mypage")}
-                className="text-sm px-4 py-1.5 rounded-full bg-gray-800 text-white border hover:bg-gray-700 transition"
+                className="cursor-pointer text-white hover:underline font-normal"
               >
                 MY
-              </button>
-              <button
+              </span>
+              <span className="text-gray-400 text-lg select-none">|</span>
+              <span
                 onClick={handleLogout}
-                className="text-sm px-4 py-1.5 rounded-full bg-gray-900 text-white border hover:bg-gray-700 transition"
+                className="cursor-pointer text-white hover:underline font-normal"
               >
                 로그아웃
-              </button>
-            </>
+              </span>
+            </div>
           ) : (
-            <>
-              <button
+            <div className="flex items-center space-x-2">
+              <span
                 onClick={() => navigate("/auth")}
-                className="text-sm px-4 py-1.5 rounded-full bg-gray-900 text-white border hover:bg-gray-700 transition"
+                className="cursor-pointer text-white hover:underline font-normal"
               >
                 로그인
-              </button>
+              </span>
               <span className="text-gray-400 text-lg select-none">|</span>
-              <button
+              <span
                 onClick={() => navigate("/auth")}
-                className="text-sm px-4 py-1.5 rounded-full bg-gray-900 text-white border hover:bg-gray-700 transition"
+                className="cursor-pointer text-white hover:underline font-normal"
               >
                 회원가입
-              </button>
-            </>
+              </span>
+            </div>
           )}
         </div>
       </div>

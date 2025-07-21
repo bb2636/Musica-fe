@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getPayments, getPaymentDetail, cancelPayment } from '../apis/payment';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+// import Header from '../components/Header';
+// import Footer from '../components/Footer';
 
 interface PaymentItem {
   paymentId: number;
@@ -134,7 +134,6 @@ const PaymentHistoryPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
       <div className="py-8 px-4">
         <div className="max-w-3xl mx-auto bg-white rounded-lg shadow p-6">
           <h2 className="text-2xl font-bold mb-6">결제 내역</h2>
@@ -251,7 +250,6 @@ const PaymentHistoryPage: React.FC = () => {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

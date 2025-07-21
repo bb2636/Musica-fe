@@ -1,11 +1,16 @@
-import { Outlet } from 'react-router-dom';
-import InstructorLayout from '../../../components/layout/InstructorLayout';
+// pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx
+import { Outlet } from "react-router-dom";
+import Header from "../../../components/Header";
+import Footer from "../../../components/Footer";
+import InstructorLayout from "../../../components/layout/InstructorLayout";
 
 const InstructorMyPage = () => {
   return (
-    <InstructorLayout>
-      <Outlet />
-    </InstructorLayout>
+    <>
+      <Header />
+      <InstructorLayout />
+      <Footer />
+    </>
   );
 };
 

@@ -34,8 +34,13 @@ export const createAnswer = (data: CreateAnswerReqDto) => {
     return axiosInstance.post<CreateAnswerResDto>('/instructors/answers', data);
 };
 
-// 강사 마이페이지에서 자신의 답변 리스트 조회
-export const getInstructorAnswers = (instructorId: number) => {
+// 강사 마이페이지에서 자신의 답변 리스트 조회 (JWT 기반)
+export const getInstructorAnswers = () => {
+    return axiosInstance.get<InstructorAnswerDto[]>(`/instructors/answers`);
+};
+
+// (옵션) 특정 instructorId로 답변 리스트 조회 (필요시)
+export const getInstructorAnswersById = (instructorId: number) => {
     return axiosInstance.get<InstructorAnswerDto[]>(`/instructors/${instructorId}/answers`);
 };
 
