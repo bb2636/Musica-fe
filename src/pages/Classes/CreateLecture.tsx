@@ -48,8 +48,8 @@ const CreateLecturePage = () => {
   const [recommendedMap, setRecommendedMap] = useState<
     Record<number, string[]>
   >({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDone, setIsDone] = useState(false);
+  const isSubmitting = false;
+  const isDone = false;
   const [activeSubmittingIndex, setActiveSubmittingIndex] = useState<
     number | null
   >(null);
@@ -206,39 +206,6 @@ const CreateLecturePage = () => {
       }));
     }
   };
-
-  const handleSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      const updatedSet = new Set<string>();
-      for (let i = 0; i < lectures.length; i++) {
-        const lecture = lectures[i];
-        if (
-          lecture.title.trim() === "" ||
-          (!lecture.videoFile &&
-            !lecture.pdfFile &&
-            !lecture.existingVideoUrl &&
-            !lecture.existingFileUrl)
-        )
-          continue;
-        const key = `${lecture.title}-${lecture.duration}-${
-          lecture.videoFile?.name || ""
-        }-${lecture.pdfFile?.name || ""}`;
-        if (updatedSet.has(key)) continue;
-        updatedSet.add(key);
-        await registerLecture(lecture, i);
-      }
-      setIsDone(true);
-      alert("강의 등록 및 수정이 완료되었습니다!");
-    } catch (err) {
-      console.error("강의 등록/수정 실패:", err);
-      alert("강의 등록 또는 수정 중 오류가 발생했습니다.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleDeleteLecture = async (index: number) => {
     const lecture = lectures[index];
     if (!window.confirm("정말 이 강의를 삭제하시겠습니까?")) return;
