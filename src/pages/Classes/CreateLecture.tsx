@@ -49,8 +49,10 @@ const CreateLecturePage = () => {
   const [recommendedMap, setRecommendedMap] = useState<
     Record<number, string[]>
   >({});
-  const [isSubmitting] = useState(false);
-  const [isDone] = useState(false);
+
+  const isSubmitting = false;
+  const isDone = false;
+  
   const [activeSubmittingIndex, setActiveSubmittingIndex] = useState<
     number | null
   >(null);
@@ -101,9 +103,14 @@ const CreateLecturePage = () => {
     field: T,
     value: LectureForm[T]
   ) => {
-    const updated = [...lectures];
-    updated[index][field] = value;
-    setLectures(updated);
+    setLectures(prev => {
+      const updated = [...prev];
+      updated[index] = {
+        ...updated[index],
+        [field]: value,
+      };
+      return updated;
+    });
   };
 
   const handleVideoDuration = (
