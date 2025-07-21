@@ -35,9 +35,6 @@ import InstructorRevenuePage from "./pages/InstructorRevenuePage";
 
 import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
-import InstructorLayout from "./components/layout/InstructorLayout";
-// import ClassDetailPage from "./pages/Classes/ClassDetailPage";
-// import ClassFormPage from "./pages/Classes/ClassFormPage";
 
 function App() {
   return (

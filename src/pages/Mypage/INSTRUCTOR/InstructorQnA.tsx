@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { instructorApi } from "../../../apis/instructorApi";
 
 interface Question {

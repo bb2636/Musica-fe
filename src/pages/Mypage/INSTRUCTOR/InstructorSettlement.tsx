@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { getMonthlySalesByInstructor } from "../../../apis/settlementApi";
 import type { MonthlyRevenueDto } from "../../../types/instructor";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";

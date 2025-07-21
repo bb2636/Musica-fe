@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   getQuestionsByClass,
   createQuestion,
   updateQuestion,
-  deleteQuestion,
-  createAnswer
+  deleteQuestion
 } from '../apis/qna';
 import type { QuestionDto } from '../types/qna';
 

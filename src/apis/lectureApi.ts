@@ -1,17 +1,13 @@
 // src/apis/lectureApi.ts
 import axiosInstance from "../apis/axiosInstance";
-import type {
-  LectureCreateResDto,
-  LectureProgressSaveReq,
-  LectureProgressSaveReqDto
-} from "../types/LectureCreateResDto";
-import type { LectureWatchData, LectureDetail, LectureSummaryDto } from "../types/lecture";
+import type { LectureCreateResDto } from "../types/LectureCreateResDto";
+import type {LectureWatchData, LectureSummary, LectureProgressSaveReq, LectureCreateReq} from "../types/lecture";
 
 export const lectureApi = {
   // 강의 등록
   createLecture: async (
       classId: number,
-      data: any
+      data: LectureCreateReq
   ): Promise<LectureCreateResDto> => {
     const res = await axiosInstance.post(
         `/instructors/classes/${classId}/lectures`,
@@ -21,7 +17,7 @@ export const lectureApi = {
   },
 
   // 강의 수정
-  updateLecture: async (lectureId: number, data: any) => {
+  updateLecture: async (lectureId: number, data: LectureCreateReq) => {
     const res = await axiosInstance.put(
         `/instructors/lectures/${lectureId}`,
         data
@@ -50,7 +46,7 @@ export const lectureApi = {
   },
 
   // 강의 순서 변경
-  updateLectureOrder: async (classId: number, orderData: any) => {
+  updateLectureOrder: async (classId: number, orderData: LectureCreateReq) => {
     const res = await axiosInstance.patch(
         `/instructors/classes/${classId}/lectures/order`,
         orderData
@@ -100,7 +96,7 @@ export const lectureApi = {
   // 강의 목록 조회 (수강생용)
   getLectureListForStudent: async (
       classId: number
-  ): Promise<LectureSummaryDto[]> => {
+  ): Promise<LectureSummary[]> => {
     const res = await axiosInstance.get(
         `/users/classes/${classId}/lectures`
     );
@@ -110,7 +106,7 @@ export const lectureApi = {
   // 강의 진행률 저장
   saveProgress: async (
       lectureId: number,
-      data: LectureProgressSaveReqDto
+      data: LectureProgressSaveReq
   ) => {
     const res = await axiosInstance.patch(
         `/lectures/${lectureId}/progress`,

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
@@ -74,10 +74,12 @@ const CreateLecturePage = () => {
     setLectures(updated);
   };
 
-  const handleLectureChange = (
-    index: number,
-    field: keyof LectureForm,
-    value: any
+  const handleLectureChange = <
+      T extends keyof LectureForm
+  >(
+      index: number,
+      field: T,
+      value: LectureForm[T]
   ) => {
     const updated = [...lectures];
     updated[index][field] = value;

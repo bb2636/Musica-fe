@@ -1,26 +1,19 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { lectureApi } from '../../apis/lectureApi';
-import type { LectureDetailResDto, LectureSummaryDto } from '../../types/lecture';
-import type { EnrolledClassDto } from '../../types/enrollment';
+import type { LectureDetail, LectureSummary } from '../../types/lecture';
 
 const LectureWatchPage: React.FC = () => {
     const urlParams = useParams<{ classId: string; lectureId?: string }>();
     const navigate = useNavigate();
 
-    const [lectureDetail, setLectureDetail] = useState<LectureDetailResDto | null>(null);
-    const [lectureList, setLectureList] = useState<LectureSummaryDto[]>([]);
-    const [enrolledClasses, setEnrolledClasses] = useState<EnrolledClassDto[]>([]);
+    const [lectureDetail, setLectureDetail] = useState<LectureDetail | null>(null);
+    const [lectureList, setLectureList] = useState<LectureSummary[]>([]);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [isPlaying, setIsPlaying] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [showNotes, setShowNotes] = useState(false);
-    const [notes, setNotes] = useState('');
-    const [playbackSpeed, setPlaybackSpeed] = useState(1);
-    const [showPlaylist, setShowPlaylist] = useState(false);
-    const [isEnrolled, setIsEnrolled] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const progressSaveIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -42,7 +35,7 @@ const LectureWatchPage: React.FC = () => {
             })();
             return;
         }
-    }, [urlParams.lectureId]);
+    }, [urlParams.lectureId, urlParams.classId, navigate]);
 
     useEffect(() => {
         loadAllData();
@@ -50,6 +43,24 @@ const LectureWatchPage: React.FC = () => {
             if (progressSaveIntervalRef.current) clearInterval(progressSaveIntervalRef.current);
         };
     }, [urlParams.lectureId]);
+
+    const saveProgress = useCallback(async () => {
+        if (!videoRef.current || !lectureDetail || duration === 0) return;
+        const watchedSeconds = Math.floor(currentTime);
+        const progressRate = (currentTime / duration) * 100;
+        const isCompleted = progressRate >= 90;
+        try {
+            await lectureApi.saveProgress(lectureDetail.lectureId, {
+                watchedSeconds,
+                isCompleted
+            });
+            setLectureDetail((prev: LectureDetail | null) =>
+                prev ? { ...prev, watchedSeconds, isCompleted } : null
+            );
+        } catch (err) {
+            console.error('진도 저장 실패:', err);
+        }
+    }, [lectureDetail, currentTime, duration]);
 
     useEffect(() => {
         if (isPlaying && currentTime > 0 && lectureDetail) {
@@ -62,14 +73,13 @@ const LectureWatchPage: React.FC = () => {
         return () => {
             if (progressSaveIntervalRef.current) clearInterval(progressSaveIntervalRef.current);
         };
-    }, [isPlaying, currentTime, lectureDetail]);
+    }, [isPlaying, currentTime, lectureDetail, saveProgress]);
 
     const loadAllData = async () => {
         setLoading(true);
         setError(null);
         try {
-            const enrolled = await lectureApi.getLectureWatchData(Number(urlParams.classId), Number(urlParams.lectureId));
-            setIsEnrolled(true);
+            await lectureApi.getLectureWatchData(Number(urlParams.classId), Number(urlParams.lectureId));
 
             const detail = await lectureApi.getLectureDetail(Number(urlParams.lectureId));
             setLectureDetail(detail);
@@ -90,23 +100,7 @@ const LectureWatchPage: React.FC = () => {
         }
     };
 
-    const saveProgress = async () => {
-        if (!videoRef.current || !lectureDetail || duration === 0) return;
-        const watchedSeconds = Math.floor(currentTime);
-        const progressRate = (currentTime / duration) * 100;
-        const isCompleted = progressRate >= 90;
-        try {
-            await lectureApi.saveProgress(lectureDetail.lectureId, {
-                watchedSeconds,
-                isCompleted
-            });
-            setLectureDetail(prev => prev ? { ...prev, watchedSeconds, isCompleted } : null);
-        } catch (err) {
-            console.error('진도 저장 실패:', err);
-        }
-    };
-
-    const goToLecture = async (lecture: LectureSummaryDto) => {
+    const goToLecture = async (lecture: LectureSummary) => {
         if (!lecture.isAccessible) return alert('아직 이용할 수 없는 강의입니다.');
         await saveProgress();
         navigate(`/classes/${urlParams.classId}/lectures/${lecture.lectureId}`);

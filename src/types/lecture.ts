@@ -14,6 +14,7 @@ export interface LectureSummary {
 export interface LectureDetail extends LectureSummary {
   watchedSeconds: number;
   isCompleted: boolean;
+  className: string;
 }
 
 export interface LectureCreateReq {
