@@ -138,7 +138,7 @@ const ReviewForm = ({ classId, lectures, editingReview, onSuccess, onCancel, onU
                     >
                         <option value={0}>후기를 작성할 강의를 선택하세요</option>
                         {lectures.map(lecture => (
-                            <option key={lecture.id} value={lecture.id}>
+                            <option key={lecture.lectureId} value={lecture.lectureId}>
                                 {lecture.lectureOrder}. {lecture.title}
                             </option>
                         ))}

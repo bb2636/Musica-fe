@@ -1,4 +1,4 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
 // ✅ 백엔드에서 받는 실제 카테고리 구조
 export interface Category {
@@ -30,21 +30,21 @@ export const commonApi = {
   async getCategories(): Promise<CategoryOption[]> {
     try {
       // 1. 모든 카테고리를 가져옴
-      const response = await axiosInstance.get('/meta/categories');
+      const response = await axiosInstance.get("/meta/categories");
       const allCategories: Category[] = response.data;
 
       // 2. 활성화된 카테고리만 필터링하고 정렬
       const activeCategories = allCategories
-          .filter(category => category.isActive)
-          .sort((a, b) => a.displayOrder - b.displayOrder);
+        .filter((category) => category.isActive)
+        .sort((a, b) => a.displayOrder - b.displayOrder);
 
       // 3. 프론트엔드에서 사용할 구조로 변환
-      return activeCategories.map(c => ({
+      return activeCategories.map((c) => ({
         id: c.id,
-        name: c.displayName
+        name: c.displayName,
       }));
     } catch (error) {
-      console.error('카테고리 조회 실패:', error);
+      console.error("카테고리 조회 실패:", error);
       // 백엔드 API가 다른 구조를 반환하는 경우 기존 방식 사용
       const response = await axiosInstance.get("/meta/categories");
       return response.data.map((c: any) => ({
@@ -56,13 +56,13 @@ export const commonApi = {
 
   // ✅ 관리자용 - 모든 카테고리 조회
   async getAllCategories(): Promise<Category[]> {
-    const response = await axiosInstance.get('/admin/categories');
+    const response = await axiosInstance.get("/admin/categories");
     return response.data;
   },
 
   // 난이도 목록 조회
   async getDifficulties(): Promise<DifficultyOption[]> {
-    const response = await axiosInstance.get('/meta/levels');
+    const response = await axiosInstance.get("/meta/levels");
     return response.data.map((d: any) => ({
       id: d.id,
       name: d.name,
@@ -79,5 +79,5 @@ export const commonApi = {
   async getDifficultyById(id: number): Promise<Difficulty> {
     const response = await axiosInstance.get(`/meta/levels/${id}`);
     return response.data;
-  }
+  },
 };

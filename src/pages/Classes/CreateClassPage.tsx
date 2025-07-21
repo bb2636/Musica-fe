@@ -23,6 +23,12 @@ const DIFFICULTY_DISPLAY_MAP: Record<string, string> = {
   Advanced: "고급",
 };
 
+const DIFFICULTY_SORT_ORDER: Record<string, number> = {
+  Beginner: 1,
+  Intermediate: 2,
+  Advanced: 3,
+};
+
 const CreateClassPage = () => {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
@@ -50,11 +56,16 @@ const CreateClassPage = () => {
         setCategories(catRes);
 
         // 난이도에 displayName 추가
-        const diffWithDisplay: DifficultyOption[] = diffRes.map((d) => ({
-          id: d.id,
-          name: d.name as "Beginner" | "Intermediate" | "Advanced",
-          displayName: DIFFICULTY_DISPLAY_MAP[d.name] || d.name,
-        }));
+        const diffWithDisplay: DifficultyOption[] = diffRes
+          .map((d) => ({
+            id: d.id,
+            name: d.name as "Beginner" | "Intermediate" | "Advanced",
+            displayName: DIFFICULTY_DISPLAY_MAP[d.name] || d.name,
+          }))
+          .sort(
+            (a, b) =>
+              DIFFICULTY_SORT_ORDER[a.name] - DIFFICULTY_SORT_ORDER[b.name]
+          );
 
         setDifficulties(diffWithDisplay);
       } catch (err) {
@@ -99,8 +110,14 @@ const CreateClassPage = () => {
   };
 
   const handleSubmit = async () => {
-    if (!title || !categoryId || !difficultyId || !classPrice) {
-      alert("필수 항목을 모두 입력해주세요.");
+    if (
+      !title ||
+      !categoryId ||
+      !difficultyId ||
+      classPrice === undefined ||
+      classPrice < 0
+    ) {
+      alert("필수 항목을 모두 입력해주세요. (가격은 0 이상)");
       return;
     }
 
@@ -130,14 +147,14 @@ const CreateClassPage = () => {
 
   if (loading) {
     return (
-        <div className="p-6 max-w-3xl mx-auto">
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="flex items-center space-x-2">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
-              <span className="text-gray-600">옵션 정보를 불러오는 중...</span>
-            </div>
+      <div className="p-6 max-w-3xl mx-auto">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="flex items-center space-x-2">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+            <span className="text-gray-600">옵션 정보를 불러오는 중...</span>
           </div>
         </div>
+      </div>
     );
   }
 
@@ -172,9 +189,9 @@ const CreateClassPage = () => {
             ))}
           </select>
           {categories.length === 0 && (
-              <p className="text-xs text-orange-600 mt-1">
-                ⚠️ 활성화된 카테고리가 없습니다. 관리자에게 문의하세요.
-              </p>
+            <p className="text-xs text-orange-600 mt-1">
+              ⚠️ 활성화된 카테고리가 없습니다. 관리자에게 문의하세요.
+            </p>
           )}
         </div>
 
@@ -199,9 +216,16 @@ const CreateClassPage = () => {
         <div>
           <label className="block font-semibold">가격</label>
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
+            pattern="[0-9]*"
             value={classPrice ?? ""}
-            onChange={(e) => setClassPrice(Number(e.target.value))}
+            onChange={(e) => {
+              const raw = e.target.value;
+              const onlyNums = raw.replace(/[^0-9]/g, ""); // 숫자만 남김
+              const num = Number(onlyNums);
+              setClassPrice(!isNaN(num) ? num : undefined);
+            }}
             className="border p-2 rounded w-full"
           />
         </div>

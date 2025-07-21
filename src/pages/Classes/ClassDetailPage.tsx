@@ -78,7 +78,7 @@ const ClassDetailPage = () => {
     const checkWishlistStatus = async () => {
         try {
             const wishlist = await wishlistApi.getMyWishlist();
-            const isLiked = wishlist.some((item) => item.id === Number(classId));
+            const isLiked = wishlist.some((item) => item.classId === Number(classId));
             setIsWishlisted(isLiked);
         } catch (err) {
             console.error('찜 목록 확인 실패:', err);
@@ -454,13 +454,13 @@ const ClassDetailPage = () => {
                     <div className="space-y-3">
                         {classDetail.lectures.map((lecture, index) => (
                             <div
-                                key={lecture.id}
+                                key={lecture.lectureId}
                                 className={`flex items-center justify-between p-4 rounded-lg border transition-all ${
                                     isEnrolled
                                         ? 'hover:bg-blue-50 hover:border-blue-200 cursor-pointer'
                                         : 'bg-gray-50 border-gray-200'
                                 }`}
-                                onClick={isEnrolled ? () => navigate(`/classes/${classId}/lectures/${lecture.id}`) : undefined}
+                                onClick={isEnrolled ? () => navigate(`/classes/${classId}/lectures/${lecture.lectureId}`) : undefined}
                             >
                                 <div className="flex items-center gap-3">
                                     <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">

@@ -1,6 +1,5 @@
 import axiosInstance from './axiosInstance';
 import type { Enrollment } from '../types/enrollment';
-import cartIcon from "../assets/cart.png";
 
 // 결제 승인 (카트 결제)
 export const approveCartPayment = (params: string) =>
@@ -26,6 +25,6 @@ export const cancelPayment = (payment_id: number, payment_item_ids: number[]) =>
   });
 
 // 수강 중인 클래스 목록 조회 - PaymentController와 일치
-getEnrolledClasses: async (): Promise<Enrollment[]> => {
-  return axiosInstance.get('/users/me/classes');
-}
+export const getEnrolledClasses = async (): Promise<Enrollment[]> => {
+    return axiosInstance.get('/users/me/classes');
+};

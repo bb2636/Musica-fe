@@ -1,5 +1,6 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
+import type { Swiper as SwiperClass } from 'swiper';
 import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
@@ -11,15 +12,13 @@ interface Props {
 }
 
 const ReviewSummarySection: React.FC<Props> = ({ reviews }) => {
-  const swiperRef = useRef<any>(null);
+  const swiperRef = useRef<SwiperClass>(null); // ✅ SwiperRef로 변경
 
   const handlePrev = () => swiperRef.current?.slidePrev();
   const handleNext = () => swiperRef.current?.slideNext();
 
   useEffect(() => {
-    if (swiperRef.current) {
-      swiperRef.current.update();
-    }
+    swiperRef.current?.update();
   }, [reviews]);
 
   if (!reviews || reviews.length === 0) {
