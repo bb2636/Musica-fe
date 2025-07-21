@@ -61,6 +61,28 @@ export interface Settlement {
   settledAt: string;
 }
 
+// ✅ 정산 계좌 DTO (AccountRequestDto, AccountResponseDto)
+export interface AccountRequestDto {
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+}
+
+export interface AccountResponseDto {
+  id: number;
+  bankName: string;
+  accountNumber: string;
+  accountHolder: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ✅ 월별 매출 DTO (MonthlyRevenueDto)
+export interface MonthlyRevenueDto {
+  month: number; // 1~12
+  totalRevenue: number;
+}
+
 // 강사 개인 정보
 export interface InstructorInfo {
   id: number;

@@ -8,9 +8,7 @@ const InstructorMyPage = () => {
   return (
     <>
       <Header />
-      <InstructorLayout>
-        <Outlet />
-      </InstructorLayout>
+      <InstructorLayout />
       <Footer />
     </>
   );

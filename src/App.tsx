@@ -21,7 +21,7 @@ import InstructorDashboard from "./pages/Mypage/INSTRUCTOR/InstructorDashboard";
 import InstructorMyClasses from "./pages/Mypage/INSTRUCTOR/InstructorMyClasses";
 import InstructorQnA from "./pages/Mypage/INSTRUCTOR/InstructorQnA";
 import InstructorReviews from "./pages/Mypage/INSTRUCTOR/InstructorReviews.tsx";
-// import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
+import InstructorSettlement from "./pages/Mypage/INSTRUCTOR/InstructorSettlement";
 import InstructorSettings from "./pages/Mypage/INSTRUCTOR/InstructorSettings.tsx";
 
 import AdminMyPage from "./pages/Mypage/ADMIN/AdminMyPage.tsx";
@@ -75,6 +75,7 @@ function App() {
             <Route path="reviews" element={<MyReviewsPage />} />
             <Route path="wishlist" element={<MyWishlistPage />} />
             <Route path="tuner" element={<AITunerPage />} />
+            <Route path="payments" element={<PaymentHistoryPage />} />
           </Route>
 
           {/* 강사 마이페이지 */}
@@ -90,7 +91,7 @@ function App() {
             {/* <Route path="/classes/:classId" element={<ClassDetailPage />} /> */}
             <Route path="qna" element={<InstructorQnA />} />
             <Route path="reviews" element={<InstructorReviews />} />
-            {/* <Route path="settlements" element={<InstructorSettlement />} /> */}
+            <Route path="settlements" element={<InstructorSettlement />} />
             <Route path="settings" element={<InstructorSettings />} />
           </Route>
 
