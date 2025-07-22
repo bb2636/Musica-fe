@@ -154,15 +154,20 @@ const MainPage: React.FC = () => {
     // const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
+    console.log("[MainPage] 로그인 여부:", !!token);
 
     if (token) {
       wishlistApi
         .getMyWishlist()
         .then((wishlist) => {
           const ids = wishlist.map((item) => item.classId);
+          console.log("[MainPage] 찜 목록 불러오기 성공:", ids);
           setWishedClassIds(ids);
         })
-        .catch(() => setWishedClassIds([]));
+        .catch(() => {
+          console.log("[MainPage] 찜 목록 불러오기 실패");
+          setWishedClassIds([]);
+        });
 
       cartApi
         .getCartItems()
@@ -171,9 +176,13 @@ const MainPage: React.FC = () => {
             classId: item.classId,
             cartItemId: item.cartItemId,
           }));
+          console.log("[MainPage] 장바구니 불러오기 성공:", items);
           setCartItems(items);
         })
-        .catch(() => setCartItems([]));
+        .catch(() => {
+          console.log("[MainPage] 장바구니 불러오기 실패");
+          setCartItems([]);
+        });
     }
 
     // if (token && isUser) {
@@ -240,6 +249,7 @@ const MainPage: React.FC = () => {
           <div className="text-center text-gray-500">로딩 중...</div>
         ) : (
           <>
+            {/* 추천 클래스 (유저 + 로그인 + 데이터 있음) */}
             {isLoggedIn && isUser && recommendedClasses.length > 0 && (
               <RecommendedSection
                 classes={recommendedClasses}
@@ -253,6 +263,8 @@ const MainPage: React.FC = () => {
                 wishlistCounts={wishlistCounts}
               />
             )}
+
+            {/* 인기, 최신, 무료 클래스 섹션들 */}
             <PopularSection
               classes={popularClasses}
               onToggleWish={onToggleWish}
@@ -264,6 +276,7 @@ const MainPage: React.FC = () => {
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
             />
+
             <RecentSection
               classes={recentClasses}
               onToggleWish={onToggleWish}
@@ -275,7 +288,9 @@ const MainPage: React.FC = () => {
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
             />
+
             <ReviewSummarySection reviews={reviewSummaryCards} />
+
             <FreeClassSection
               classes={freeClasses}
               onToggleWish={onToggleWish}

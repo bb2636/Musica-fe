@@ -70,76 +70,79 @@ axiosInstance.interceptors.request.use((config) => {
 
 // 응답 인터셉터 - 자동 토큰 갱신
 axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      const originalRequest = error.config;
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-      if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
 
-        if (originalRequest.url?.includes("/auth/refresh")) {
-          onRefreshFailed();
-          return Promise.reject(error);
-        }
+      if (originalRequest.url?.includes("/auth/refresh")) {
+        onRefreshFailed();
+        return Promise.reject(error);
+      }
 
-        if (isRefreshing) {
-          return new Promise((resolve) => {
-            subscribeTokenRefresh((token: string) => {
-              originalRequest.headers["Authorization"] = `Bearer ${token}`;
-              resolve(axiosInstance(originalRequest));
-            });
+      if (isRefreshing) {
+        return new Promise((resolve) => {
+          subscribeTokenRefresh((token: string) => {
+            originalRequest.headers["Authorization"] = `Bearer ${token}`;
+            resolve(axiosInstance(originalRequest));
           });
-        }
-
-        isRefreshing = true;
-
-        try {
-          const refreshToken = localStorage.getItem("refreshToken");
-          if (!refreshToken) throw new Error("No refresh token available");
-
-          const res = await axios.post(
-              "/api/auth/refresh",
-              { refreshToken },
-              { withCredentials: true }
-          );
-
-          const newAccessToken = res.data.accessToken;
-          const newRefreshToken = res.data.refreshToken;
-
-          localStorage.setItem("accessToken", newAccessToken);
-          if (newRefreshToken) {
-            localStorage.setItem("refreshToken", newRefreshToken);
-          }
-
-          onRefreshed(newAccessToken);
-          originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
-          return axiosInstance(originalRequest);
-        } catch (refreshErr) {
-          console.error("토큰 갱신 실패:", refreshErr);
-          onRefreshFailed();
-          return Promise.reject(refreshErr);
-        } finally {
-          isRefreshing = false;
-        }
+        });
       }
 
-      // 기타 오류 처리
-      const status = error.response?.status;
+      isRefreshing = true;
 
-      if (error.code === "ECONNREFUSED" || error.message?.includes("ECONNREFUSED")) {
-        console.error("서버 연결 실패:", error);
-      } else if (status === 403) {
-        alert("권한이 없습니다. 다시 로그인 해주세요.");
-      } else if (status === 404) {
-        alert("요청하신 페이지를 찾을 수 없습니다.");
-      } else if (status >= 500) {
-        alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } else if (!status) {
-        alert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+      try {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) throw new Error("No refresh token available");
+
+        const res = await axios.post(
+          "/api/auth/refresh",
+          { refreshToken },
+          { withCredentials: true }
+        );
+
+        const newAccessToken = res.data.accessToken;
+        const newRefreshToken = res.data.refreshToken;
+
+        localStorage.setItem("accessToken", newAccessToken);
+        if (newRefreshToken) {
+          localStorage.setItem("refreshToken", newRefreshToken);
+        }
+
+        onRefreshed(newAccessToken);
+        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        return axiosInstance(originalRequest);
+      } catch (refreshErr) {
+        console.error("토큰 갱신 실패:", refreshErr);
+        onRefreshFailed();
+        return Promise.reject(refreshErr);
+      } finally {
+        isRefreshing = false;
       }
-
-      return Promise.reject(error);
     }
+
+    // 기타 오류 처리
+    const status = error.response?.status;
+
+    if (
+      error.code === "ECONNREFUSED" ||
+      error.message?.includes("ECONNREFUSED")
+    ) {
+      console.error("서버 연결 실패:", error);
+    } else if (status === 403) {
+      alert("권한이 없습니다. 다시 로그인 해주세요.");
+    } else if (status === 404) {
+      alert("요청하신 페이지를 찾을 수 없습니다.");
+    } else if (status >= 500) {
+      alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    } else if (!status) {
+      alert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
+    }
+
+    return Promise.reject(error);
+  }
 );
 
 export default axiosInstance;
