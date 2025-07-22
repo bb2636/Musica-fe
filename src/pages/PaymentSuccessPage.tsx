@@ -41,7 +41,7 @@ const PaymentSuccessPage: React.FC = () => {
         console.log("결제 승인 API status:", res.data.status);
         if (res.data.status === "success" || res.data.status === "CANCELED") {
           alert("결제가 성공적으로 완료되었습니다.");
-          navigate("/payment-history");
+          navigate("/payment-history", { replace: true });
         } else {
           alert(res.data.message || "결제 승인에 실패했습니다.");
           navigate("/cart");
