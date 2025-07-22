@@ -12,11 +12,9 @@ export default function useWishlist() {
       const wishlist = await wishlistApi.getMyWishlist();
       const ids = wishlist.map((item) => item.classId);
       setWishedClassIds(ids);
-      // 찜 개수 동기화는 별도 API 필요, 현재는 빈 객체로 초기화
-      setWishlistCounts({});
     } catch {
       setWishedClassIds([]);
-      setWishlistCounts({});
+      // setWishlistCounts({});
     }
   }, []);
 
@@ -27,30 +25,30 @@ export default function useWishlist() {
       const newSet = new Set(processingSet);
       newSet.add(classId);
       setProcessingSet(newSet);
-
+  
+      // 임시 UI 반영
       setWishedClassIds((prev) =>
         isWished ? prev.filter((id) => id !== classId) : [...prev, classId]
       );
-      setWishlistCounts((prev) => ({
-        ...prev,
-        [classId]: Math.max(0, (prev[classId] ?? 0) + (isWished ? -1 : 1)),
-      }));
-
+  
       try {
         if (!isWished) {
           await wishlistApi.addToWishlist(classId);
         } else {
           await wishlistApi.removeFromWishlist(classId);
         }
+  
+        // ✅ 정확한 count 서버에서 재조회
+        const newCount = await wishlistApi.getWishlistCount(classId);
+        setWishlistCounts((prev) => ({
+          ...prev,
+          [classId]: newCount,
+        }));
       } catch {
         // 롤백
         setWishedClassIds((prev) =>
           isWished ? [...prev, classId] : prev.filter((id) => id !== classId)
         );
-        setWishlistCounts((prev) => ({
-          ...prev,
-          [classId]: Math.max(0, (prev[classId] ?? 0) + (isWished ? -1 : 1)),
-        }));
       } finally {
         const updated = new Set(processingSet);
         updated.delete(classId);
