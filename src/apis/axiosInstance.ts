@@ -55,7 +55,7 @@ axiosInstance.interceptors.request.use((config) => {
   const fullPath = `${config.baseURL ?? ""}${config.url ?? ""}`;
   const isPublic = publicPaths.some((path) => fullPath.startsWith(path));
 
-  if (isPublic || !token) {
+  if (isPublic || !token || token === "null") {
     delete config.headers.Authorization;
   } else {
     config.headers.Authorization = `Bearer ${token}`;
