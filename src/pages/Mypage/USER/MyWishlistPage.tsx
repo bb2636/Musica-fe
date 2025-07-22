@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { wishlistApi } from '../../../apis/WishlistApi';
 
 interface WishlistItem {
@@ -14,6 +15,7 @@ export default function MyWishlistPage() {
     const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadWishlist = async () => {
@@ -30,6 +32,16 @@ export default function MyWishlistPage() {
 
         loadWishlist();
     }, []);
+
+    // ✅ 찜 해제 핸들러 추가
+    const handleRemove = async (classId: number) => {
+    try {
+        await wishlistApi.removeFromWishlist(classId);
+        setWishlist((prev) => prev.filter((item) => item.classId !== classId)); // ✅ UI 갱신
+    } catch (error) {
+        console.error('찜 해제 실패:', error);
+    }
+    };
 
     if (loading) {
         return (
@@ -90,11 +102,19 @@ export default function MyWishlistPage() {
                                 </div>
                             )}
                             <div className="mt-3 flex space-x-2">
-                                <button className="flex-1 bg-blue-500 text-white py-2 px-3 rounded text-sm hover:bg-blue-600">
-                                    강의 보기
+                                {/* ✅ 강의 상세페이지 이동 */}
+                                <button
+                                className="flex-1 bg-blue-500 text-white py-2 px-3 rounded text-sm hover:bg-blue-600"
+                                onClick={() => navigate(`/classes/${item.classId}`)} // ✅ 이동 경로
+                                >
+                                강의 보기
                                 </button>
-                                <button className="bg-red-500 text-white py-2 px-3 rounded text-sm hover:bg-red-600">
-                                    찜 해제
+                                {/* ✅ 찜 해제 */}
+                                <button
+                                className="bg-red-500 text-white py-2 px-3 rounded text-sm hover:bg-red-600"
+                                onClick={() => handleRemove(item.classId)} // ✅ 찜 해제 핸들러
+                                >
+                                찜 해제
                                 </button>
                             </div>
                         </div>

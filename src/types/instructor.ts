@@ -84,7 +84,7 @@ export interface MonthlyRevenueDto {
 }
 
 // 강사 개인 정보
-export interface AccountInstructorInfo {
+export interface InstructorInfo {
   id: number;
   name: string;
   email: string;

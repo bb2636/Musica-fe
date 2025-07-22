@@ -53,7 +53,7 @@ const MainPage: React.FC = () => {
       tag: item.categoryName,
       categoryName: item.categoryName,
       thumbnailUrl: item.thumbnailUrl,
-      instructor: item.instructor,
+      instructor: item.instructorName,
       ratingCount: item.ratingCount,
       originalPrice: item.originalPrice,
       studentCount: item.studentCount ?? 0,
@@ -126,7 +126,7 @@ const MainPage: React.FC = () => {
         const found = prevCartItems.find((item) => item.classId === classId);
         if (found) {
           await cartApi.removeFromCart([found.cartItemId]);
-          alert("장바구니에서 제거했습니다.");
+          //alert("장바구니에서 제거했습니다.");
         } else {
           throw new Error("기존 장바구니 정보 없음");
         }

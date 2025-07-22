@@ -196,13 +196,8 @@ export default function UserMyPage() {
                   >
                     {enrollments.length > 0 ? (
                       <ul className="space-y-1">
-                        {enrollments.slice(0, 3).map((e) => (
-                          <li
-                            key={e.enrollmentId}
-                            className="text-sm text-gray-600 truncate"
-                          >
-                            • {e.classInfo.title}
-                          </li>
+                        {enrollments.slice(0, 3).map(e => (
+                          <li key={e.enrollmentId} className="text-sm text-gray-600 truncate">• {(e as any).title || '제목 없음'}</li>
                         ))}
                         {enrollments.length > 3 && (
                           <li className="text-xs text-gray-500">

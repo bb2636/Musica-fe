@@ -1,11 +1,6 @@
 import axiosInstance from "../apis/axiosInstance";
-import type {
-
-  DashboardData, InstructorInfo,
-  Question,
-  Review,
-  Settlement,
-} from "../types/instructor";
+import type {DashboardData, InstructorInfo, Question, Settlement} from "../types/instructor.ts";
+import type {Review} from "../types/review.ts";
 
 export const instructorApi = {
   /**
