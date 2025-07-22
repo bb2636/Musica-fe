@@ -399,45 +399,6 @@ const ClassDetailPage = () => {
                 </div>
               </div>
             )}
-
-            {/* 조건부로 구매 버튼 삽입 */}
-            {!isEnrolled && (
-              <div className="mt-4">
-                <div className="flex gap-3">
-                  {/* 💳 지금 결제하고 수강 */}
-                  <button
-                    onClick={async () => {
-                      if (!isInCart) {
-                        try {
-                          const res = await cartApi.addToCart(Number(classId));
-                          if (res.status === "success") {
-                            setIsInCart(true);
-                          } else {
-                            alert(res.message || "장바구니 추가 실패");
-                            return;
-                          }
-                        } catch (err) {
-                          alert("장바구니 추가 중 오류 발생");
-                          return;
-                        }
-                      }
-                      navigate("/cart");
-                    }}
-                    className="flex-1 bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    💳 지금 결제하기
-                  </button>
-
-                  {/* 🛒 장바구니 담기/보기 */}
-                  <button
-                    onClick={isInCart ? handleGoToCart : handleAddToCart}
-                    className="flex-1 border border-blue-600 text-blue-600 font-semibold py-3 px-4 rounded-lg hover:bg-blue-50 transition-colors"
-                  >
-                    {isInCart ? "🛒 장바구니 보기" : "🛒 장바구니 담기"}
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -534,80 +495,33 @@ const ClassDetailPage = () => {
                     <h3 className="font-medium text-gray-900">
                       {lecture.title}
                     </h3>
-
                     <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                      {/* ⏱️ 강의 시간 */}
                       <span className="flex items-center gap-1">
                         ⏱️ {formatDuration(lecture.duration)}
                       </span>
-
-                      {/* 🎥 영상 아이콘 */}
-                      {lecture.videoUrl &&
-                        (isEnrolled ? (
-                          <span className="flex items-center gap-1 text-green-600">
-                            🎥 동영상
-                          </span>
-                        ) : (
-                          <span className="flex items-center gap-1 text-gray-400 cursor-not-allowed">
-                            🔒 동영상 잠김
-                          </span>
-                        ))}
-
-                      {/* 📄 자료 아이콘 */}
-                      {lecture.fileUrl &&
-                        (isEnrolled ? (
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(lecture.fileUrl, "_blank");
-                            }}
-                            className="flex items-center gap-1 text-blue-600 hover:underline"
-                          >
-                            📄 자료
-                          </button>
-                        ) : (
-                          <span className="flex items-center gap-1 text-gray-400 cursor-not-allowed">
-                            🔒 자료 잠김
-                          </span>
-                        ))}
-
-                      {/* 📊 강의별 진도율 */}
-                      {isEnrolled && lecture.progressRate >= 0 && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${lecture.progressRate}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-xs text-gray-500 ml-2">
-                            강의 진행률 {lecture.progressRate.toFixed(0)}%
-                          </span>
-                        </div>
+                      {lecture.videoUrl && (
+                        <span className="flex items-center gap-1 text-green-600">
+                          🎥 동영상
+                        </span>
+                      )}
+                      {lecture.fileUrl && (
+                        <span className="flex items-center gap-1 text-blue-600">
+                          📄 자료
+                        </span>
                       )}
                     </div>
                   </div>
                 </div>
 
-                {/* 🎯 오른쪽 상태 표시 */}
-                <div className="text-sm text-right space-y-1">
-                  {isEnrolled ? (
-                    <>
-                      <span className="text-blue-600 hover:text-blue-800 font-medium">
-                        ▶️ 학습하기
-                      </span>
-                      {lecture.isCompleted && (
-                        <div className="text-green-600 text-xs font-semibold">
-                          ✅ 완료됨
-                        </div>
-                      )}
-                    </>
-                  ) : (
-                    <span className="text-gray-400 flex items-center gap-1">
-                      🔒 구매 필요
-                    </span>
-                  )}
-                </div>
+                {isEnrolled ? (
+                  <span className="text-blue-600 hover:text-blue-800 font-medium">
+                    ▶️ 학습하기
+                  </span>
+                ) : (
+                  <span className="text-gray-400 flex items-center gap-1">
+                    🔒 구매 필요
+                  </span>
+                )}
               </div>
             ))}
           </div>
