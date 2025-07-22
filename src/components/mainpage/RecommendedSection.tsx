@@ -1,7 +1,7 @@
-import React from 'react';
-import SwiperSection from './SwiperSection';
-import ClassCard from './ClassCard';
-import type { MainpageClassItem } from '../../types/MainpageClassItem';
+import React from "react";
+import SwiperSection from "./SwiperSection";
+import ClassCard from "./ClassCard";
+import type { MainpageClassItem } from "../../types/MainpageClassItem";
 
 interface Props {
   classes: MainpageClassItem[];
@@ -11,6 +11,7 @@ interface Props {
   isInCartList: number[];
   isProcessingWishSet?: Set<number>;
   isProcessingCartSet?: Set<number>;
+  paidClassIds: number[];
 }
 
 const RecommendedSection: React.FC<Props> = ({
@@ -21,23 +22,32 @@ const RecommendedSection: React.FC<Props> = ({
   isInCartList,
   isProcessingWishSet,
   isProcessingCartSet,
+  paidClassIds,
 }) => {
   return (
-    <SwiperSection title={<><span role="img" aria-label="추천"></span> 추천 클래스</>} moreLink="/classes/recommend">
+    <SwiperSection
+      title={
+        <>
+          <span role="img" aria-label="추천"></span> 추천 클래스
+        </>
+      }
+      moreLink="/classes/recommend"
+    >
       {classes.map((item) => (
         <ClassCard
           key={item.id}
           id={item.id}
-          title={item.title ?? '제목 없음'}
-          instructor={item.instructor ?? '미정'}
+          title={item.title ?? "제목 없음"}
+          instructor={item.instructor ?? "미정"}
           price={item.price ?? 0}
           originalPrice={item.originalPrice}
           rating={item.rating ?? 5}
           ratingCount={item.ratingCount ?? 0}
-          tag={item.tag ?? item.categoryName ?? '기타'}
-          thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+          tag={item.tag ?? item.categoryName ?? "기타"}
+          thumbnailUrl={item.thumbnailUrl ?? "/no-image.png"}
           wishlistCount={item.wishlistCount ?? 0}
           isInCart={isInCartList.includes(item.id)}
+          isPaid={paidClassIds.includes(item.id)} // ✅ 수정: boolean 전달
           onToggleWish={onToggleWish}
           onToggleCart={onToggleCart}
           wishedClassIds={wishedClassIds}

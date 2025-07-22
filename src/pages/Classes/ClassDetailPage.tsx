@@ -141,7 +141,7 @@ const ClassDetailPage = () => {
         alert(response.message);
 
         // 🔔 헤더 장바구니 카운트 업데이트
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
+        // window.dispatchEvent(new CustomEvent("cartUpdated"));
       } else {
         alert(response.message || "장바구니 추가에 실패했습니다.");
       }
@@ -164,7 +164,7 @@ const ClassDetailPage = () => {
         } else if (axiosError.response?.status === 400) {
           errorMessage =
             axiosError.response.data?.message ||
-            "이미 결제한 강의는 장바구니에 담을 수 없습니다.";
+            "이미 결제한 클래스는 장바구니에 담을 수 없습니다.";
         } else if (axiosError.response?.data?.message) {
           errorMessage = axiosError.response.data.message;
         }
@@ -177,8 +177,8 @@ const ClassDetailPage = () => {
   const handlePurchase = () => {
     if (!classDetail) return;
 
-    if (classDetail.userClassStatus?.isEnrolled) {
-      alert("이미 수강 중인 강의입니다.");
+    if (classDetail.userClassStatus?.enrolled) {
+      alert("이미 수강 중인 클래스입니다.");
       return;
     }
 
@@ -317,7 +317,8 @@ const ClassDetailPage = () => {
     (sum, lecture) => sum + lecture.duration,
     0
   );
-  const isEnrolled = classDetail.userClassStatus?.isEnrolled || false;
+  const isEnrolled = classDetail.userClassStatus?.enrolled || false;
+  console.log("userClassStatus:", classDetail.userClassStatus); // 클래스 등록(구매) 여부 확인 로그 출력
   const averageRating = calculateAverageRating();
 
   return (
@@ -394,8 +395,9 @@ const ClassDetailPage = () => {
               </div>
             )}
 
-            {/* 🎯 액션 버튼들 */}
+            {/* 구매, 장바구니, 찜 버튼 영역 */}
             <div className="flex flex-col sm:flex-row gap-3">
+              {/* 수강 중이면 수강하러 가기만 노출 */}
               {isEnrolled ? (
                 <button
                   onClick={() => navigate(`/classes/${classId}/lectures`)}
@@ -405,26 +407,34 @@ const ClassDetailPage = () => {
                 </button>
               ) : (
                 <>
+                  {/* 아직 수강 안 했을 때만 노출 */}
                   <button
                     onClick={handlePurchase}
-                    className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 bg-neutral-900 text-white py-3 px-6 rounded-lg font-semibold hover:bg-neutral-800 transition-colors flex items-center justify-center gap-2"
                   >
                     💳 <span>지금 구매하기</span>
                   </button>
-                  <button
-                    onClick={isInCart ? handleGoToCart : handleAddToCart}
-                    className={`px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 ${
-                      isInCart
-                        ? "bg-orange-500 text-white hover:bg-orange-600"
-                        : "bg-gray-600 text-white hover:bg-gray-700"
-                    }`}
-                  >
-                    🛒{" "}
-                    <span>{isInCart ? "장바구니 보기" : "장바구니 담기"}</span>
-                  </button>
+
+                  {/* 수강 X + 장바구니 상태에 따라 토글 */}
+                  {isInCart ? (
+                    <button
+                      onClick={handleGoToCart}
+                      className="px-6 py-3 rounded-lg font-semibold bg-orange-500 text-white hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      🛒 <span>장바구니 보기</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddToCart}
+                      className="px-6 py-3 rounded-lg font-semibold bg-blue-500 text-white hover:bg-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
+                      ➕ <span>장바구니 담기</span>
+                    </button>
+                  )}
                 </>
               )}
 
+              {/* 찜하기 버튼은 항상 표시 */}
               <button
                 onClick={handleWishlistToggle}
                 className={`px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 ${
