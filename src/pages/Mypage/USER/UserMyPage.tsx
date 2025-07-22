@@ -195,20 +195,33 @@ export default function UserMyPage() {
                     link="/mypage/users/enrollments"
                   >
                     {enrollments.length > 0 ? (
-                      <ul className="space-y-1">
-                        {enrollments.slice(0, 3).map(e => (
-                          <li key={e.enrollmentId} className="text-sm text-gray-600 truncate">• {(e as any).title || '제목 없음'}</li>
-                        ))}
-                        {enrollments.length > 3 && (
-                          <li className="text-xs text-gray-500">
-                            외 {enrollments.length - 3}개 더...
+                      <ul className="space-y-2">
+                        {enrollments.slice(0, 2).map(e => (
+                          <li
+                            key={(e as any).class_id}
+                            className="flex items-center gap-3 bg-gray-50 rounded p-2 cursor-pointer hover:bg-gray-200 transition"
+                            onClick={() => window.location.href = `/classes/${(e as any).class_id}`}
+                          >
+                            <img
+                              src={(e as any).thumbnailUrl}
+                              alt={(e as any).title}
+                              className="w-12 h-12 object-cover rounded"
+                              onError={ev => (ev.currentTarget.src = '/default-thumbnail.png')}
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="font-semibold truncate">{(e as any).title}</div>
+                              <div className="text-xs text-gray-500 truncate">강사: {(e as any).instructorName}</div>
+                              <div className="text-xs text-gray-500">진도율: {(e as any).progress}%</div>
+                            </div>
+                            <div className="text-sm font-bold whitespace-nowrap">{(e as any).amount?.toLocaleString()}원</div>
                           </li>
+                        ))}
+                        {enrollments.length > 2 && (
+                          <li className="text-xs text-gray-500">외 {enrollments.length - 2}개 더...</li>
                         )}
                       </ul>
                     ) : (
-                      <p className="text-gray-500">
-                        수강 중인 강의가 없습니다.
-                      </p>
+                      <p className="text-gray-500">수강 중인 강의가 없습니다.</p>
                     )}
                   </Card>
 

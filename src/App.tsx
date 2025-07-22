@@ -37,6 +37,7 @@ import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
 
 import ClassDetailPage from "./pages/Classes/ClassDetailPage";
+import EnrollmentsPage from "./pages/Mypage/USER/InstructorMyClasses";
 
 function App() {
   return (
@@ -69,7 +70,7 @@ function App() {
           {/* 유저 마이페이지 */}
           <Route path="/mypage/users" element={<UserMyPage />}>
             <Route path="profile" element={<ProfileEditPage />} />
-            <Route path="enrollments" element={<MyEnrollmentsPage />} />
+            <Route path="enrollments" element={<EnrollmentsPage />} />
             <Route path="questions" element={<MyQuestionsPage />} />
             <Route path="reviews" element={<MyReviewsPage />} />
             <Route path="wishlist" element={<MyWishlistPage />} />
