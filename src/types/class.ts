@@ -1,8 +1,8 @@
-import type { LectureSummary } from './lecture';
+import type { LectureSummary } from "./lecture";
 
 // ✅ 사용자 관련 수강 정보
 export interface UserClassStatus {
-  isEnrolled: boolean;
+  enrolled: boolean; // ✅ 서버 응답 필드와 일치
   progressRate: number;
   completedLectureCount: number;
   totalLectureCount: number;

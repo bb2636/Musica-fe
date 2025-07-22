@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { instructorApi } from "../../../apis/instructorApi";
 import { classApi } from "../../../apis/classesApi";
 import { commonApi } from "../../../apis/commonApi";
+import ClassActionButtons from "../../../components/ClassActionButtons";
+import { useNavigate } from "react-router-dom";
 import type { DashboardData } from "../../../types/instructor";
 import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
@@ -39,6 +41,7 @@ const InstructorDashboard = () => {
   );
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
@@ -132,26 +135,31 @@ const InstructorDashboard = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
         <StatCard
           title="총 수익"
           value={`${dashboard.stats.totalRevenue.toLocaleString()}원`}
-          color="blue"
+          color="cool"
         />
         <StatCard
           title="이번 달 수익"
           value={`${dashboard.stats.monthlyRevenue.toLocaleString()}원`}
-          color="green"
+          color="cool"
         />
         <StatCard
           title="미답변 질문"
           value={`${dashboard.stats.pendingQuestions}`}
-          color="yellow"
+          color="cool"
         />
         <StatCard
           title="평균 평점"
           value={`${dashboard.stats.averageRating.toFixed(1)}`}
-          color="purple"
+          color="cool"
+        />
+        <StatCard
+          title="총 리뷰 수"
+          value={`${dashboard.stats.totalReviews}개`}
+          color="cool"
         />
       </div>
 
@@ -191,7 +199,7 @@ const InstructorDashboard = () => {
           <>
             <div className="overflow-x-auto">
               <table className="min-w-full table-auto text-sm text-left">
-                <thead className="border-b text-gray-600 bg-gray-100">
+                <thead className="border-b text-gray-600 bg-gray-100 text-center">
                   <tr>
                     <th className="px-4 py-2">썸네일</th>
                     <th className="px-4 py-2">클래스명</th>
@@ -200,9 +208,10 @@ const InstructorDashboard = () => {
                     <th className="px-4 py-2">수강생</th>
                     <th className="px-4 py-2">평점</th>
                     <th className="px-4 py-2">가격</th>
+                    {/* <th className="px-4 py-2">관리</th> */}
                   </tr>
                 </thead>
-                <tbody>
+                {/* <tbody>
                   {pageData?.content.map((cls) => (
                     <tr key={cls.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2">
@@ -232,13 +241,80 @@ const InstructorDashboard = () => {
                       </td>
                     </tr>
                   ))}
+                </tbody> */}
+                <tbody>
+                  {pageData?.content.map((cls) => (
+                    <tr key={cls.id} className="border-b hover:bg-gray-50">
+                      <td className="px-4 py-2 text-center">
+                        <img
+                          src={cls.thumbnailUrl}
+                          alt={cls.title}
+                          className="w-20 h-12 object-cover rounded mx-auto"
+                        />
+                      </td>
+                      <td className="px-4 py-2 font-medium text-center">
+                        {cls.title}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {cls.category} /{" "}
+                        {DIFFICULTY_DISPLAY_MAP[cls.difficulty] ??
+                          cls.difficulty}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {cls.totalLectureCount}
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {cls.studentCount}명
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {cls.averageRating.toFixed(1)} ⭐
+                      </td>
+                      <td className="px-4 py-2 text-center">
+                        {cls.classPrice.toLocaleString()}원
+                      </td>
+                      {/* <td className="px-4 py-2 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/mypage/instructor/classes/${cls.id}/lectures/create`
+                              )
+                            }
+                            className="bg-neutral-200 hover:bg-neutral-300 text-sm text-gray-900 px-3 py-1 rounded transition"
+                          >
+                            수정
+                          </button>
+                          <button
+                            onClick={async () => {
+                              const confirmed = window.confirm(
+                                "정말로 이 클래스를 삭제하시겠습니까?"
+                              );
+                              if (!confirmed) return;
+
+                              try {
+                                await instructorApi.deleteClass(cls.id);
+                                alert("클래스가 삭제되었습니다.");
+                                fetchData(); // 삭제 후 목록 갱신
+                              } catch (err) {
+                                console.error("삭제 실패:", err);
+                                alert("클래스 삭제에 실패했습니다.");
+                              }
+                            }}
+                            className="bg-neutral-400 hover:bg-neutral-600 text-sm text-white px-3 py-1 rounded transition"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td> */}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
 
             <div className="flex justify-between items-center mt-4">
               <button
-                className="px-3 py-1 rounded border bg-white text-gray-700 disabled:opacity-40"
+                className="px-3 py-1 rounded bg-neutral-900 text-white disabled:opacity-40 hover:bg-neutral-800 transition"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
                 disabled={currentPage === 0}
               >
@@ -251,10 +327,10 @@ const InstructorDashboard = () => {
                     <button
                       key={i}
                       onClick={() => setCurrentPage(i)}
-                      className={`px-3 py-1 rounded border ${
+                      className={`px-3 py-1 rounded transition ${
                         currentPage === i
-                          ? "bg-blue-500 text-white"
-                          : "bg-gray-100 text-gray-700"
+                          ? "bg-neutral-600 text-white"
+                          : "bg-white text-gray-800 border hover:bg-neutral-800 hover:text-white"
                       }`}
                     >
                       {i + 1}
@@ -263,7 +339,7 @@ const InstructorDashboard = () => {
               </div>
 
               <button
-                className="px-3 py-1 rounded border bg-white text-gray-700 disabled:opacity-40"
+                className="px-3 py-1 rounded bg-neutral-900 text-white disabled:opacity-40 hover:bg-neutral-800 transition"
                 onClick={() =>
                   setCurrentPage((prev) =>
                     pageData
@@ -292,13 +368,27 @@ const StatCard = ({
 }: {
   title: string;
   value: string;
-  color: "blue" | "green" | "yellow" | "purple";
+  color:
+    | "blue"
+    | "green"
+    | "yellow"
+    | "purple"
+    | "pink"
+    | "black"
+    | "dark"
+    | "cool";
 }) => {
   const colorMap: Record<string, string> = {
     blue: "from-blue-500 to-blue-600",
     green: "from-green-500 to-green-600",
     yellow: "from-yellow-500 to-yellow-600",
     purple: "from-purple-500 to-purple-600",
+    pink: "from-pink-500 to-pink-600",
+
+    // ✅ 추가된 블랙 계열
+    black: "from-gray-900 to-black", // 완전 어두운 그라데이션
+    dark: "from-gray-800 to-gray-900", // 조금 더 부드러운 블랙
+    cool: "from-neutral-800 to-gray-950", // 쿨톤 블랙
   };
 
   return (

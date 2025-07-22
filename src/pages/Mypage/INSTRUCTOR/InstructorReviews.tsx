@@ -37,22 +37,25 @@ const ReviewSummary = ({ reviews }: { reviews: InstructorReview[] }) => {
   const { totalReviews, averageRating, mostReviewedClass, latestReviewDate } =
     calculateStats(reviews);
 
+  const cardClass =
+    "rounded-lg p-4 shadow text-white bg-gradient-to-r from-neutral-800 to-black";
+
   return (
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      <div className="bg-blue-500 text-white rounded-lg p-4 shadow">
-        <p className="text-lg font-semibold">총 후기 수</p>
-        <p className="text-2xl">{totalReviews}개</p>
+      <div className={cardClass}>
+        <p className="text-sm font-medium">총 후기 수</p>
+        <p className="text-2xl font-semibold">{totalReviews}개</p>
       </div>
-      <div className="bg-purple-500 text-white rounded-lg p-4 shadow">
-        <p className="text-lg font-semibold">평균 평점</p>
-        <p className="text-2xl">{averageRating}</p>
+      <div className={cardClass}>
+        <p className="text-sm font-medium">평균 평점</p>
+        <p className="text-2xl font-semibold">{averageRating}</p>
       </div>
-      <div className="bg-green-500 text-white rounded-lg p-4 shadow">
-        <p className="text-lg font-semibold">가장 많이 리뷰된 클래스</p>
+      <div className={cardClass}>
+        <p className="text-sm font-medium">리뷰가 가장 많은 클래스</p>
         <p className="text-base">{mostReviewedClass || "-"}</p>
       </div>
-      <div className="bg-yellow-500 text-white rounded-lg p-4 shadow">
-        <p className="text-lg font-semibold">최근 후기 작성일</p>
+      <div className={cardClass}>
+        <p className="text-sm font-medium">최근 후기 작성일</p>
         <p className="text-base">{latestReviewDate?.slice(0, 10) || "-"}</p>
       </div>
     </div>
@@ -118,19 +121,22 @@ const InstructorReviewList = () => {
 
       {/* 후기 리스트 */}
       {reviews.length === 0 ? (
-        <p>등록된 후기가 없습니다.</p>
+        <p className="text-gray-500">등록된 후기가 없습니다.</p>
       ) : (
         <ul className="space-y-2">
           {reviews.map((review) => (
-            <li key={review.reviewId} className="border p-4 rounded">
+            <li
+              key={review.reviewId}
+              className="bg-neutral-900 text-white p-4 rounded-lg shadow"
+            >
               <p className="font-semibold">
                 {review.classTitle} - {review.lectureTitle}
               </p>
-              <p>
+              <p className="text-sm mt-1">
                 ⭐️ {review.rating}점 by {review.reviewerName}
               </p>
-              <p className="text-gray-600 text-sm">{review.createdAt}</p>
-              <p>{review.comment}</p>
+              <p className="text-xs text-gray-400">{review.createdAt}</p>
+              <p className="mt-2">{review.comment}</p>
             </li>
           ))}
         </ul>
@@ -143,8 +149,10 @@ const InstructorReviewList = () => {
             <button
               key={`page-${i}`}
               onClick={() => setPage(i)}
-              className={`px-3 py-1 rounded ${
-                i === page ? "bg-black text-white" : "bg-gray-200"
+              className={`px-3 py-1 rounded border transition ${
+                i === page
+                  ? "bg-black text-white"
+                  : "bg-white text-gray-800 hover:bg-neutral-800 hover:text-white"
               }`}
             >
               {i + 1}

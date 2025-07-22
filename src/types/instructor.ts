@@ -1,12 +1,12 @@
 // instructorTypes.ts
 // ✅ 강사 대시보드
 export interface DashboardData {
-  instructorInfo: InstructorInfo;
+  instructorInfo: DashboardInstructorInfo;
   stats: Statistics;
   recentActivities: Activity[];
 }
 
-export interface InstructorInfo {
+export interface DashboardInstructorInfo {
   name: string;
   email: string;
   totalClasses: number;
@@ -84,7 +84,7 @@ export interface MonthlyRevenueDto {
 }
 
 // 강사 개인 정보
-export interface InstructorInfo {
+export interface AccountInstructorInfo {
   id: number;
   name: string;
   email: string;

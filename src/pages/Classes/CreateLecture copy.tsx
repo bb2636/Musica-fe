@@ -32,30 +32,18 @@ export interface LectureResponse {
   videoObjectKey?: string;
 }
 
+// 최상단에 선언
 const INSTRUMENT_DISPLAY_MAP: Record<string, string> = {
   bass: "베이스",
-  drum: "드럼",
   drums: "드럼",
-  guitar: "기타",
   guitars: "기타",
   keys: "키보드",
-  keyboard: "키보드",
   percussion: "타악기",
   piano: "피아노",
-  string: "현악기",
   strings: "현악기",
-  vocal: "보컬",
   vocals: "보컬",
   wind: "관악기",
-  brass: "금관악기",
-  sax: "색소폰",
-  saxophone: "색소폰",
-  flute: "플루트",
-  clarinet: "클라리넷",
-  trumpet: "트럼펫",
-  trombone: "트롬본",
-  harp: "하프",
-  // 필요한 악기가 더 있다면 여기에 추가하세요!
+  // 추가적으로 필요한 매핑 모두 여기에!
 };
 
 function toKoreanInstrument(key: string) {
@@ -211,7 +199,7 @@ const CreateLecturePage = () => {
       const instruments = detail.detectedInstruments || {};
       const recommended = Object.entries(instruments)
         .filter(([, v]) => v === true)
-        .map(([k]) => toKoreanInstrument(k));
+        .map(([k]) => INSTRUMENT_DISPLAY_MAP[k] || k);
       setLectures((prev) => {
         const updated = [...prev];
         updated[index] = {
@@ -226,12 +214,24 @@ const CreateLecturePage = () => {
       });
       setRecommendedMap((prev) => ({ ...prev, [lecture.id!]: recommended }));
     } else {
+      const INSTRUMENT_DISPLAY_MAP: Record<string, string> = {
+        bass: "베이스",
+        drums: "드럼",
+        guitars: "기타",
+        keys: "키보드",
+        percussion: "타악기",
+        piano: "피아노",
+        strings: "현악기",
+        vocals: "보컬",
+        wind: "관악기",
+      };
+
       const res = await lectureApi.createLecture(Number(classId), payload);
 
       // ✅ 한글 매핑 처리
-      const recommended = (res.recommendedCategories || []).map(
-        toKoreanInstrument
-      );
+      const recommended = res.recommendedCategories.map((eng: string) => {
+        return INSTRUMENT_DISPLAY_MAP[eng.toLowerCase()] || eng;
+      });
 
       setLectures((prev) => {
         const updated = [...prev];
