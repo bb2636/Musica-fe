@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { instructorApi } from "../../apis/instructorApi";
 import { uploadApi } from "../../apis/uploadApi";
 import { commonApi } from "../../apis/commonApi";
+import { getContentType } from "../../utils/getContentType";
 
 interface CategoryOption {
   id: number;
@@ -79,33 +80,68 @@ const CreateClassPage = () => {
     fetchOptions();
   }, []);
 
+  // const handleThumbnailChange = async (
+  //   e: React.ChangeEvent<HTMLInputElement>
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+
+  //   const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+  //   if (!allowedTypes.includes(file.type)) {
+  //     alert("지원되지 않는 이미지 형식입니다.");
+  //     return;
+  //   }
+
+  //   try {
+  //     const { uploadUrl, fileUrl } = await uploadApi.getPresignedUrl(
+  //       file.name,
+  //       file.type
+  //     );
+  //     await fetch(uploadUrl, {
+  //       method: "PUT",
+  //       body: file,
+  //       headers: { "Content-Type": file.type },
+  //     });
+  //     setThumbnailUrl(fileUrl);
+  //     // alert("썸네일 업로드 성공!");
+  //   } catch (e) {
+  //     console.error("썸네일 업로드 실패", e);
+  //     alert("썸네일 업로드 실패: 지원하지 않는 이미지 형식입니다.");
+  //   }
+  // };
+
   const handleThumbnailChange = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
-    if (!allowedTypes.includes(file.type)) {
-      alert("지원되지 않는 이미지 형식입니다.");
+    // 🔍 확장자 기반 MIME 타입 추론
+    const contentType = getContentType(file);
+
+    // ✅ 썸네일로 허용할 이미지 타입 목록
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+    if (!allowedTypes.includes(contentType)) {
+      alert("지원되지 않는 이미지 형식입니다.\n지원 형식: PNG, JPG, WEBP");
       return;
     }
 
     try {
       const { uploadUrl, fileUrl } = await uploadApi.getPresignedUrl(
         file.name,
-        file.type
+        contentType
       );
+
       await fetch(uploadUrl, {
         method: "PUT",
         body: file,
-        headers: { "Content-Type": file.type },
+        headers: { "Content-Type": contentType },
       });
+
       setThumbnailUrl(fileUrl);
-      // alert("썸네일 업로드 성공!");
     } catch (e) {
       console.error("썸네일 업로드 실패", e);
-      alert("썸네일 업로드 실패: 지원하지 않는 이미지 형식입니다.");
+      alert("썸네일 업로드 실패: 이미지 업로드 중 오류가 발생했습니다.");
     }
   };
 

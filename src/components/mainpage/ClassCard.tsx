@@ -114,10 +114,12 @@ const ClassCard: React.FC<ClassCardProps> = ({
       {/* 정보 영역 */}
       <div className="flex-[3] p-4 flex flex-col justify-start bg-white gap-1 relative">
         {tag && (
-            <div className="text-xs text-blue-600 font-semibold">{tag}</div>
-          )}
+          <div className="text-xs text-blue-600 font-semibold">{tag}</div>
+        )}
         {/* 제목 */}
-        <div className="text-lg font-bold text-gray-900 line-clamp-2">{title}</div>
+        <div className="text-lg font-bold text-gray-900 line-clamp-2">
+          {title}
+        </div>
 
         {/* 강사명 */}
         {instructor && (
@@ -160,11 +162,13 @@ const ClassCard: React.FC<ClassCardProps> = ({
             >
               {isWished ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                  <path
+                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
                   c0-2.54 2.03-4.5 4.5-4.5 1.74 0 3.41 1.01 4.13 2.44
                   C11.09 5.01 12.76 4 14.5 4
                   C16.97 4 19 5.96 19 8.5
-                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                  />
                 </svg>
               ) : (
                 <svg
@@ -175,9 +179,11 @@ const ClassCard: React.FC<ClassCardProps> = ({
                   stroke="#ef4444"
                   strokeWidth="2"
                 >
-                  <path d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
+                  <path
+                    d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
                   c-1.96 1.96-1.96 5.14 0 7.1l6.72 6.73 6.72-6.73
-                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"/>
+                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"
+                  />
                 </svg>
               )}
             </button>

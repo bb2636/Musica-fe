@@ -188,7 +188,9 @@ const MainPage: React.FC = () => {
     if (token && isUser) {
       getEnrolledClasses()
         .then((classes) => {
+          console.log("📦 수강 중 클래스 응답:", classes);
           const ids = classes.map((item) => item.classId);
+          console.log("✅ 결제된 클래스 ID 목록:", ids);
           setPaidClassIds(ids);
         })
         .finally(() => {
