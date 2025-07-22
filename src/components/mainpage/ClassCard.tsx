@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 interface ClassCardProps {
@@ -44,28 +44,47 @@ const ClassCard: React.FC<ClassCardProps> = ({
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));
   const isWished = wishedClassIds.includes(id);
   const isProcessingCart = isProcessingCartSet?.has(id) ?? false;
+  const isProcessingWish = isProcessingWishSet?.has(id) ?? false;
+  // const wishlistCount = wishlistCounts[id] ?? 0;
 
-  const [isProcessingWish, setIsProcessingWish] = useState(false);
+  //const [isProcessingWish, setIsProcessingWish] = useState(false);
 
-  const handleToggleCart = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoggedIn) return navigate("/auth");
-    if (isProcessingCart) return;
-    onToggleCart(id, isInCart);
-  };
+  // 장바구니 토글 핸들러 - useCallback으로 메모이제이션 (최적화 적용)
+  const handleToggleCart = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!isLoggedIn) {
+        const confirmed = window.confirm(
+          "장바구니 담기를 이용하려면 로그인이 필요합니다. 로그인하시겠습니까?"
+        );
+        if (confirmed) navigate("/auth");
+        return;
+      }
+      if (isProcessingCart) return;
+      onToggleCart(id, isInCart);
+    },
+    [isLoggedIn, isProcessingCart, navigate, id, isInCart, onToggleCart]
+  );
 
-  const handleToggleWish = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (!isLoggedIn) return navigate("/auth");
-    if (isProcessingWish || isProcessingWishSet?.has(id)) return;
+  // 찜 토글 핸들러 - useCallback + 낙관적 UI 반영 (최적화 적용)
+  const handleToggleWish = useCallback(
+    async (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (!isLoggedIn) {
+        const confirmed = window.confirm(
+          "찜 등록을 이용하려면 로그인이 필요합니다. 로그인하시겠습니까?"
+        );
+        if (confirmed) navigate("/auth");
+        return;
+      }
+      //if (isProcessingWish) return;
 
-    setIsProcessingWish(true);
-    try {
-      await onToggleWish(id, isWished);
-    } finally {
-      setIsProcessingWish(false);
-    }
-  };
+      // 🔥 여기서 최신값을 다시 계산하도록 변경
+      const currentlyWished = wishedClassIds.includes(id); // 최신 상태
+      await onToggleWish(id, currentlyWished); 
+    },
+    [isLoggedIn, isProcessingWish, navigate, id, wishedClassIds, onToggleWish]
+  );
 
   const handleCardClick = () => {
     navigate(`/classes/${id}`);
@@ -119,7 +138,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
             {/* ❤️ 찜 버튼 */}
             <button
               onClick={handleToggleWish}
-              disabled={isProcessingWish || isProcessingWishSet?.has(id)}
+              disabled={isProcessingWishSet?.has(id)}
               className={`bg-white rounded-full p-1 shadow transition ${
                 isWished ? "bg-red-100" : "hover:bg-red-100"
               } ${isProcessingWish ? "opacity-50" : ""}`}
