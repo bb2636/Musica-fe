@@ -120,9 +120,14 @@ export default function UserMyPage() {
                                     <Card emoji="📘" title="수강 중인 강의" desc="내가 결제한 강의 보기" link="/mypage/users/enrollments">
                                         {enrollments.length > 0 ? (
                                             <ul className="space-y-1">
-                                                {enrollments.slice(0, 3).map(e => (
-                                                    <li key={e.enrollmentId} className="text-sm text-gray-600 truncate">• {e.classInfo.title}</li>
-                                                ))}
+                                                {enrollments.slice(0, 3).map(e => {
+                                                    console.log('enrollment:', e);
+                                                    console.log('enrollment.classInfo:', e.classInfo);
+                                                    console.log('enrollment.title:', (e as any).title);
+                                                    return (
+                                                        <li key={e.enrollmentId} className="text-sm text-gray-600 truncate">• {e.classInfo?.title || (e as any).title || '제목 없음'}</li>
+                                                    );
+                                                })}
                                                 {enrollments.length > 3 && <li className="text-xs text-gray-500">외 {enrollments.length - 3}개 더...</li>}
                                             </ul>
                                         ) : (
@@ -133,9 +138,12 @@ export default function UserMyPage() {
                                     <Card emoji="❤️" title="찜 목록" desc="관심 강의 모아보기" link="/mypage/users/wishlist">
                                         {wishlist.length > 0 ? (
                                             <ul className="space-y-1">
-                                                {wishlist.slice(0, 3).map(w => (
-                                                    <li key={w.id} className="text-sm text-gray-600 truncate">• {w.title}</li>
-                                                ))}
+                                                {wishlist.slice(0, 3).map(w => {
+                                                    console.log('wishlist:', w);
+                                                    return (
+                                                        <li key={w.id} className="text-sm text-gray-600 truncate">• {w.title}</li>
+                                                    );
+                                                })}
                                                 {wishlist.length > 3 && <li className="text-xs text-gray-500">외 {wishlist.length - 3}개 더...</li>}
                                             </ul>
                                         ) : (
@@ -146,9 +154,12 @@ export default function UserMyPage() {
                                     <Card emoji="❓" title="내 질문" desc="강의에 남긴 질문 확인" link="/mypage/users/questions">
                                         {questions.length > 0 ? (
                                             <ul className="space-y-1">
-                                                {questions.slice(0, 3).map(q => (
-                                                    <li key={q.id} className="text-sm text-gray-600 truncate">• {q.content}</li>
-                                                ))}
+                                                {questions.slice(0, 3).map(q => {
+                                                    console.log('question:', q);
+                                                    return (
+                                                        <li key={q.id} className="text-sm text-gray-600 truncate">• {q.content}</li>
+                                                    );
+                                                })}
                                                 {questions.length > 3 && <li className="text-xs text-gray-500">외 {questions.length - 3}개 더...</li>}
                                             </ul>
                                         ) : (
@@ -159,9 +170,12 @@ export default function UserMyPage() {
                                     <Card emoji="⭐" title="내 후기" desc="작성한 후기 모아보기" link="/mypage/users/reviews">
                                         {reviews.length > 0 ? (
                                             <ul className="space-y-1">
-                                                {reviews.slice(0, 3).map(r => (
-                                                    <li key={r.id} className="text-sm text-gray-600 truncate">• {r.comment}</li>
-                                                ))}
+                                                {reviews.slice(0, 3).map(r => {
+                                                    console.log('review:', r);
+                                                    return (
+                                                        <li key={r.id} className="text-sm text-gray-600 truncate">• {r.comment}</li>
+                                                    );
+                                                })}
                                                 {reviews.length > 3 && <li className="text-xs text-gray-500">외 {reviews.length - 3}개 더...</li>}
                                             </ul>
                                         ) : (
@@ -239,12 +253,15 @@ const PaymentSummary: React.FC = () => {
         <div className="text-gray-400 text-sm">결제 내역이 없습니다.</div>
       ) : (
         <ul>
-          {payments.map((item) => (
-            <li key={item.paymentId} className="flex justify-between py-1 border-b last:border-b-0">
-              <span>{item.title}</span>
-              <span className="font-semibold">{item.amount.toLocaleString()}원</span>
-            </li>
-          ))}
+          {payments.map((item) => {
+            console.log('PaymentSummary payment item:', item);
+            return (
+              <li key={item.paymentId} className="flex justify-between py-1 border-b last:border-b-0">
+                <span>{item.title}</span>
+                <span className="font-semibold">{item.amount.toLocaleString()}원</span>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
