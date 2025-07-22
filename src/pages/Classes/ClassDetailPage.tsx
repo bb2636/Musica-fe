@@ -175,14 +175,6 @@ const ClassDetailPage = () => {
     }
   };
 
-  const handlePurchase = async () => {
-    if (!classDetail || !classId) return;
-
-    if (classDetail.userClassStatus?.enrolled) {
-      alert("이미 수강 중인 클래스입니다.");
-      return;
-    }
-
     try {
       let cartItemId: number;
 
