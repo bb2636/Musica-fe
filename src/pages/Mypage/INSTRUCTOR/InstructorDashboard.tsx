@@ -9,7 +9,7 @@ import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
 
 // ✅ 필터 UI 컴포넌트 임포트
-import ClassSearchFilter from "../../../components/ClassSearchFilter";
+import ClassSearchFilter from "../../../components/ClassSearchFilter.tsx";
 
 interface PageResult<T> {
   content: T[];

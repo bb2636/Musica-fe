@@ -1,7 +1,7 @@
 import axiosInstance from "../apis/axiosInstance";
 import type {
-  InstructorInfo,
-  DashboardData,
+
+  DashboardData, InstructorInfo,
   Question,
   Review,
   Settlement,
