@@ -106,7 +106,7 @@ const ClassDetailPage = () => {
       } else {
         await wishlistApi.addToWishlist(Number(classId));
         setIsWishlisted(true);
-        alert("찜 목록에 추가되었습니다.");
+        // alert("찜 목록에 추가되었습니다.");
       }
     } catch (err) {
       console.error("찜 목록 처리 실패:", err);
@@ -799,7 +799,7 @@ const ClassDetailPage = () => {
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               <button
-                onClick={handlePurchase}
+                onClick={handleAddToCart}
                 className="bg-white text-blue-600 px-8 py-3 rounded-lg font-bold hover:bg-gray-100 transition-colors text-lg"
               >
                 💳 {formatPrice(classDetail.classPrice)}에 시작하기
@@ -808,7 +808,7 @@ const ClassDetailPage = () => {
                 onClick={isInCart ? handleGoToCart : handleAddToCart}
                 className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors"
               >
-                {isInCart ? "💳 지금 구매하기" : "🛒 장바구니에 담기"}
+                {isInCart ? "🛒 장바구니 바로가기" : "🛒 장바구니에 담기"}
               </button>
             </div>
 

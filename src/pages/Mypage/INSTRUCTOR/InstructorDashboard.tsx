@@ -5,6 +5,7 @@ import { commonApi } from "../../../apis/commonApi";
 import type { DashboardData } from "../../../types/instructor";
 import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
+import { useNavigate } from "react-router-dom";
 
 // ✅ 필터 UI 컴포넌트 임포트
 import ClassSearchFilter from "../../../components/ClassSearchFilter.tsx";
@@ -27,6 +28,7 @@ const DIFFICULTY_DISPLAY_MAP: Record<string, string> = {
 };
 
 const InstructorDashboard = () => {
+  const navigate = useNavigate(); // ✅ 선언해야 navigate 함수가 정의됨
   const [sort, setSort] = useState("latest");
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [difficultyId, setDifficultyId] = useState<number | undefined>();

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
 import { classApi } from "../../apis/classesApi";
+import { getContentType } from "../../utils/getContentType";
 
 interface LectureForm {
   id?: number;
@@ -162,16 +163,32 @@ const CreateLecturePage = () => {
     }
   };
 
+  // const uploadFile = async (file: File) => {
+  //   const { uploadUrl, fileUrl, objectKey } = await uploadApi.getPresignedUrl(
+  //     file.name,
+  //     file.type
+  //   );
+  //   await fetch(uploadUrl, {
+  //     method: "PUT",
+  //     body: file,
+  //     headers: { "Content-Type": file.type },
+  //   });
+  //   return { fileUrl, objectKey };
+  // };
   const uploadFile = async (file: File) => {
+    const contentType = getContentType(file); // ✅ file.type 비어 있을 때 확장자 기반 추론
+
     const { uploadUrl, fileUrl, objectKey } = await uploadApi.getPresignedUrl(
       file.name,
-      file.type
+      contentType
     );
+
     await fetch(uploadUrl, {
       method: "PUT",
       body: file,
-      headers: { "Content-Type": file.type },
+      headers: { "Content-Type": contentType },
     });
+
     return { fileUrl, objectKey };
   };
 
