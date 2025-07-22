@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams } from "react-router-dom";
 import ClassCard from "../components/mainpage/ClassCard";
-import type { MainpageClassItem } from "../types/MainpageClassItem";
+import type { SearchClassItem } from "../types/SearchClassItem";
 import useWishlist from "../hooks/useWishlist";
 import useCart from "../hooks/useCart";
 import Header from "../components/Header";
@@ -21,7 +21,7 @@ const PAGE_SIZE = 30; // 5x6
 const SearchResultPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [pageData, setPageData] = useState<PageResult<MainpageClassItem> | null>(null);
+  const [pageData, setPageData] = useState<PageResult<SearchClassItem> | null>(null);
 
   // 커스텀 훅 사용
   const { wishedClassIds, wishlistCounts, processingSet: wishProcessingSet, toggleWish } = useWishlist();
@@ -48,7 +48,7 @@ const SearchResultPage: React.FC = () => {
         };
         if (categoryId !== undefined) params.categoryId = categoryId;
         if (difficultyId !== undefined) params.difficultyId = difficultyId;
-        const res = await classApi.getInstructorClasses(params);
+        const res = await classApi.getAllClasses(params);
         setPageData(res);
       } catch (err) {
         setPageData(null);
@@ -132,6 +132,8 @@ const SearchResultPage: React.FC = () => {
   const handleToggleWish = (id: number) => toggleWish(id, wishedClassIds.includes(id));
   const handleToggleCart = (id: number) => toggleCart(id, cartClassIds.includes(id));
 
+//   console.log(`🧩 카드 ${i}:`, cls);
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -149,15 +151,15 @@ const SearchResultPage: React.FC = () => {
                 key={cls.id}
                 id={cls.id}
                 title={cls.title}
-                instructor={cls.instructor}
-                price={cls.price}
-                rating={cls.rating}
+                instructor={cls.instructorName}
+                price={cls.classPrice}
+                rating={cls.averageRating}
                 ratingCount={cls.ratingCount}
                 thumbnailUrl={cls.thumbnailUrl}
                 onToggleWish={() => handleToggleWish(cls.id)}
                 onToggleCart={() => handleToggleCart(cls.id)}
                 wishedClassIds={wishedClassIds}
-                wishlistCount={wishlistCounts[cls.id] ?? 0}
+                wishlistCount={wishlistCounts[cls.id] ?? 0} // ← 서버 응답에 없음
                 isProcessingWishSet={wishProcessingSet}
                 isProcessingCartSet={cartProcessingSet}
                 isInCart={cartClassIds.includes(cls.id)}
