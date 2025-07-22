@@ -35,7 +35,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_KEY }}
-          source: "dist/*"
+          source: "dist"
           target: "/home/ubuntu/frontend"
 
       - name: SSH to EC2 and deploy
@@ -46,5 +46,5 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           script: |
             sudo rm -rf /var/www/html/*
-            sudo cp -r /home/ubuntu/frontend/* /var/www/html/
+            sudo cp -r /home/ubuntu/frontend/dist/* /var/www/html/
             sudo systemctl restart nginx

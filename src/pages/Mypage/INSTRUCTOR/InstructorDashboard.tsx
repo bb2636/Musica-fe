@@ -5,7 +5,7 @@ import { commonApi } from "../../../apis/commonApi";
 import type { DashboardData } from "../../../types/instructor";
 import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
-import { useNavigate } from "react-router-dom";
+//import { useNavigate } from "react-router-dom";
 
 // ✅ 필터 UI 컴포넌트 임포트
 import ClassSearchFilter from "../../../components/ClassSearchFilter.tsx";
@@ -28,7 +28,7 @@ const DIFFICULTY_DISPLAY_MAP: Record<string, string> = {
 };
 
 const InstructorDashboard = () => {
-  const navigate = useNavigate(); // ✅ 선언해야 navigate 함수가 정의됨
+  //const navigate = useNavigate(); // ✅ 선언해야 navigate 함수가 정의됨
   const [sort, setSort] = useState("latest");
   const [categoryId, setCategoryId] = useState<number | undefined>();
   const [difficultyId, setDifficultyId] = useState<number | undefined>();
@@ -243,11 +243,7 @@ const InstructorDashboard = () => {
                 </tbody> */}
                 <tbody>
                   {pageData?.content.map((cls) => (
-                    <tr
-                      key={cls.id}
-                      className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => navigate(`/classes/${cls.id}`)}
-                    >
+                    <tr key={cls.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2 text-center">
                         <img
                           src={cls.thumbnailUrl}
@@ -255,7 +251,7 @@ const InstructorDashboard = () => {
                           className="w-20 h-12 object-cover rounded mx-auto"
                         />
                       </td>
-                      <td className="px-4 py-2 font-medium text-center text-gray-900">
+                      <td className="px-4 py-2 font-medium text-center">
                         {cls.title}
                       </td>
                       <td className="px-4 py-2 text-center">

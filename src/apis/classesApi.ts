@@ -35,7 +35,7 @@ export const classApi = {
     page?: number;
     size?: number;
   }) => {
-    const res = await axiosInstance.get("/instructors/classes", { params });
+    const res = await axiosInstance.get("/classes", { params });
     return res.data;
   },
 };
