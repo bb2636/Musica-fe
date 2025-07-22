@@ -5,21 +5,25 @@ const axiosInstance = axios.create({
   withCredentials: true,
 });
 
-// ✅ 인증 없이 접근 가능한 경로 목록 (Spring Security permitAll 기준)
+// 인증 없이 접근 가능한 경로 목록 (백엔드 permitAll 기준)
 const publicPaths = [
   "/users/register",
   "/auth/login",
   "/auth/refresh",
   "/meta",
   "/admin/login",
-  "/dev",
   "/reviews/summary/lecture",
+  "/reviews/summary/cards",
   "/users/check-email",
   "/levels",
   "/reviews/classes",
   "/user/signup",
   "/payment/cart/checkout",
   "/main",
+  "/main/popular",
+  "/main/latest",
+  "/main/reviews/summary",
+  "/main/classes/free",
 
   // baseURL 없이 요청되는 경로들
   "/oauth2",
@@ -28,7 +32,7 @@ const publicPaths = [
   "/oauth-success",
 ];
 
-// 🔄 토큰 갱신 상태 관리
+// 토큰 갱신 관리
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
 
@@ -48,7 +52,7 @@ const onRefreshFailed = () => {
   window.location.href = "/auth";
 };
 
-// ✅ 요청 인터셉터 - 토큰 자동 주입
+// 요청 인터셉터 - 토큰 주입
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
 
@@ -64,7 +68,7 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// ✅ 응답 인터셉터 - 자동 토큰 갱신
+// 응답 인터셉터 - 자동 토큰 갱신
 axiosInstance.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -119,24 +123,18 @@ axiosInstance.interceptors.response.use(
         }
       }
 
-      // ✅ 기타 에러 처리
+      // 기타 오류 처리
       const status = error.response?.status;
 
-      if (
-          error.code === "ECONNREFUSED" ||
-          error.message?.includes("ECONNREFUSED")
-      ) {
+      if (error.code === "ECONNREFUSED" || error.message?.includes("ECONNREFUSED")) {
         console.error("서버 연결 실패:", error);
-        return Promise.reject(error);
-      }
-
-      if (status === 403) {
+      } else if (status === 403) {
         alert("권한이 없습니다. 다시 로그인 해주세요.");
       } else if (status === 404) {
         alert("요청하신 페이지를 찾을 수 없습니다.");
       } else if (status >= 500) {
         alert("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-      } else if (!status && !error.code?.includes("ECONNREFUSED")) {
+      } else if (!status) {
         alert("네트워크 오류가 발생했습니다. 인터넷 연결을 확인해주세요.");
       }
 
