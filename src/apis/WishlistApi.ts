@@ -60,4 +60,11 @@ export const wishlistApi = {
       return false;
     }
   },
+
+  // ✅ 클래스별 찜 수 조회
+  async getWishlistCount(classId: number): Promise<number> {
+    const res = await axiosInstance.get(`/users/wishlists/classes/${classId}/count`);
+    return res.data.count ?? 0;
+  },
+  
 };

@@ -52,7 +52,8 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({ title, moreLink, children
 
   return (
     <section className="w-full py-8 relative z-10">
-      <div className="flex items-center justify-between mb-4 px-2 max-w-[1400px] mx-auto">
+      {/* 섹션 제목 + 더 보기 */}
+      <div className="flex items-center justify-between mb-4 px-4 max-w-[1200px] mx-auto">
         <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
         {moreLink && (
           <a href={moreLink} className="text-blue-600 text-xs md:text-sm hover:underline">
@@ -61,7 +62,8 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({ title, moreLink, children
         )}
       </div>
 
-      <div className="relative max-w-[1400px] mx-auto">
+      {/* 슬라이더 전체 wrapper */}
+      <div className="relative max-w-[1200px] mx-auto px-4">
         {!isAtStart && (
           <button
             className="absolute z-20 top-1/2 -translate-y-1/2 -left-6 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center"
@@ -120,6 +122,7 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({ title, moreLink, children
         </div>
       </div>
     </section>
+
   );
 };
 

@@ -11,4 +11,5 @@ export interface SearchClassItem {
     studentCount: number;
     averageRating: number;
     ratingCount?: number;
+    wishlistCount?: number;
   }

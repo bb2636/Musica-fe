@@ -7,6 +7,7 @@ import useCart from "../hooks/useCart";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { classApi } from "../apis/classesApi";
+import { getEnrolledClasses } from "../apis/payment"; // ✅ 수강중 API 추가
 
 interface PageResult<T> {
   content: T[];
@@ -16,26 +17,57 @@ interface PageResult<T> {
   size: number;
 }
 
-const PAGE_SIZE = 30; // 5x6
+const PAGE_SIZE = 30;
 
 const SearchResultPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [pageData, setPageData] = useState<PageResult<SearchClassItem> | null>(null);
 
-  // 커스텀 훅 사용
-  const { wishedClassIds, wishlistCounts, processingSet: wishProcessingSet, toggleWish } = useWishlist();
+  // ✅ 수강중 클래스 ID 목록
+  const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
+  const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
+
+  // 커스텀 훅
+  const { wishedClassIds, wishlistCounts, processingSet: wishProcessingSet, toggleWish, fetchWishlist } = useWishlist(); // ✅ fetchWishlist 포함
   const { cartItems, processingSet: cartProcessingSet, toggleCart } = useCart();
   const cartClassIds = cartItems.map((item) => item.classId);
 
-  // 쿼리 파라미터 추출
+  // ✅ 수강중 클래스 불러오기
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    const role = localStorage.getItem("userRole") ?? "";
+    const isUser = role.toUpperCase() === "USER";
+
+    if (token && isUser) {
+      getEnrolledClasses()
+        .then((classes) => {
+          const ids = classes.map((item) => item.classId);
+          setPaidClassIds(ids);
+        })
+        .finally(() => {
+          setPaidClassIdsLoading(false);
+        });
+    } else {
+      setPaidClassIdsLoading(false);
+    }
+  }, []);
+
+  // ✅ 찜 목록 불러오기
+  useEffect(() => {
+    if (localStorage.getItem("accessToken")) {
+      fetchWishlist();
+    }
+  }, [fetchWishlist]);
+
+  // 쿼리 파라미터
   const keyword = searchParams.get("keyword") || "";
   const sort = searchParams.get("sort") || "latest";
   const categoryId = searchParams.get("categoryId") ? Number(searchParams.get("categoryId")) : undefined;
   const difficultyId = searchParams.get("difficultyId") ? Number(searchParams.get("difficultyId")) : undefined;
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 0;
 
-  // 데이터 fetch
+  // 클래스 목록 불러오기
   useEffect(() => {
     setLoading(true);
     const fetchData = async () => {
@@ -57,16 +89,13 @@ const SearchResultPage: React.FC = () => {
       }
     };
     fetchData();
-    // eslint-disable-next-line
   }, [keyword, sort, categoryId, difficultyId, page]);
 
-  // 페이지 이동
   const goToPage = useCallback((p: number) => {
     searchParams.set("page", String(p));
     setSearchParams(searchParams);
   }, [searchParams, setSearchParams]);
 
-  // 페이지네이션 버튼 생성
   const renderPagination = () => {
     if (!pageData) return null;
     const { totalPages, number } = pageData;
@@ -83,24 +112,10 @@ const SearchResultPage: React.FC = () => {
     }
     return (
       <div className="flex items-center justify-center gap-1 mt-8">
-        <button
-          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
-          onClick={() => goToPage(0)}
-          disabled={currentPage === 0}
-        >
-          &lt;&lt;
-        </button>
-        <button
-          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 0}
-        >
-          &lt;
-        </button>
+        <button onClick={() => goToPage(0)} disabled={currentPage === 0} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&lt;&lt;</button>
+        <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&lt;</button>
         {pages.map((p) => (
-          <button
-            key={p}
-            onClick={() => goToPage(p)}
+          <button key={p} onClick={() => goToPage(p)}
             className={`px-3 py-1 rounded transition text-sm font-semibold ${
               currentPage === p
                 ? "bg-neutral-900 text-white"
@@ -110,69 +125,55 @@ const SearchResultPage: React.FC = () => {
             {p + 1}
           </button>
         ))}
-        <button
-          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === maxPage}
-        >
-          &gt;
-        </button>
-        <button
-          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
-          onClick={() => goToPage(maxPage)}
-          disabled={currentPage === maxPage}
-        >
-          &gt;&gt;
-        </button>
+        <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === maxPage} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&gt;</button>
+        <button onClick={() => goToPage(maxPage)} disabled={currentPage === maxPage} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&gt;&gt;</button>
       </div>
     );
   };
 
-  // 핸들러
   const handleToggleWish = (id: number) => toggleWish(id, wishedClassIds.includes(id));
   const handleToggleCart = (id: number) => toggleCart(id, cartClassIds.includes(id));
-
-//   console.log(`🧩 카드 ${i}:`, cls);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-    <div className="max-w-7xl mx-auto px-4 py-8 min-h-[60vh]">
-      <h2 className="text-2xl font-bold mb-6">검색 결과</h2>
-      {loading ? (
-        <div className="text-center text-lg py-20">로딩 중...</div>
-      ) : !pageData || pageData.content.length === 0 ? (
-        <div className="text-center text-gray-500 py-20">검색 결과가 없습니다</div>
-      ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {pageData.content.map((cls) => (
-              <ClassCard
-                key={cls.id}
-                id={cls.id}
-                title={cls.title}
-                instructor={cls.instructorName}
-                price={cls.classPrice}
-                rating={cls.averageRating}
-                ratingCount={cls.ratingCount}
-                thumbnailUrl={cls.thumbnailUrl}
-                onToggleWish={() => handleToggleWish(cls.id)}
-                onToggleCart={() => handleToggleCart(cls.id)}
-                wishedClassIds={wishedClassIds}
-                wishlistCount={wishlistCounts[cls.id] ?? 0} // ← 서버 응답에 없음
-                isProcessingWishSet={wishProcessingSet}
-                isProcessingCartSet={cartProcessingSet}
-                isInCart={cartClassIds.includes(cls.id)}
-              />
-            ))}
-          </div>
-          {renderPagination()}
-        </>
-      )}
+      <div className="max-w-[1400px] mx-auto px-4 py-8 min-h-[60vh]">
+        <h2 className="text-2xl font-bold mb-6">검색 결과</h2>
+        {loading || paidClassIdsLoading ? (
+          <div className="text-center text-lg py-20">로딩 중...</div>
+        ) : !pageData || pageData.content.length === 0 ? (
+          <div className="text-center text-gray-500 py-20">검색 결과가 없습니다</div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+              {pageData.content.map((cls) => (
+                <ClassCard
+                  key={cls.id}
+                  id={cls.id}
+                  title={cls.title}
+                  instructor={cls.instructorName}
+                  price={cls.classPrice}
+                  rating={cls.averageRating}
+                  ratingCount={cls.ratingCount}
+                  thumbnailUrl={cls.thumbnailUrl}
+                  onToggleWish={() => handleToggleWish(cls.id)}
+                  onToggleCart={() => handleToggleCart(cls.id)}
+                  wishedClassIds={wishedClassIds}
+                  wishlistCount={wishlistCounts[cls.id] ?? cls.wishlistCount}
+                  isProcessingWishSet={wishProcessingSet}
+                  isProcessingCartSet={cartProcessingSet}
+                  isInCart={cartClassIds.includes(cls.id)}
+                  isPaid={paidClassIds.includes(cls.id)} // ✅ 수강중 표시용
+                />
+              ))}
+            </div>
+            {renderPagination()}
+          </>
+        )}
       </div>
       <Footer />
     </div>
   );
 };
 
-export default SearchResultPage; 
+export default SearchResultPage;

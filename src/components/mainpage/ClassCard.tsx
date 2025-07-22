@@ -1,5 +1,8 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import jjimbefore from '../../assets/jjimbefore.png';
+import jjimafter from '../../assets/jjimafter.png';
+import { ShoppingCart } from 'lucide-react';
 
 interface ClassCardProps {
   id: number;
@@ -97,38 +100,30 @@ const ClassCard: React.FC<ClassCardProps> = ({
   return (
     <div
       onClick={handleCardClick}
-      className="relative w-full h-[350px] bg-white rounded-xl shadow hover:scale-[1.02] transition-transform duration-150 flex flex-col overflow-hidden cursor-pointer"
+      className="relative flex flex-col transition-shadow duration-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md hover:-translate-y-[1px] transform cursor-pointer h-[400px]"
     >
       {/* 썸네일 */}
-      <div className="flex-[7] aspect-[4/3] h-[190px] relative bg-gray-100 flex items-center justify-center rounded-t-xl overflow-hidden">
+      <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100 h-[240px] flex items-center justify-center">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
             alt={title}
-            className="object-cover w-full h-full"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-gray-400">No Image</div>
+          <div className="text-gray-400 w-full h-full flex items-center justify-center">No Image</div>
         )}
       </div>
-
       {/* 정보 영역 */}
-      <div className="flex-[3] p-4 flex flex-col justify-start bg-white gap-1 relative">
+      <div className="p-4 flex flex-col">
         {tag && (
           <div className="text-xs text-blue-600 font-semibold">{tag}</div>
         )}
-        {/* 제목 */}
-        <div className="text-lg font-bold text-gray-900 line-clamp-2">
-          {title}
-        </div>
-
-        {/* 강사명 */}
+        <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep">{title}</h3>
         {instructor && (
           <div className="text-sm text-gray-500">{instructor}</div>
         )}
-
-        {/* 찜 + 별점 */}
-        <div className="flex justify-between text-xs text-gray-600">
+        <div className="flex justify-between text-xs text-gray-600 mt-1">
           <div>❤️ {wishlistCount}명 찜</div>
           <div className="flex items-center gap-1">
             <span className="text-yellow-400">★</span>
@@ -136,91 +131,36 @@ const ClassCard: React.FC<ClassCardProps> = ({
             <span className="text-gray-400">({ratingCount})</span>
           </div>
         </div>
-
-        {/* 가격 + 버튼 */}
-        <div className="flex justify-between items-end mt-auto">
-          {/* 가격 */}
-          <div className="flex flex-col">
-            <span className="text-md font-bold text-gray-900">
-              ₩{price.toLocaleString()}
-            </span>
-            {originalPrice && (
-              <span className="text-xs line-through text-gray-400">
-                ₩{originalPrice.toLocaleString()}
-              </span>
-            )}
-          </div>
-
-          {/* 찜 + 장바구니 버튼 */}
-          <div className="flex gap-2">
-            {/* 찜 버튼 */}
-            <button
-              onClick={handleToggleWish}
-              // disabled={isProcessingWish}
-              className={`bg-white rounded-full p-1 shadow transition ${
-                isWished ? "bg-red-100" : "hover:bg-red-100"
-              } ${isProcessingWish ? "opacity-50" : ""}`}
-            >
-              {isWished ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444">
-                  <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                  c0-2.54 2.03-4.5 4.5-4.5 1.74 0 3.41 1.01 4.13 2.44
-                  C11.09 5.01 12.76 4 14.5 4
-                  C16.97 4 19 5.96 19 8.5
-                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="2"
-                >
-                  <path
-                    d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
-                  c-1.96 1.96-1.96 5.14 0 7.1l6.72 6.73 6.72-6.73
-                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"
-                  />
-                </svg>
-              )}
+        <div className="flex justify-between items-center mt-2">
+          <span className="font-semibold text-lg text-gray-900">
+            ₩{price.toLocaleString()}
+          </span>
+          <div className="flex items-center gap-2">
+            <button onClick={handleToggleWish} type="button">
+              <img
+                src={isWished ? jjimafter : jjimbefore}
+                alt="찜"
+                className="w-6 h-6"
+              />
             </button>
-
-            {/* 장바구니 or 수강중 */}
             {isPaid ? (
-              <button
-                disabled
-                className="bg-gray-200 text-gray-500 px-3 py-1 text-sm rounded-full cursor-not-allowed"
-              >
+              <span className="px-3 py-1 text-sm text-gray-500 bg-gray-200 rounded-full cursor-not-allowed">
                 수강중
-              </button>
+              </span>
             ) : (
-              <button
-                onClick={handleToggleCart}
-                // disabled={isProcessingCart}
-                className={`bg-white rounded-full p-1 shadow transition ${
-                  isInCart ? "bg-green-100" : "hover:bg-green-100"
-                } ${isProcessingCart ? "opacity-50" : ""}`}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill={isInCart ? "#3b82f6" : "none"}
-                  stroke="#3b82f6"
-                  strokeWidth="2"
-                >
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
+              <button onClick={handleToggleCart} type="button">
+                {isInCart ? (
+                  <ShoppingCart className="w-6 h-6 text-blue-600 fill-blue-600" fill="currentColor" />
+                ) : (
+                  <ShoppingCart className="w-6 h-6 text-blue-600" />
+                )}
               </button>
             )}
           </div>
         </div>
+        {originalPrice && (
+          <span className="text-xs line-through text-gray-400">₩{originalPrice.toLocaleString()}</span>
+        )}
       </div>
     </div>
   );
