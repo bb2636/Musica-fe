@@ -13,7 +13,6 @@ import MyReviewsPage from "./pages/Mypage/USER/MyReviewsPage.tsx";
 import MyWishlistPage from "./pages/Mypage/USER/MyWishlistPage.tsx";
 import AITunerPage from "./pages/Mypage/USER/AITunerPage.tsx";
 import QnAPage from "./pages/QnAPage";
-import MyEnrollmentsPage from "./pages/Mypage/USER/MyEnrollmentsPage";
 import LectureWatchPage from "./pages/Classes/LectureWatchPage";
 
 import InstructorMyPage from "./pages/Mypage/INSTRUCTOR/InstructorMyPage.tsx";
