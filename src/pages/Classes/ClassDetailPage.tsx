@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { classApi } from "../../apis/classesApi";
 import { wishlistApi } from "../../apis/WishlistApi.ts";
@@ -174,55 +173,6 @@ const ClassDetailPage = () => {
       alert(errorMessage);
     }
   };
-
-    try {
-      let cartItemId: number;
-
-      if (isInCart) {
-        // 👉 이미 장바구니에 담겨 있다면 cartItemId 찾기
-        const res = await cartApi.getCartItems();
-        const matchedItem = res.cartItems.find(
-          (item) => item.classId === Number(classId)
-        );
-        if (!matchedItem) throw new Error("장바구니 항목을 찾을 수 없습니다.");
-        cartItemId = matchedItem.cartItemId;
-      } else {
-        // 👉 장바구니에 추가 후 cartItemId 받아서 이동
-        const res = await cartApi.addToCart(Number(classId));
-        if (res.status !== "success") throw new Error(res.message);
-
-        // ⛳ 백엔드 응답에 아래 형태로 내려와야 함
-        // { status: 'success', message: '추가됨', items: { cartItemId: number } }
-        cartItemId = res.items.cartItemId;
-
-        setIsInCart(true);
-      }
-
-      // 👉 결제 페이지 이동 (장바구니 기반)
-      navigate(
-        `/payment?type=cart&cartItemIds=${cartItemId}&price=${classDetail.classPrice}`
-      );
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error("서버 메시지:", error.response?.data?.message);
-      }
-    }
-  };
-
-  // const handlePurchase = () => {
-  //   if (!classDetail) return;
-
-  //   if (classDetail.userClassStatus?.enrolled) {
-  //     alert("이미 수강 중인 클래스입니다.");
-  //     return;
-  //   }
-
-  //   // 즉시 구매 처리
-  //   navigate(
-  //     `/payment?type=direct&classId=${classId}&price=${classDetail.classPrice}`
-  //   );
-  // };
-
   const handleGoToCart = () => {
     navigate("/cart");
   };
@@ -272,7 +222,7 @@ const ClassDetailPage = () => {
         alert("후기가 수정되었습니다.");
         setEditingReview(null);
         setShowReviewForm(false);
-        loadReviews(); // 후기 목록 새로고침
+        await loadReviews(); // 후기 목록 새로고침
       } else {
         alert(response.message || "후기 수정에 실패했습니다.");
       }
@@ -289,7 +239,7 @@ const ClassDetailPage = () => {
       const response = await reviewApi.deleteReview(reviewId);
       if (response.status === "success") {
         alert("후기가 삭제되었습니다.");
-        loadReviews(); // 후기 목록 새로고침
+        await loadReviews(); // 후기 목록 새로고침
       } else {
         alert(response.message || "후기 삭제에 실패했습니다.");
       }
