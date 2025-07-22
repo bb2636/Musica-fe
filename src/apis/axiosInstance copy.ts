@@ -26,22 +26,13 @@ const onRefreshFailed = () => {
   window.location.href = "/auth";
 };
 
-// const onRefreshFailed = () => {
-//   refreshSubscribers = [];
-//   // localStorage.removeItem("accessToken");   // 이 라인 임시 주석처리
-//   // localStorage.removeItem("refreshToken"); // 이 라인 임시 주석처리
-//   // window.location.href = "/auth";          // 이 라인 임시 주석처리
-//   // 대신 콘솔 로그 등으로만 실패 표시
-//   console.warn("토큰 갱신 실패 (임시): 로그아웃/토큰 삭제/이동 안함");
-// };
-
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   console.log("🚨 interceptor에서 가져온 accessToken:", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
     //console.log('[axiosInstance] Authorization 헤더 주입됨:', config.headers.Authorization); // 로그 4
-  }
+    }
   //   else {
   //     console.warn('[axiosInstance] 토큰 없음, Authorization 미주입됨');
   // }

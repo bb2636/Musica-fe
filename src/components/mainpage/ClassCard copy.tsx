@@ -84,6 +84,67 @@ const ClassCard: React.FC<ClassCardProps> = ({
         ) : (
           <div className="text-gray-400">No Image</div>
         )}
+        <div className="absolute top-2 right-2 z-10 flex gap-2 pr-2">
+          <button
+            onClick={handleToggleWish}
+            disabled={isProcessingWish || isProcessingWishSet?.has(id)}
+            className={`bg-white/80 rounded-full p-1 shadow transition ${
+              isWished ? "bg-red-100" : "hover:bg-red-100"
+            } ${
+              isProcessingWish || isProcessingWishSet?.has(id)
+                ? "opacity-50"
+                : ""
+            }`}
+          >
+            {isWished ? (
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="#ef4444">
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                  c0-2.54 2.03-4.5 4.5-4.5 1.74 0 3.41 1.01 4.13 2.44
+                  C11.09 5.01 12.76 4 14.5 4
+                  C16.97 4 19 5.96 19 8.5
+                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                />
+              </svg>
+            ) : (
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#ef4444"
+                strokeWidth="2"
+              >
+                <path
+                  d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
+                  c-1.96 1.96-1.96 5.14 0 7.1l6.72 6.73 6.72-6.73
+                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"
+                />
+              </svg>
+            )}
+          </button>
+
+          <button
+            onClick={handleToggleCart}
+            disabled={isProcessingCart}
+            className={`bg-white/80 rounded-full p-1 shadow transition ${
+              isInCart ? "bg-green-100" : "hover:bg-green-100"
+            } ${isProcessingCart ? "opacity-50" : ""}`}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill={isInCart ? "#22c55e" : "none"}
+              stroke="#22c55e"
+              strokeWidth="2"
+            >
+              <circle cx="9" cy="21" r="1" />
+              <circle cx="20" cy="21" r="1" />
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div className="flex-[3] p-4 flex flex-col justify-end bg-white gap-2 min-h-[90px]">
@@ -100,77 +161,15 @@ const ClassCard: React.FC<ClassCardProps> = ({
           <span>{rating.toFixed(1)}</span>
           <span className="text-xs text-gray-400">({ratingCount})</span>
         </div>
-
-        {/* ✅ 하단 가격 + 버튼 라인 */}
-        <div className="flex justify-between items-end mt-auto">
-          <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900">
-              ₩{price.toLocaleString()}
+        <div className="flex items-end gap-2 mt-auto">
+          <span className="text-lg font-bold text-gray-900">
+            ₩{price.toLocaleString()}
+          </span>
+          {originalPrice && (
+            <span className="text-xs line-through text-gray-400">
+              ₩{originalPrice.toLocaleString()}
             </span>
-            {originalPrice && (
-              <span className="text-xs line-through text-gray-400">
-                ₩{originalPrice.toLocaleString()}
-              </span>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={handleToggleWish}
-              disabled={isProcessingWish || isProcessingWishSet?.has(id)}
-              className={`bg-white rounded-full p-1 shadow transition ${
-                isWished ? "bg-red-100" : "hover:bg-red-100"
-              } ${isProcessingWish ? "opacity-50" : ""}`}
-            >
-              {isWished ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444">
-                  <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
-                    c0-2.54 2.03-4.5 4.5-4.5 1.74 0 3.41 1.01 4.13 2.44
-                    C11.09 5.01 12.76 4 14.5 4
-                    C16.97 4 19 5.96 19 8.5
-                    c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#ef4444"
-                  strokeWidth="2"
-                >
-                  <path
-                    d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
-                    c-1.96 1.96-1.96 5.14 0 7.1l6.72 6.73 6.72-6.73
-                    c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"
-                  />
-                </svg>
-              )}
-            </button>
-
-            <button
-              onClick={handleToggleCart}
-              disabled={isProcessingCart}
-              className={`bg-white rounded-full p-1 shadow transition ${
-                isInCart ? "bg-green-100" : "hover:bg-green-100"
-              } ${isProcessingCart ? "opacity-50" : ""}`}
-            >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill={isInCart ? "#22c55e" : "none"}
-                stroke="#22c55e"
-                strokeWidth="2"
-              >
-                <circle cx="9" cy="21" r="1" />
-                <circle cx="20" cy="21" r="1" />
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-              </svg>
-            </button>
-          </div>
+          )}
         </div>
       </div>
     </div>

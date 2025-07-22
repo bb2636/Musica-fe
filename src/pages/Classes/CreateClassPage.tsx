@@ -255,7 +255,7 @@ const CreateClassPage = () => {
 
       <button
         onClick={handleSubmit}
-        className="bg-blue-600 text-white px-4 py-2 rounded w-full"
+        className="bg-neutral-800 hover:bg-gray-950 text-white px-4 py-2 rounded w-full transition"
       >
         등록하고 강의 등록 페이지로 이동
       </button>

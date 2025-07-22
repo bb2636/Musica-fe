@@ -3,6 +3,7 @@ import { instructorApi } from "../../../apis/instructorApi";
 import { classApi } from "../../../apis/classesApi";
 import { commonApi } from "../../../apis/commonApi";
 import ClassActionButtons from "../../../components/ClassActionButtons";
+import { useNavigate } from "react-router-dom";
 import type { DashboardData } from "../../../types/instructor";
 import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
@@ -40,6 +41,7 @@ const InstructorDashboard = () => {
   );
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);
@@ -206,7 +208,7 @@ const InstructorDashboard = () => {
                     <th className="px-4 py-2">수강생</th>
                     <th className="px-4 py-2">평점</th>
                     <th className="px-4 py-2">가격</th>
-                    <th className="px-4 py-2">관리</th>
+                    {/* <th className="px-4 py-2">관리</th> */}
                   </tr>
                 </thead>
                 {/* <tbody>
@@ -270,12 +272,40 @@ const InstructorDashboard = () => {
                       <td className="px-4 py-2 text-center">
                         {cls.classPrice.toLocaleString()}원
                       </td>
-                      <td className="px-4 py-2 text-center">
-                        <ClassActionButtons
-                          classId={cls.id}
-                          fetchClasses={fetchData}
-                        />
-                      </td>
+                      {/* <td className="px-4 py-2 text-center">
+                        <div className="flex gap-2 justify-center">
+                          <button
+                            onClick={() =>
+                              navigate(
+                                `/mypage/instructor/classes/${cls.id}/lectures/create`
+                              )
+                            }
+                            className="bg-neutral-200 hover:bg-neutral-300 text-sm text-gray-900 px-3 py-1 rounded transition"
+                          >
+                            수정
+                          </button>
+                          <button
+                            onClick={async () => {
+                              const confirmed = window.confirm(
+                                "정말로 이 클래스를 삭제하시겠습니까?"
+                              );
+                              if (!confirmed) return;
+
+                              try {
+                                await instructorApi.deleteClass(cls.id);
+                                alert("클래스가 삭제되었습니다.");
+                                fetchData(); // 삭제 후 목록 갱신
+                              } catch (err) {
+                                console.error("삭제 실패:", err);
+                                alert("클래스 삭제에 실패했습니다.");
+                              }
+                            }}
+                            className="bg-neutral-400 hover:bg-neutral-600 text-sm text-white px-3 py-1 rounded transition"
+                          >
+                            삭제
+                          </button>
+                        </div>
+                      </td> */}
                     </tr>
                   ))}
                 </tbody>

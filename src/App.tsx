@@ -36,6 +36,8 @@ import InstructorRevenuePage from "./pages/InstructorRevenuePage";
 import CreateClassPage from "./pages/Classes/CreateClassPage.tsx";
 import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
 
+import ClassDetailPage from "./pages/Classes/ClassDetailPage";
+
 function App() {
   return (
     <BrowserRouter>
@@ -75,6 +77,9 @@ function App() {
             <Route path="payments" element={<PaymentHistoryPage />} />
           </Route>
 
+          {/* 클래스 상세페이지 */}
+          <Route path="/classes/:classId" element={<ClassDetailPage />} />
+
           {/* 강사 마이페이지 */}
           <Route path="/mypage/instructor" element={<InstructorMyPage />}>
             <Route index element={<Navigate to="dashboard" />} />
@@ -85,7 +90,6 @@ function App() {
               path="classes/:classId/lectures/create"
               element={<CreateLecturePage />}
             />
-            {/* <Route path="/classes/:classId" element={<ClassDetailPage />} /> */}
             <Route path="qna" element={<InstructorQnA />} />
             <Route path="reviews" element={<InstructorReviews />} />
             <Route path="settlements" element={<InstructorSettlement />} />
