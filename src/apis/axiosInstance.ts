@@ -7,19 +7,19 @@ const axiosInstance = axios.create({
 
 // ✅ 인증 없이 접근 가능한 경로 목록 (Spring Security permitAll 기준)
 const publicPaths = [
-  "/users/register",
-  "/auth/login",
-  "/auth/refresh",
-  "/meta",
-  "/admin/login",
-  "/dev",
-  "/reviews/summary/lecture",
-  "/users/check-email",
-  "/levels",
-  "/reviews/classes",
-  "/user/signup",
-  "/payment/cart/checkout",
-  "/main",
+  "/api/users/register",
+  "/api/auth/login",
+  "/api/auth/refresh",
+  "/api/meta",
+  "/api/admin/login",
+  "/api/dev",
+  "/api/reviews/summary/lecture",
+  "/api/users/check-email",
+  "/api/levels",
+  "/api/reviews/classes",
+  "/api/user/signup",
+  "/api/payment/cart/checkout",
+  "/api/main",
 
   // baseURL 없이 요청되는 경로들
   "/oauth2",
@@ -52,9 +52,8 @@ const onRefreshFailed = () => {
 axiosInstance.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
 
-  const isPublic = publicPaths.some((path) =>
-      config.url?.startsWith(path)
-  );
+  const fullPath = `${config.baseURL ?? ""}${config.url ?? ""}`;
+  const isPublic = publicPaths.some((path) => fullPath.startsWith(path));
 
   if (!isPublic && token) {
     config.headers.Authorization = `Bearer ${token}`;
