@@ -61,6 +61,9 @@ const ClassCard: React.FC<ClassCardProps> = ({
         return;
       }
       if (isProcessingCart) return;
+
+      alert(isInCart ? "장바구니에서 제거했습니다." : "장바구니에 담았습니다.");
+
       onToggleCart(id, isInCart);
     },
     [isLoggedIn, isProcessingCart, navigate, id, isInCart, onToggleCart]
@@ -81,6 +84,9 @@ const ClassCard: React.FC<ClassCardProps> = ({
 
       // 🔥 여기서 최신값을 다시 계산하도록 변경
       const currentlyWished = wishedClassIds.includes(id); // 최신 상태
+
+      alert(currentlyWished ? "찜에서 제거했습니다." : "찜 등록했습니다.");
+      
       await onToggleWish(id, currentlyWished); 
     },
     [isLoggedIn, isProcessingWish, navigate, id, wishedClassIds, onToggleWish]
@@ -95,6 +101,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
       onClick={handleCardClick}
       className="relative w-full h-[350px] bg-white rounded-xl shadow hover:scale-[1.02] transition-transform duration-150 flex flex-col overflow-hidden cursor-pointer"
     >
+      {/* 썸네일 */}
       <div className="flex-[7] aspect-[4/3] h-[190px] relative bg-gray-100 flex items-center justify-center rounded-t-xl overflow-hidden">
         {thumbnailUrl ? (
           <img
@@ -107,24 +114,34 @@ const ClassCard: React.FC<ClassCardProps> = ({
         )}
       </div>
 
-      <div className="flex-[3] p-4 flex flex-col justify-end bg-white gap-2 min-h-[90px]">
+      {/* 정보 영역 */}
+      <div className="flex-[3] p-4 flex flex-col justify-start bg-white gap-1 relative">
         {tag && (
-          <div className="text-xs text-blue-600 font-semibold">{tag}</div>
-        )}
-        <div className="font-bold text-base line-clamp-2">{title}</div>
+            <div className="text-xs text-blue-600 font-semibold">{tag}</div>
+          )}
+        {/* 제목 */}
+        <div className="text-lg font-bold text-gray-900 line-clamp-2">{title}</div>
+
+        {/* 강사명 */}
         {instructor && (
-          <div className="text-xs text-gray-500">{instructor}</div>
+          <div className="text-sm text-gray-500">{instructor}</div>
         )}
-        <div className="text-xs text-gray-500">❤️ {wishlistCount}명 찜</div>
-        <div className="flex items-center gap-1 text-sm text-gray-700">
-          <span className="text-yellow-400">★</span>
-          <span>{rating.toFixed(1)}</span>
-          <span className="text-xs text-gray-400">({ratingCount})</span>
+
+        {/* 찜 + 별점 */}
+        <div className="flex justify-between text-xs text-gray-600">
+          <div>❤️ {wishlistCount}명 찜</div>
+          <div className="flex items-center gap-1">
+            <span className="text-yellow-400">★</span>
+            <span>{rating.toFixed(1)}</span>
+            <span className="text-gray-400">({ratingCount})</span>
+          </div>
         </div>
 
+        {/* 가격 + 버튼 */}
         <div className="flex justify-between items-end mt-auto">
+          {/* 가격 */}
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-gray-900">
+            <span className="text-md font-bold text-gray-900">
               ₩{price.toLocaleString()}
             </span>
             {originalPrice && (
@@ -134,24 +151,23 @@ const ClassCard: React.FC<ClassCardProps> = ({
             )}
           </div>
 
+          {/* 찜 + 장바구니 버튼 */}
           <div className="flex gap-2">
-            {/* ❤️ 찜 버튼 */}
+            {/* 찜 버튼 */}
             <button
               onClick={handleToggleWish}
-              disabled={isProcessingWishSet?.has(id)}
+              // disabled={isProcessingWish}
               className={`bg-white rounded-full p-1 shadow transition ${
                 isWished ? "bg-red-100" : "hover:bg-red-100"
               } ${isProcessingWish ? "opacity-50" : ""}`}
             >
               {isWished ? (
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444">
-                  <path
-                    d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5
                   c0-2.54 2.03-4.5 4.5-4.5 1.74 0 3.41 1.01 4.13 2.44
                   C11.09 5.01 12.76 4 14.5 4
                   C16.97 4 19 5.96 19 8.5
-                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-                  />
+                  c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
               ) : (
                 <svg
@@ -162,16 +178,14 @@ const ClassCard: React.FC<ClassCardProps> = ({
                   stroke="#ef4444"
                   strokeWidth="2"
                 >
-                  <path
-                    d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
+                  <path d="M12.1 8.64l-.1.1-.11-.11C10.14 6.6 7.24 6.6 5.28 8.56
                   c-1.96 1.96-1.96 5.14 0 7.1l6.72 6.73 6.72-6.73
-                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"
-                  />
+                  c1.96-1.96 1.96-5.14 0-7.1-1.96-1.96-5.14-1.96-7.1 0z"/>
                 </svg>
               )}
             </button>
 
-            {/* 🛒 장바구니 또는 '이미 결제됨' 버튼 */}
+            {/* 장바구니 or 수강중 */}
             {isPaid ? (
               <button
                 disabled
@@ -182,7 +196,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
             ) : (
               <button
                 onClick={handleToggleCart}
-                disabled={isProcessingCart}
+                // disabled={isProcessingCart}
                 className={`bg-white rounded-full p-1 shadow transition ${
                   isInCart ? "bg-green-100" : "hover:bg-green-100"
                 } ${isProcessingCart ? "opacity-50" : ""}`}
