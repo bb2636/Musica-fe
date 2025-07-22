@@ -1,189 +1,213 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { lectureApi } from "../../apis/lectureApi";
-import type {
-  LectureDetail,
-  LectureSummary,
-  LectureWatchData,
-} from "../../types/lecture";
+import type { LectureDetail, LectureSummary } from "../../types/lecture";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const LectureWatchPage: React.FC = () => {
-  const urlParams = useParams<{ classId: string; lectureId?: string }>();
+const LectureWatchPage = () => {
+  const { lectureId } = useParams();
+  const parsedLectureId = Number(lectureId);
   const navigate = useNavigate();
-
-  const [lectureDetail, setLectureDetail] = useState<LectureDetail | null>(
-    null
-  );
-  const [lectureList, setLectureList] = useState<LectureSummary[]>([]);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
   const videoRef = useRef<HTMLVideoElement>(null);
-  const progressSaveIntervalRef = useRef<ReturnType<typeof setInterval> | null>(
-    null
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
+
+  const [lecture, setLecture] = useState<LectureDetail | null>(null);
+  const [lectureList, setLectureList] = useState<LectureSummary[]>([]);
+  const [duration, setDuration] = useState<number>(0);
+  const [watchedSeconds, setWatchedSeconds] = useState<number>(0);
+  const [completed, setCompleted] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const saveProgress = useCallback(
+    async (forceImmediate = false) => {
+      if (
+        !isMountedRef.current ||
+        !parsedLectureId ||
+        !videoRef.current ||
+        !duration
+      )
+        return;
+
+      const currentTime = videoRef.current.currentTime;
+      if (isNaN(currentTime) || currentTime < 0) return;
+
+      const progressRate = (currentTime / duration) * 100;
+      const isNowCompleted = progressRate >= 95;
+
+      const payload = {
+        watchedSeconds: Math.floor(currentTime),
+        completed: isNowCompleted,
+      };
+
+      try {
+        await lectureApi.saveProgress(parsedLectureId, payload);
+        if (isMountedRef.current) {
+          if (isNowCompleted && !completed) {
+            toast.success("🎉 강의 수강 완료!");
+            setCompleted(true);
+          } else if (forceImmediate) {
+            toast.success("💾 진도 저장 완료!");
+          }
+        }
+      } catch (error) {
+        if (forceImmediate && isMountedRef.current) {
+          toast.error("진도 저장에 실패했습니다.");
+        }
+      }
+    },
+    [parsedLectureId, duration, completed]
   );
 
-  // ✅ lectureId가 없으면 에러 처리
-  useEffect(() => {
-    if (!urlParams.lectureId) {
-      setError("잘못된 접근입니다. 유효한 강의 ID가 필요합니다.");
+  const debouncedSaveProgress = useCallback(() => {
+    if (!isMountedRef.current) return;
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
     }
-  }, [urlParams.lectureId]);
-
-  // ✅ 강의 및 커리큘럼 데이터 로딩
-  const loadAllData = useCallback(async () => {
-    if (!urlParams.classId || !urlParams.lectureId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      const data: LectureWatchData = await lectureApi.getLectureWatchData(
-        Number(urlParams.classId),
-        Number(urlParams.lectureId)
-      );
-
-      setLectureDetail(data.currentLecture);
-      setLectureList(data.lectures);
-
-      if (data.currentLecture.watchedSeconds > 0) {
-        setTimeout(() => {
-          if (videoRef.current) {
-            videoRef.current.currentTime = data.currentLecture.watchedSeconds;
-          }
-        }, 500);
+    saveTimeoutRef.current = setTimeout(() => {
+      if (isMountedRef.current) {
+        saveProgress();
       }
-    } catch (err: any) {
-      console.error("📛 강의 데이터 로딩 실패:", err);
-      if (err.response?.status === 401) {
-        console.warn("🔁 인증 오류 발생. 토큰 만료 or 로그인 필요.");
-      }
-      setError("강의 정보를 불러올 수 없습니다.");
-    }
-  }, [urlParams.classId, urlParams.lectureId]);
+    }, 5000);
+  }, [saveProgress]);
 
   useEffect(() => {
-    loadAllData();
-    return () => {
-      if (progressSaveIntervalRef.current) {
-        clearInterval(progressSaveIntervalRef.current);
+    const fetchLecture = async () => {
+      try {
+        setLoading(true);
+        const res = await lectureApi.getLectureDetail(parsedLectureId);
+        setLecture(res);
+        setCompleted(res.isCompleted);
+      } catch (error) {
+        toast.error("강의 정보를 불러올 수 없습니다.");
+      } finally {
+        setLoading(false);
       }
     };
-  }, [loadAllData]);
 
-  // ✅ 진도 저장
-  const saveProgress = useCallback(async () => {
-    if (!videoRef.current || !lectureDetail || duration === 0) return;
-    const watchedSeconds = Math.floor(currentTime);
-    const progressRate = (currentTime / duration) * 100;
-    const isCompleted = progressRate >= 90;
-    try {
-      await lectureApi.saveProgress(lectureDetail.lectureId, {
-        watchedSeconds,
-        isCompleted,
-      });
-      setLectureDetail((prev) =>
-        prev ? { ...prev, watchedSeconds, isCompleted } : null
-      );
-    } catch (err) {
-      console.error("진도 저장 실패:", err);
-    }
-  }, [lectureDetail, currentTime, duration]);
-
-  // ✅ 재생 중일 때만 인터벌로 진도 저장
-  useEffect(() => {
-    if (isPlaying && currentTime > 0 && lectureDetail) {
-      progressSaveIntervalRef.current = setInterval(saveProgress, 30000);
-    } else if (progressSaveIntervalRef.current) {
-      clearInterval(progressSaveIntervalRef.current);
-    }
-    return () => {
-      if (progressSaveIntervalRef.current) {
-        clearInterval(progressSaveIntervalRef.current);
+    const fetchLectureList = async () => {
+      if (!parsedLectureId || isNaN(parsedLectureId)) return;
+      try {
+        const res = await lectureApi.getLectureListForStudent(
+          lecture?.classId || 0
+        );
+        setLectureList(res);
+      } catch (e) {
+        toast.error("강의 목록을 불러올 수 없습니다.");
       }
     };
-  }, [isPlaying, currentTime, lectureDetail, saveProgress]);
 
-  // ✅ 강의 이동
-  const goToLecture = async (lecture: LectureSummary) => {
-    if (!lecture.isAccessible) return alert("아직 이용할 수 없는 강의입니다.");
-    await saveProgress();
-    navigate(`/classes/${urlParams.classId}/lectures/${lecture.lectureId}`);
+    fetchLecture().then(() => {
+      if (lecture?.classId) fetchLectureList();
+    });
+  }, [parsedLectureId, lecture?.classId]);
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleTimeUpdate = () => {
+    if (!isMountedRef.current || !videoRef.current) return;
+    const currentTime = videoRef.current.currentTime;
+    if (isNaN(currentTime)) return;
+    setWatchedSeconds(currentTime);
+    debouncedSaveProgress();
   };
 
-  const getPreviousLecture = () => {
-    const index = lectureList.findIndex(
-      (l) => l.lectureId === lectureDetail?.lectureId
-    );
-    return index > 0 ? lectureList[index - 1] : null;
+  const handlePause = () => {
+    if (!isMountedRef.current) return;
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveProgress(true);
   };
 
-  const getNextLecture = () => {
-    const index = lectureList.findIndex(
-      (l) => l.lectureId === lectureDetail?.lectureId
-    );
-    return index >= 0 && index < lectureList.length - 1
-      ? lectureList[index + 1]
-      : null;
+  const handlePlay = () => {
+    if (!isMountedRef.current) return;
+    saveProgress();
   };
 
-  if (loading) return <div className="text-white">강의 로딩 중...</div>;
-  if (error || !lectureDetail)
-    return (
-      <div className="text-red-600">
-        {error || "강의 정보를 불러올 수 없습니다."}
-      </div>
-    );
+  const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    if (!isMountedRef.current) return;
+    const video = e.currentTarget;
+    const videoDuration = video.duration;
+    if (isNaN(videoDuration) || videoDuration <= 0) return;
+    setDuration(videoDuration);
+    if (lecture?.watchedSeconds) {
+      video.currentTime = Math.min(lecture.watchedSeconds, videoDuration);
+    }
+  };
+
+  if (loading || !lecture) {
+    return <div className="p-4">강의 정보를 불러오는 중입니다...</div>;
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      <h1 className="text-2xl font-bold mb-4">
-        {lectureDetail.className} - {lectureDetail.title}
-      </h1>
-
-      <video
-        ref={videoRef}
-        className="w-full h-[60vh] bg-black"
-        controls
-        onTimeUpdate={() => setCurrentTime(videoRef.current?.currentTime || 0)}
-        onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => {
-          setIsPlaying(false);
-          saveProgress();
-        }}
-        src={lectureDetail.videoUrl}
-      />
-
-      <div className="mt-4 flex justify-between items-center text-sm">
-        <div>
-          현재 시간: {Math.floor(currentTime)}초 / 총 {Math.floor(duration)}초
-        </div>
-        <div>
-          진도율: {Math.floor((currentTime / duration) * 100)}%{" "}
-          {lectureDetail.isCompleted ? "✅ 완료" : "🔄 진행 중"}
+    <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+      <div className="flex-1">
+        <h1 className="text-2xl font-bold mb-4">{lecture.title}</h1>
+        <video
+          ref={videoRef}
+          controls
+          src={lecture.videoUrl}
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate}
+          onPause={handlePause}
+          onPlay={handlePlay}
+          onEnded={() => saveProgress(true)}
+          className="w-full aspect-video bg-black rounded-lg shadow"
+        />
+        <div className="bg-gray-50 rounded p-4 shadow-sm mt-4">
+          <p className="text-sm">
+            진도율: {Math.round((watchedSeconds / duration) * 100)}%
+          </p>
+          <progress
+            value={watchedSeconds}
+            max={duration}
+            className="w-full h-2 mt-1"
+          />
         </div>
       </div>
-
-      <div className="mt-4 flex gap-4">
-        {getPreviousLecture() && (
-          <button
-            onClick={() => goToLecture(getPreviousLecture()!)}
-            className="bg-gray-700 px-4 py-2 rounded hover:bg-gray-600"
-          >
-            ← 이전 강의
-          </button>
-        )}
-        {getNextLecture() && (
-          <button
-            onClick={() => goToLecture(getNextLecture()!)}
-            className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-500"
-          >
-            다음 강의 →
-          </button>
-        )}
-      </div>
+      <aside className="w-full lg:w-80">
+        <div className="bg-white shadow rounded-lg p-4">
+          <h2 className="text-lg font-semibold mb-3">강의 목록</h2>
+          <ul className="space-y-2">
+            {lectureList.map((lec) => (
+              <li
+                key={lec.lectureId}
+                onClick={() =>
+                  navigate(
+                    `/classes/${lecture.classId}/lectures/${lec.lectureId}`
+                  )
+                }
+                className={`p-3 rounded border cursor-pointer transition hover:bg-gray-100 ${
+                  lec.lectureId === lecture.lectureId
+                    ? "bg-blue-50 border-blue-500"
+                    : "border-gray-200"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="truncate font-medium">{lec.title}</span>
+                  {lec.isCompleted && (
+                    <span className="text-green-600 text-xs">✔ 완료</span>
+                  )}
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  ⏱ {Math.floor(lec.duration / 60)}분 {lec.duration % 60}초
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </aside>{" "}
     </div>
   );
 };

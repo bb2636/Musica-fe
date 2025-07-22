@@ -39,9 +39,13 @@ import CreateLecturePage from "./pages/Classes/CreateLecture.tsx";
 import ClassDetailPage from "./pages/Classes/ClassDetailPage";
 import EnrollmentsPage from "./pages/Mypage/USER/InstructorMyClasses";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer position="top-center" autoClose={3000} />
       <main>
         <Routes>
           {/* 공통 */}
