@@ -44,7 +44,7 @@ function App() {
     <BrowserRouter>
       <main>
         <Routes>
-          {/*공통*/}
+          {/* 공통 */}
           <Route path="/" element={<MainPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/login" element={<Login />} />
@@ -53,8 +53,14 @@ function App() {
           <Route path="/cart" element={<CartPage />} />
           <Route path="/oauth-success" element={<OAuthSuccessPage />} />
           <Route path="/qna" element={<QnAPage />} />
+
+          {/* ✅ 강의 시청 페이지: lectureId 있을 때 & 없을 때 */}
           <Route
             path="/classes/:classId/lectures/:lectureId"
+            element={<LectureWatchPage />}
+          />
+          <Route
+            path="/classes/:classId/lectures"
             element={<LectureWatchPage />}
           />
 
@@ -80,7 +86,7 @@ function App() {
             <Route path="payments" element={<PaymentHistoryPage />} />
           </Route>
 
-          {/* 클래스 상세페이지 */}
+          {/* 클래스 상세 페이지 */}
           <Route path="/classes/:classId" element={<ClassDetailPage />} />
 
           {/* 강사 마이페이지 */}

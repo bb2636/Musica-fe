@@ -52,10 +52,12 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
+    
     if (token) {
-      fetchWishlist();
-      fetchCart();
+    fetchWishlist(); // ✅ 커스텀 훅 사용
+    fetchCart();     // ✅ 커스텀 훅 사용
     }
+
     if (token && isUser) {
       getEnrolledClasses()
         .then((classes) => {
@@ -70,6 +72,7 @@ const MainPage: React.FC = () => {
     } else {
       setPaidClassIdsLoading(false);
     }
+    
     axiosInstance
       .get("/main/reviews/summary")
       .then((res) => setReviewSummaryCards(Array.isArray(res.data) ? res.data : []))
@@ -108,6 +111,7 @@ const MainPage: React.FC = () => {
           <div className="text-center text-gray-500">로딩 중...</div>
         ) : (
           <>
+            {/* 추천 클래스 (유저 + 로그인 + 데이터 있음) */}
             {isLoggedIn && isUser && recommendedClasses.length > 0 && (
               <RecommendedSection
                 classes={recommendedClasses}
@@ -121,6 +125,8 @@ const MainPage: React.FC = () => {
                 wishlistCounts={wishlistCounts}
               />
             )}
+
+            {/* 인기, 최신, 무료 클래스 섹션들 */}
             <PopularSection
               classes={popularClasses}
               onToggleWish={handleToggleWish}
@@ -132,6 +138,7 @@ const MainPage: React.FC = () => {
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
             />
+
             <RecentSection
               classes={recentClasses}
               onToggleWish={handleToggleWish}
@@ -143,7 +150,9 @@ const MainPage: React.FC = () => {
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
             />
+
             <ReviewSummarySection reviews={reviewSummaryCards} />
+
             <FreeClassSection
               classes={freeClasses}
               onToggleWish={handleToggleWish}
