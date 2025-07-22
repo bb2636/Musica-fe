@@ -41,9 +41,10 @@ import EnrollmentsPage from "./pages/Mypage/USER/InstructorMyClasses";
 function App() {
   return (
     <BrowserRouter>
-      <main className="p-4">
+      <main>
         <Routes>
           {/*공통*/}
+          <Route path="/" element={<MainPage />} />
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/main" element={<MainPage />} />
