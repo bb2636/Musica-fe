@@ -194,8 +194,43 @@ const InstructorMyClasses = () => {
                   {c.classPrice.toLocaleString()}원
                 </p>
 
-                {/* ✅ 수정 / 삭제 버튼 */}
+                {/* ✅ 수정 / 삭제 버튼 (파랑/빨강 강조) */}
                 <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(
+                        `/mypage/instructor/classes/${c.id}/lectures/create`
+                      );
+                    }}
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-sm text-white py-1 rounded transition"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      const confirmed = window.confirm(
+                        "정말로 이 클래스를 삭제하시겠습니까?"
+                      );
+                      if (!confirmed) return;
+
+                      try {
+                        await instructorApi.deleteClass(c.id);
+                        alert("클래스가 삭제되었습니다.");
+                        fetchClasses(); // 🔄 목록 새로고침
+                      } catch (err) {
+                        console.error("삭제 실패:", err);
+                        alert("클래스 삭제에 실패했습니다.");
+                      }
+                    }}
+                    className="w-full bg-red-500 hover:bg-red-600 text-sm text-white py-1 rounded transition"
+                  >
+                    삭제
+                  </button>
+                </div>
+                {/* ✅ 수정 / 삭제 버튼 (검정, 회색) */}
+                {/* <div className="flex gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -228,7 +263,7 @@ const InstructorMyClasses = () => {
                   >
                     삭제
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           ))}

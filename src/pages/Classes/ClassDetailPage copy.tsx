@@ -356,26 +356,6 @@ const ClassDetailPage = () => {
     );
   }
 
-  const handleRemoveFromCart = async () => {
-    try {
-      const cart = await cartApi.getCartItems();
-      const numericClassId = Number(classId);
-      const targetItem = cart.cartItems.find(
-        (item) => item.classId === numericClassId
-      );
-
-      if (!targetItem) {
-        console.warn("장바구니에 해당 클래스가 없습니다.");
-        return;
-      }
-
-      await cartApi.removeFromCart([targetItem.cartItemId]);
-      setIsInCart(false); // 상태 업데이트
-    } catch (error) {
-      console.error("장바구니 제거 실패:", error);
-    }
-  };
-
   const totalDuration = classDetail.lectures.reduce(
     (sum, lecture) => sum + lecture.duration,
     0
@@ -458,7 +438,7 @@ const ClassDetailPage = () => {
               </div>
             )}
 
-            {/* 구매 + 찜/장바구니 버튼 그룹 */}
+            {/* 구매, 장바구니, 찜 버튼 영역 */}
             <div className="flex flex-col sm:flex-row gap-3">
               {/* 수강 중이면 수강하러 가기만 노출 */}
               {isEnrolled ? (
@@ -470,31 +450,35 @@ const ClassDetailPage = () => {
                 </button>
               ) : (
                 <>
-                  {/* ✅ 장바구니 상태에 따라 토글 */}
+                  {/* ✅ 지금 구매하기 */}
                   <button
-                    onClick={isInCart ? handleRemoveFromCart : handleAddToCart}
-                    className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 ${
-                      isInCart
-                        ? "bg-yellow-500 text-white hover:bg-yellow-600"
-                        : "bg-green-600 text-white hover:bg-green-700"
-                    }`}
+                    onClick={handleGoToCart}
+                    className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                   >
-                    {isInCart ? "🛒 장바구니 해제" : "➕ 장바구니 담기"}
+                    💳 <span>지금 구매하기</span>
                   </button>
+                  
 
-                  {/* ✅ 장바구니 보기 (언제나 표시 가능 or isInCart 상태일 때만 노출 가능) */}
-                  {isInCart && (
+                  {/* ✅ 장바구니 상태에 따라 토글 */}
+                  {isInCart ? (
                     <button
                       onClick={handleGoToCart}
-                      className="flex-1 bg-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                      className="flex-1 px-6 py-3 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
                     >
                       💳 <span>장바구니에서 구매하기</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 px-6 py-3 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+                    >
+                      ➕ <span>장바구니 담기</span>
                     </button>
                   )}
                 </>
               )}
 
-              {/* 찜하기 버튼 */}
+              {/* 찜하기 버튼은 항상 표시 */}
               <button
                 onClick={handleWishlistToggle}
                 className={`flex-1 px-6 py-3 rounded-lg font-semibold transition-colors flex items-center justify-center gap-2 ${
@@ -503,7 +487,8 @@ const ClassDetailPage = () => {
                     : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                 }`}
               >
-                {isWishlisted ? "💖 찜 해제" : "🖤 찜하기"}
+                {isWishlisted ? "💖" : "🖤"}
+                <span>{isWishlisted ? "찜 해제" : "찜하기"}</span>
               </button>
             </div>
           </div>
