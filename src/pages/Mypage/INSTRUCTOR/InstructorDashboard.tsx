@@ -241,11 +241,7 @@ const InstructorDashboard = () => {
                 </tbody> */}
                 <tbody>
                   {pageData?.content.map((cls) => (
-                    <tr
-                      key={cls.id}
-                      className="border-b hover:bg-gray-50 cursor-pointer"
-                      onClick={() => navigate(`/classes/${cls.id}`)}
-                    >
+                    <tr key={cls.id} className="border-b hover:bg-gray-50">
                       <td className="px-4 py-2 text-center">
                         <img
                           src={cls.thumbnailUrl}
@@ -253,7 +249,7 @@ const InstructorDashboard = () => {
                           className="w-20 h-12 object-cover rounded mx-auto"
                         />
                       </td>
-                      <td className="px-4 py-2 font-medium text-center text-gray-900">
+                      <td className="px-4 py-2 font-medium text-center">
                         {cls.title}
                       </td>
                       <td className="px-4 py-2 text-center">

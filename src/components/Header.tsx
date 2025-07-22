@@ -1,13 +1,60 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/musica-logo.png";
-import SearchBar from "./SearchBar.tsx";
 import cartIcon from "../assets/cart.png";
-
+import { commonApi } from "../apis/commonApi";
+import type { CategoryOption, DifficultyOption } from "../types/common";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("accessToken");
+
+  // 통합 검색 상태
+  const [sort, setSort] = useState<string>("latest");
+  const [categoryId, setCategoryId] = useState<number | undefined>(undefined);
+  const [difficultyId, setDifficultyId] = useState<number | undefined>(undefined);
+  const [keyword, setKeyword] = useState<string>("");
+  const [categoryList, setCategoryList] = useState<CategoryOption[]>([]);
+  const [difficultyList, setDifficultyList] = useState<DifficultyOption[]>([]);
+
+  useEffect(() => {
+    // 카테고리/난이도 데이터 불러오기
+    const fetchMeta = async () => {
+      try {
+        const [cats, diffs] = await Promise.all([
+          commonApi.getCategories(),
+          commonApi.getDifficulties(),
+        ]);
+        setCategoryList(cats);
+        setDifficultyList(diffs);
+      } catch (err) {
+        console.error("카테고리/난이도 불러오기 실패:", err);
+      }
+    };
+    fetchMeta();
+  }, []);
+
+  // 검색 실행
+  const handleSearch = () => {
+    navigate(
+      `/search?keyword=${encodeURIComponent(keyword)}&sort=${sort}&categoryId=${categoryId ?? ""}&difficultyId=${difficultyId ?? ""}`
+    );
+  };
+
+  // 필터 초기화
+  const handleReset = () => {
+    setSort("latest");
+    setCategoryId(undefined);
+    setDifficultyId(undefined);
+    setKeyword("");
+  };
+
+  // Enter 키로 검색
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -32,11 +79,77 @@ const Header: React.FC = () => {
           />
         </div>
 
-        {/* 가운데: 검색바 */}
+        {/* 가운데: 통합 검색 필터 UI */}
         <div className="flex-1 flex justify-center mx-8">
-          <div className="max-w-lg w-full">
-            <SearchBar />
-          </div>
+          <form
+            className="flex flex-wrap gap-2 items-center bg-white/90 px-4 py-2 rounded-lg shadow max-w-3xl w-full"
+            onSubmit={e => {
+              e.preventDefault();
+              handleSearch();
+            }}
+          >
+            {/* 정렬 */}
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={sort}
+              onChange={e => setSort(e.target.value)}
+            >
+              <option value="latest">최신순</option>
+              <option value="popular">인기순</option>
+            </select>
+            {/* 카테고리 */}
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={categoryId ?? ""}
+              onChange={e => {
+                const val = e.target.value;
+                setCategoryId(val ? Number(val) : undefined);
+              }}
+            >
+              <option value="">카테고리</option>
+              {categoryList.map(cat => (
+                <option key={cat.id} value={cat.id}>{cat.name}</option>
+              ))}
+            </select>
+            {/* 난이도 */}
+            <select
+              className="border rounded px-2 py-1 text-sm"
+              value={difficultyId ?? ""}
+              onChange={e => {
+                const val = e.target.value;
+                setDifficultyId(val ? Number(val) : undefined);
+              }}
+            >
+              <option value="">난이도</option>
+              {difficultyList.map(diff => (
+                <option key={diff.id} value={diff.id}>{diff.name}</option>
+              ))}
+            </select>
+            {/* 클래스명 검색어 */}
+            <input
+              type="text"
+              className="border rounded px-2 py-1 text-sm flex-1 min-w-[120px]"
+              placeholder="클래스명 검색"
+              value={keyword}
+              onChange={e => setKeyword(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            {/* 검색 버튼 */}
+            <button
+              type="submit"
+              className="bg-neutral-900 text-white px-3 py-1 rounded hover:bg-neutral-800 transition text-sm"
+            >
+              검색
+            </button>
+            {/* 필터 초기화 버튼 */}
+            <button
+              type="button"
+              className="bg-gray-200 text-gray-700 px-3 py-1 rounded hover:bg-gray-300 transition text-sm"
+              onClick={handleReset}
+            >
+              초기화
+            </button>
+          </form>
         </div>
 
         {/* 오른쪽: 버튼들 */}

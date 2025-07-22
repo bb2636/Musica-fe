@@ -64,6 +64,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
 
       alert(isInCart ? "장바구니에서 제거했습니다." : "장바구니에 담았습니다.");
 
+      console.log("🛒 장바구니 토글 요청:", id, isInCart);
       onToggleCart(id, isInCart);
     },
     [isLoggedIn, isProcessingCart, navigate, id, isInCart, onToggleCart]

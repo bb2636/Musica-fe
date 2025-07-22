@@ -4,6 +4,7 @@ import MainPage from "./pages/MainPage";
 import CartPage from "./pages/CartPage";
 import { OAuthSuccessPage } from "./pages/OAuthSuccessPage";
 import Login from "./pages/Login.tsx";
+import SearchResultPage from "./pages/SearchResultPage";
 
 import MyPage from "./pages/Mypage/MyPage";
 import UserMyPage from "./pages/Mypage/USER/UserMyPage.tsx";
@@ -47,6 +48,7 @@ function App() {
           <Route path="/auth" element={<AuthPage />} />
           <Route path="/auth/login" element={<Login />} />
           <Route path="/main" element={<MainPage />} />
+          <Route path="/search" element={<SearchResultPage />} />
           <Route path="/cart" element={<CartPage />} />
           <Route path="/oauth-success" element={<OAuthSuccessPage />} />
           <Route path="/qna" element={<QnAPage />} />
