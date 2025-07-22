@@ -28,16 +28,20 @@ const MainPage: React.FC = () => {
   >([]);
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
   const [wishedClassIds, setWishedClassIds] = useState<number[]>([]); // 찜된 클래스 ID 목록
+  const [wishlistCounts, setWishlistCounts] = useState<Record<number, number>>({}); // 찜 개수 상태 추가
   const [cartItems, setCartItems] = useState<CartItemInfo[]>([]); // 장바구니에 담긴 클래스 목록
   const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
-  const wishProcessingSet = useRef<Set<number>>(new Set()); // 찜 중복 요청 방지용
+  //const wishProcessingSet = useRef<Set<number>>(new Set()); // 찜 중복 요청 방지용
+  const [wishProcessingSet, setWishProcessingSet] = useState<Set<number>>(new Set());
   const cartProcessingSet = useRef<Set<number>>(new Set()); // 장바구니 중복 요청 방지용
   const cartClassIds = cartItems.map((item) => item.classId);
 
   const mapClassData = (data: any[]): MainpageClassItem[] => {
     if (!Array.isArray(data)) return [];
-    return data.map((item) => ({
+  
+    // 💡 먼저 매핑된 클래스 목록을 만들어줍니다
+    const mapped = data.map((item) => ({
       id: item.id,
       title: item.title,
       price: item.price,
@@ -49,16 +53,33 @@ const MainPage: React.FC = () => {
       ratingCount: item.ratingCount,
       originalPrice: item.originalPrice,
       studentCount: item.studentCount ?? 0,
-      wishlistCount: item.wishlistCount ?? 0, // 💡 프론트 표시용 찜 수 추가
+      wishlistCount: item.wishlistCount ?? 0, // 프론트에서 찜 수 바로 보여주기 위함
     }));
+  
+    // 💡 클래스별 찜 수를 상태로 따로 저장해서 낙관적 UI 구현
+    const countMap: Record<number, number> = {};
+    mapped.forEach((cls) => {
+      countMap[cls.id] = cls.wishlistCount ?? 0;
+    });
+    setWishlistCounts(countMap);
+  
+    return mapped;
   };
 
+  
   const onToggleWish = async (classId: number, isWished: boolean) => {
-    if (wishProcessingSet.current.has(classId)) return;
-    wishProcessingSet.current.add(classId);
+    if (wishProcessingSet.has(classId)) return;
+    const newSet = new Set(wishProcessingSet);
+    newSet.add(classId);
+    setWishProcessingSet(newSet);
+
     setWishedClassIds((prev) =>
       isWished ? prev.filter((id) => id !== classId) : [...prev, classId]
-    ); // 💡 낙관적 UI 반영
+    );
+    setWishlistCounts((prev) => ({
+      ...prev,
+      [classId]: (prev[classId] ?? 0) + (isWished ? -1 : 1),
+    }));
 
     try {
       if (!isWished) {
@@ -70,9 +91,15 @@ const MainPage: React.FC = () => {
       alert("찜 처리 중 오류가 발생했습니다.");
       setWishedClassIds((prev) =>
         isWished ? [...prev, classId] : prev.filter((id) => id !== classId)
-      ); // ❗ 실패 시 롤백
+      );
+      setWishlistCounts((prev) => ({
+        ...prev,
+        [classId]: (prev[classId] ?? 0) + (isWished ? 1 : -1),
+      }));
     } finally {
-      wishProcessingSet.current.delete(classId);
+      const updated = new Set(wishProcessingSet);
+      updated.delete(classId);
+      setWishProcessingSet(updated);
     }
   };
 
@@ -203,9 +230,10 @@ const MainPage: React.FC = () => {
             onToggleCart={onToggleCart}
             wishedClassIds={wishedClassIds}
             isInCartList={cartClassIds}
-            isProcessingWishSet={wishProcessingSet.current}
+            isProcessingWishSet={wishProcessingSet}
             isProcessingCartSet={cartProcessingSet.current}
             paidClassIds={paidClassIds} // ✅ 여기 추가
+            wishlistCounts={wishlistCounts}
           />
         )}
         <PopularSection
@@ -214,9 +242,10 @@ const MainPage: React.FC = () => {
           onToggleCart={onToggleCart}
           wishedClassIds={wishedClassIds}
           isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet.current}
+          isProcessingWishSet={wishProcessingSet}
           isProcessingCartSet={cartProcessingSet.current}
           paidClassIds={paidClassIds} // ✅ 여기 추가
+          wishlistCounts={wishlistCounts}
         />
         <RecentSection
           classes={recentClasses}
@@ -224,9 +253,10 @@ const MainPage: React.FC = () => {
           onToggleCart={onToggleCart}
           wishedClassIds={wishedClassIds}
           isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet.current}
+          isProcessingWishSet={wishProcessingSet}
           isProcessingCartSet={cartProcessingSet.current}
           paidClassIds={paidClassIds} // ✅ 여기 추가
+          wishlistCounts={wishlistCounts}
         />
         <ReviewSummarySection reviews={reviewSummaryCards} />
         <FreeClassSection
@@ -235,9 +265,10 @@ const MainPage: React.FC = () => {
           onToggleCart={onToggleCart}
           wishedClassIds={wishedClassIds}
           isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet.current}
+          isProcessingWishSet={wishProcessingSet}
           isProcessingCartSet={cartProcessingSet.current}
           paidClassIds={paidClassIds} // ✅ 여기 추가
+          wishlistCounts={wishlistCounts}
         />
       </main>
       <Footer />

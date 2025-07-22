@@ -12,6 +12,7 @@ interface Props {
   isProcessingWishSet?: Set<number>;
   isProcessingCartSet?: Set<number>;
   paidClassIds: number[]; // ✅ 전달받음
+  wishlistCounts: Record<number, number>;
 }
 
 const RecentSection: React.FC<Props> = ({
@@ -23,6 +24,7 @@ const RecentSection: React.FC<Props> = ({
   isProcessingWishSet,
   isProcessingCartSet,
   paidClassIds,
+  wishlistCounts,
 }) => {
   return (
     <SwiperSection
@@ -43,9 +45,9 @@ const RecentSection: React.FC<Props> = ({
           originalPrice={item.originalPrice}
           rating={item.rating ?? 5}
           ratingCount={item.ratingCount ?? 0}
-          tag={item.tag ?? item.categoryName ?? "기타"}
-          thumbnailUrl={item.thumbnailUrl ?? "/no-image.png"}
-          wishlistCount={item.wishlistCount ?? 0}
+          tag={item.tag ?? item.categoryName ?? '기타'}
+          thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+          wishlistCount={wishlistCounts[item.id] ?? 0}
           isInCart={isInCartList.includes(item.id)}
           onToggleWish={onToggleWish}
           onToggleCart={onToggleCart}
