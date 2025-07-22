@@ -27,7 +27,9 @@ const InstructorQnA = () => {
     try {
       const params: { status?: "PENDING" | "ANSWERED" } =
         filter !== "ALL" ? { status: filter } : {};
+      console.log("✅ 요청 params 확인:", params); // 🔍 파라미터 확인
       const data = await instructorApi.getQuestions(params);
+      console.log("✅ 응답 데이터:", data); // 🔍 응답 확인
       setQuestions(data || []);
     } catch (error) {
       console.error("질문 목록 로드 실패:", error);

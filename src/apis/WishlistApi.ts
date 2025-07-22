@@ -14,7 +14,7 @@ export const wishlistApi = {
   async getMyWishlist(): Promise<WishlistItem[]> {
     try {
       const response = await axiosInstance.get('/users/wishlists/mywishlist');
-      console.log('[wishlistApi] 찜 목록 응답 데이터:', response.data);
+      // console.log('[wishlistApi] 찜 목록 응답 데이터:', response.data);
 
       const rawList = response.data.wishlist || [];
 
@@ -41,7 +41,12 @@ export const wishlistApi = {
 
   // 찜 목록에서 제거
   async removeFromWishlist(classId: number): Promise<{ message: string }> {
-    const response = await axiosInstance.delete(`/users/wishlists/classes/${classId}`);
+    const token = localStorage.getItem('accessToken'); // ✅ 토큰 수동 주입
+    const response = await axiosInstance.delete(`/users/wishlists/classes/${classId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     return response.data;
   },
 

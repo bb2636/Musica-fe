@@ -134,7 +134,7 @@ const InstructorSettingsPage = () => {
         <button
           onClick={handleSubmit}
           disabled={isSaving}
-          className="w-full bg-blue-600 text-white py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+          className="w-full bg-neutral-900 text-white py-3 rounded-md font-semibold hover:bg-black transition disabled:opacity-50"
         >
           {isSaving ? "저장 중..." : "저장"}
         </button>

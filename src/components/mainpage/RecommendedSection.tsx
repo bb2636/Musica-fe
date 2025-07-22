@@ -1,16 +1,18 @@
-import React from 'react';
-import SwiperSection from './SwiperSection';
-import ClassCard from './ClassCard';
-import type { MainpageClassItem } from '../../types/MainpageClassItem';
-import type { CartItemInfo } from '../../types/CartItemInfo';
+import React from "react";
+import SwiperSection from "./SwiperSection";
+import ClassCard from "./ClassCard";
+import type { MainpageClassItem } from "../../types/MainpageClassItem";
 
 interface Props {
   classes: MainpageClassItem[];
-  onToggleWish: (id: number) => void;
-  onToggleCart: (id: number) => void;
+  onToggleWish: (id: number, isWished: boolean) => void;
+  onToggleCart: (id: number, isInCart: boolean) => void;
   wishedClassIds: number[];
   isInCartList: number[];
-  cartItems: CartItemInfo[];
+  isProcessingWishSet?: Set<number>;
+  isProcessingCartSet?: Set<number>;
+  paidClassIds: number[];
+  wishlistCounts: Record<number, number>;
 }
 
 const RecommendedSection: React.FC<Props> = ({
@@ -19,31 +21,11 @@ const RecommendedSection: React.FC<Props> = ({
   onToggleCart,
   wishedClassIds,
   isInCartList,
-  cartItems,
+  isProcessingWishSet,
+  isProcessingCartSet,
+  paidClassIds,
+  wishlistCounts,
 }) => {
-  const cardElements = classes
-    .filter((item) => item && item.id)
-    .map((item) => (
-      <ClassCard
-        key={`${item.id}-${wishedClassIds.includes(item.id)}`}
-        id={item.id}
-        title={item.title ?? '제목 없음'}
-        instructor={item.instructor ?? '미정'}
-        price={item.price ?? 0}
-        originalPrice={item.originalPrice}
-        rating={item.rating ?? 5}
-        ratingCount={item.ratingCount ?? 0}
-        tag={item.tag ?? item.categoryName ?? '기타'}
-        thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
-        onToggleWish={onToggleWish}
-        onToggleCart={onToggleCart}
-        isInCart={isInCartList.includes(item.id)}
-        wishlistCount={item.wishlistCount ?? 0}
-        cartItems={cartItems}
-        wishedClassIds={wishedClassIds}
-      />
-    ));
-
   return (
     <SwiperSection
       title={
@@ -53,7 +35,28 @@ const RecommendedSection: React.FC<Props> = ({
       }
       moreLink="/classes/recommend"
     >
-      {cardElements}
+      {classes.map((item) => (
+        <ClassCard
+          key={item.id}
+          id={item.id}
+          title={item.title ?? "제목 없음"}
+          instructor={item.instructor ?? "미정"}
+          price={item.price ?? 0}
+          originalPrice={item.originalPrice}
+          rating={item.rating ?? 5}
+          ratingCount={item.ratingCount ?? 0}
+          tag={item.tag ?? item.categoryName ?? '기타'}
+          thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+          wishlistCount={wishlistCounts[item.id] ?? 0}
+          isInCart={isInCartList.includes(item.id)}
+          isPaid={paidClassIds.includes(item.id)} // ✅ 수정: boolean 전달
+          onToggleWish={onToggleWish}
+          onToggleCart={onToggleCart}
+          wishedClassIds={wishedClassIds}
+          isProcessingWishSet={isProcessingWishSet}
+          isProcessingCartSet={isProcessingCartSet}
+        />
+      ))}
     </SwiperSection>
   );
 };
