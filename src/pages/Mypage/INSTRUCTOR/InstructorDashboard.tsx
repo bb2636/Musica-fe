@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { instructorApi } from "../../../apis/instructorApi";
 import { classApi } from "../../../apis/classesApi";
 import { commonApi } from "../../../apis/commonApi";
-import ClassActionButtons from "../../../components/ClassActionButtons";
-import { useNavigate } from "react-router-dom";
 import type { DashboardData } from "../../../types/instructor";
 import type { ClassSummary } from "../../../types/class";
 import type { CategoryOption, DifficultyOption } from "../../../types/common";
@@ -41,7 +39,6 @@ const InstructorDashboard = () => {
   );
   const [currentPage, setCurrentPage] = useState(0);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   const fetchData = async () => {
     setLoading(true);

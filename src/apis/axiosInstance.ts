@@ -7,19 +7,19 @@ const axiosInstance = axios.create({
 
 // ✅ 인증 없이 접근 가능한 경로 목록 (Spring Security permitAll 기준)
 const publicPaths = [
-  "/api/users/register",
-  "/api/auth/login",
-  "/api/auth/refresh",
-  "/api/meta",
-  "/api/admin/login",
-  "/api/dev",
-  "/api/reviews/summary/lecture",
-  "/api/users/check-email",
-  "/api/levels",
-  "/api/reviews/classes",
-  "/api/user/signup",
-  "/api/payment/cart/checkout",
-  "/api/main",
+  "/users/register",
+  "/auth/login",
+  "/auth/refresh",
+  "/meta",
+  "/admin/login",
+  "/dev",
+  "/reviews/summary/lecture",
+  "/users/check-email",
+  "/levels",
+  "/reviews/classes",
+  "/user/signup",
+  "/payment/cart/checkout",
+  "/main",
 
   // baseURL 없이 요청되는 경로들
   "/oauth2",
