@@ -12,6 +12,7 @@ import PopularSection from "../components/mainpage/PopularSection";
 import RecentSection from "../components/mainpage/RecentSection";
 import ReviewSummarySection from "../components/mainpage/ReviewSummarySection";
 import FreeClassSection from "../components/mainpage/FreeClassSection";
+import { getEnrolledClasses } from "../apis/payment";
 
 const role = localStorage.getItem("userRole") ?? "";
 const isUser = role.toUpperCase() === "USER";
@@ -28,6 +29,7 @@ const MainPage: React.FC = () => {
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
   const [wishedClassIds, setWishedClassIds] = useState<number[]>([]); // 찜된 클래스 ID 목록
   const [cartItems, setCartItems] = useState<CartItemInfo[]>([]); // 장바구니에 담긴 클래스 목록
+  const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const wishProcessingSet = useRef<Set<number>>(new Set()); // 찜 중복 요청 방지용
   const cartProcessingSet = useRef<Set<number>>(new Set()); // 장바구니 중복 요청 방지용
@@ -88,7 +90,7 @@ const MainPage: React.FC = () => {
     try {
       if (!isInCart) {
         await cartApi.addToCart(classId);
-        alert("장바구니에 담았습니다!");
+        // alert("장바구니에 담았습니다!");
       } else {
         const found = prevCartItems.find((item) => item.classId === classId);
         if (found) {
@@ -142,6 +144,22 @@ const MainPage: React.FC = () => {
         .catch(() => setCartItems([]));
     }
 
+    if (token && isUser) {
+      getEnrolledClasses().then((classes) => {
+        console.log("📦 수강 중 클래스 응답:", classes);
+        const ids = classes.map((item) => item.classId);
+        console.log("✅ 결제된 클래스 ID 목록:", ids);
+        setPaidClassIds(ids);
+      });
+    }
+
+    if (token && isUser) {
+      getEnrolledClasses().then((classes) => {
+        const ids = classes.map((item) => item.classId);
+        setPaidClassIds(ids); // ✅ 결제된 클래스 ID 저장
+      });
+    }
+
     axiosInstance
       .get("/main/reviews/summary")
       .then((res) =>
@@ -187,6 +205,7 @@ const MainPage: React.FC = () => {
             isInCartList={cartClassIds}
             isProcessingWishSet={wishProcessingSet.current}
             isProcessingCartSet={cartProcessingSet.current}
+            paidClassIds={paidClassIds} // ✅ 여기 추가
           />
         )}
         <PopularSection
@@ -197,6 +216,7 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           isProcessingWishSet={wishProcessingSet.current}
           isProcessingCartSet={cartProcessingSet.current}
+          paidClassIds={paidClassIds} // ✅ 여기 추가
         />
         <RecentSection
           classes={recentClasses}
@@ -206,6 +226,7 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           isProcessingWishSet={wishProcessingSet.current}
           isProcessingCartSet={cartProcessingSet.current}
+          paidClassIds={paidClassIds} // ✅ 여기 추가
         />
         <ReviewSummarySection reviews={reviewSummaryCards} />
         <FreeClassSection
@@ -216,6 +237,7 @@ const MainPage: React.FC = () => {
           isInCartList={cartClassIds}
           isProcessingWishSet={wishProcessingSet.current}
           isProcessingCartSet={cartProcessingSet.current}
+          paidClassIds={paidClassIds} // ✅ 여기 추가
         />
       </main>
       <Footer />
