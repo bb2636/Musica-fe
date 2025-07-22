@@ -84,10 +84,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
 
       // 🔥 여기서 최신값을 다시 계산하도록 변경
       const currentlyWished = wishedClassIds.includes(id); // 최신 상태
-
-      alert(currentlyWished ? "찜에서 제거했습니다." : "찜 등록했습니다.");
-      
-      await onToggleWish(id, currentlyWished); 
+      await onToggleWish(id, currentlyWished);
     },
     [isLoggedIn, isProcessingWish, navigate, id, wishedClassIds, onToggleWish]
   );
@@ -205,8 +202,8 @@ const ClassCard: React.FC<ClassCardProps> = ({
                   width="20"
                   height="20"
                   viewBox="0 0 24 24"
-                  fill={isInCart ? "#22c55e" : "none"}
-                  stroke="#22c55e"
+                  fill={isInCart ? "#3b82f6" : "none"}
+                  stroke="#3b82f6"
                   strokeWidth="2"
                 >
                   <circle cx="9" cy="21" r="1" />

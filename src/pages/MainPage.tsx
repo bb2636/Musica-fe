@@ -16,8 +16,8 @@ import { getEnrolledClasses } from "../apis/payment";
 
 const role = localStorage.getItem("userRole") ?? "";
 const isUser = role.toUpperCase() === "USER";
-
 const MainPage: React.FC = () => {
+  const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
   const [recommendedClasses, setRecommendedClasses] = useState<
     MainpageClassItem[]
   >([]);
@@ -28,18 +28,22 @@ const MainPage: React.FC = () => {
   >([]);
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
   const [wishedClassIds, setWishedClassIds] = useState<number[]>([]); // 찜된 클래스 ID 목록
-  const [wishlistCounts, setWishlistCounts] = useState<Record<number, number>>({}); // 찜 개수 상태 추가
+  const [wishlistCounts, setWishlistCounts] = useState<Record<number, number>>(
+    {}
+  ); // 찜 개수 상태 추가
   const [cartItems, setCartItems] = useState<CartItemInfo[]>([]); // 장바구니에 담긴 클래스 목록
   const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   //const wishProcessingSet = useRef<Set<number>>(new Set()); // 찜 중복 요청 방지용
-  const [wishProcessingSet, setWishProcessingSet] = useState<Set<number>>(new Set());
+  const [wishProcessingSet, setWishProcessingSet] = useState<Set<number>>(
+    new Set()
+  );
   const cartProcessingSet = useRef<Set<number>>(new Set()); // 장바구니 중복 요청 방지용
   const cartClassIds = cartItems.map((item) => item.classId);
 
   const mapClassData = (data: any[]): MainpageClassItem[] => {
     if (!Array.isArray(data)) return [];
-  
+
     // 💡 먼저 매핑된 클래스 목록을 만들어줍니다
     const mapped = data.map((item) => ({
       id: item.id,
@@ -55,18 +59,17 @@ const MainPage: React.FC = () => {
       studentCount: item.studentCount ?? 0,
       wishlistCount: item.wishlistCount ?? 0, // 프론트에서 찜 수 바로 보여주기 위함
     }));
-  
+
     // 💡 클래스별 찜 수를 상태로 따로 저장해서 낙관적 UI 구현
     const countMap: Record<number, number> = {};
     mapped.forEach((cls) => {
       countMap[cls.id] = cls.wishlistCount ?? 0;
     });
     setWishlistCounts(countMap);
-  
+
     return mapped;
   };
 
-  
   const onToggleWish = async (classId: number, isWished: boolean) => {
     if (wishProcessingSet.has(classId)) return;
     const newSet = new Set(wishProcessingSet);
@@ -86,6 +89,7 @@ const MainPage: React.FC = () => {
         await wishlistApi.addToWishlist(classId);
       } else {
         await wishlistApi.removeFromWishlist(classId);
+        alert("찜 목록에서 제거했습니다.");
       }
     } catch (err) {
       alert("찜 처리 중 오류가 발생했습니다.");
@@ -147,6 +151,7 @@ const MainPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
 
@@ -171,20 +176,26 @@ const MainPage: React.FC = () => {
         .catch(() => setCartItems([]));
     }
 
-    if (token && isUser) {
-      getEnrolledClasses().then((classes) => {
-        console.log("📦 수강 중 클래스 응답:", classes);
-        const ids = classes.map((item) => item.classId);
-        console.log("✅ 결제된 클래스 ID 목록:", ids);
-        setPaidClassIds(ids);
-      });
-    }
+    // if (token && isUser) {
+    //   getEnrolledClasses().then((classes) => {
+    //     console.log("📦 수강 중 클래스 응답:", classes);
+    //     const ids = classes.map((item) => item.classId);
+    //     console.log("✅ 결제된 클래스 ID 목록:", ids);
+    //     setPaidClassIds(ids);
+    //   });
+    // }
 
     if (token && isUser) {
-      getEnrolledClasses().then((classes) => {
-        const ids = classes.map((item) => item.classId);
-        setPaidClassIds(ids); // ✅ 결제된 클래스 ID 저장
-      });
+      getEnrolledClasses()
+        .then((classes) => {
+          const ids = classes.map((item) => item.classId);
+          setPaidClassIds(ids);
+        })
+        .finally(() => {
+          setPaidClassIdsLoading(false); // ✅ 여기서는 상태만 변경
+        });
+    } else {
+      setPaidClassIdsLoading(false); // 로그인 안 했을 때도 해줘야 렌더링 됨!
     }
 
     axiosInstance
@@ -223,53 +234,59 @@ const MainPage: React.FC = () => {
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       <main className="flex-1 w-full mx-auto px-4 py-8">
-        {isLoggedIn && isUser && (
-          <RecommendedSection
-            classes={recommendedClasses}
-            onToggleWish={onToggleWish}
-            onToggleCart={onToggleCart}
-            wishedClassIds={wishedClassIds}
-            isInCartList={cartClassIds}
-            isProcessingWishSet={wishProcessingSet}
-            isProcessingCartSet={cartProcessingSet.current}
-            paidClassIds={paidClassIds} // ✅ 여기 추가
-            wishlistCounts={wishlistCounts}
-          />
+        {paidClassIdsLoading ? (
+          <div className="text-center text-gray-500">로딩 중...</div>
+        ) : (
+          <>
+            {isLoggedIn && isUser && recommendedClasses.length > 0 && (
+              <RecommendedSection
+                classes={recommendedClasses}
+                onToggleWish={onToggleWish}
+                onToggleCart={onToggleCart}
+                wishedClassIds={wishedClassIds}
+                isInCartList={cartClassIds}
+                isProcessingWishSet={wishProcessingSet}
+                isProcessingCartSet={cartProcessingSet.current}
+                paidClassIds={paidClassIds}
+                wishlistCounts={wishlistCounts}
+              />
+            )}
+            <PopularSection
+              classes={popularClasses}
+              onToggleWish={onToggleWish}
+              onToggleCart={onToggleCart}
+              wishedClassIds={wishedClassIds}
+              isInCartList={cartClassIds}
+              isProcessingWishSet={wishProcessingSet}
+              isProcessingCartSet={cartProcessingSet.current}
+              paidClassIds={paidClassIds}
+              wishlistCounts={wishlistCounts}
+            />
+            <RecentSection
+              classes={recentClasses}
+              onToggleWish={onToggleWish}
+              onToggleCart={onToggleCart}
+              wishedClassIds={wishedClassIds}
+              isInCartList={cartClassIds}
+              isProcessingWishSet={wishProcessingSet}
+              isProcessingCartSet={cartProcessingSet.current}
+              paidClassIds={paidClassIds}
+              wishlistCounts={wishlistCounts}
+            />
+            <ReviewSummarySection reviews={reviewSummaryCards} />
+            <FreeClassSection
+              classes={freeClasses}
+              onToggleWish={onToggleWish}
+              onToggleCart={onToggleCart}
+              wishedClassIds={wishedClassIds}
+              isInCartList={cartClassIds}
+              isProcessingWishSet={wishProcessingSet}
+              isProcessingCartSet={cartProcessingSet.current}
+              paidClassIds={paidClassIds}
+              wishlistCounts={wishlistCounts}
+            />
+          </>
         )}
-        <PopularSection
-          classes={popularClasses}
-          onToggleWish={onToggleWish}
-          onToggleCart={onToggleCart}
-          wishedClassIds={wishedClassIds}
-          isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet}
-          isProcessingCartSet={cartProcessingSet.current}
-          paidClassIds={paidClassIds} // ✅ 여기 추가
-          wishlistCounts={wishlistCounts}
-        />
-        <RecentSection
-          classes={recentClasses}
-          onToggleWish={onToggleWish}
-          onToggleCart={onToggleCart}
-          wishedClassIds={wishedClassIds}
-          isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet}
-          isProcessingCartSet={cartProcessingSet.current}
-          paidClassIds={paidClassIds} // ✅ 여기 추가
-          wishlistCounts={wishlistCounts}
-        />
-        <ReviewSummarySection reviews={reviewSummaryCards} />
-        <FreeClassSection
-          classes={freeClasses}
-          onToggleWish={onToggleWish}
-          onToggleCart={onToggleCart}
-          wishedClassIds={wishedClassIds}
-          isInCartList={cartClassIds}
-          isProcessingWishSet={wishProcessingSet}
-          isProcessingCartSet={cartProcessingSet.current}
-          paidClassIds={paidClassIds} // ✅ 여기 추가
-          wishlistCounts={wishlistCounts}
-        />
       </main>
       <Footer />
     </div>
