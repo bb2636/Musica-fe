@@ -518,19 +518,21 @@ const ClassDetailPage = () => {
                         </button>
                       )}
 
-                      {isEnrolled && lecture.progressRate >= 0 && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${lecture.progressRate}%` }}
-                            ></div>
+                      {isEnrolled &&
+                        typeof lecture.progressRate === "number" &&
+                        lecture.progressRate >= 0 && (
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${lecture.progressRate}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-500 ml-2">
+                              강의 진행률 {lecture.progressRate.toFixed(0)}%
+                            </span>
                           </div>
-                          <span className="text-xs text-gray-500 ml-2">
-                            강의 진행률 {lecture.progressRate.toFixed(0)}%
-                          </span>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>
