@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { classApi } from "../../apis/classesApi";
-import { wishlistApi } from "../../apis/WishlistApi.ts";
+// import { wishlistApi } from "../../apis/WishlistApi.ts";
 import { cartApi } from "../../apis/cart";
 import { reviewApi } from "../../apis/reviewApi";
 import type { ReviewDetail, ReviewSummaryCard } from "../../types/review";
@@ -21,7 +21,7 @@ const ClassDetailPage = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  // const [isWishlisted, setIsWishlisted] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -39,7 +39,7 @@ const ClassDetailPage = () => {
         loadClassDetail(),
         loadReviews(),
         loadReviewSummaries(),
-        checkWishlistStatus(),
+        // checkWishlistStatus(),
         checkCartStatus(),
       ]);
     } catch (err) {
@@ -77,15 +77,15 @@ const ClassDetailPage = () => {
     }
   };
 
-  const checkWishlistStatus = async () => {
-    try {
-      const wishlist = await wishlistApi.getMyWishlist();
-      const isLiked = wishlist.some((item) => item.classId === Number(classId));
-      setIsWishlisted(isLiked);
-    } catch (err) {
-      console.error("찜 목록 확인 실패:", err);
-    }
-  };
+  // const checkWishlistStatus = async () => {
+  //   try {
+  //     const wishlist = await wishlistApi.getMyWishlist();
+  //     const isLiked = wishlist.some((item) => item.classId === Number(classId));
+  //     setIsWishlisted(isLiked);
+  //   } catch (err) {
+  //     console.error("찜 목록 확인 실패:", err);
+  //   }
+  // };
 
   const checkCartStatus = async () => {
     try {
@@ -96,35 +96,35 @@ const ClassDetailPage = () => {
     }
   };
 
-  const handleWishlistToggle = async () => {
-    try {
-      if (isWishlisted) {
-        await wishlistApi.removeFromWishlist(Number(classId));
-        setIsWishlisted(false);
-        alert("찜 목록에서 제거되었습니다.");
-      } else {
-        await wishlistApi.addToWishlist(Number(classId));
-        setIsWishlisted(true);
-        // alert("찜 목록에 추가되었습니다.");
-      }
-    } catch (err) {
-      console.error("찜 목록 처리 실패:", err);
+  // const handleWishlistToggle = async () => {
+  //   try {
+  //     if (isWishlisted) {
+  //       await wishlistApi.removeFromWishlist(Number(classId));
+  //       setIsWishlisted(false);
+  //       alert("찜 목록에서 제거되었습니다.");
+  //     } else {
+  //       await wishlistApi.addToWishlist(Number(classId));
+  //       setIsWishlisted(true);
+  //       // alert("찜 목록에 추가되었습니다.");
+  //     }
+  //   } catch (err) {
+  //     console.error("찜 목록 처리 실패:", err);
 
-      let errorMessage = "로그인이 필요한 서비스입니다.";
+  //     let errorMessage = "로그인이 필요한 서비스입니다.";
 
-      if (err instanceof Error) {
-        console.error("Error details:", err.message);
-      } else if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosError = err as {
-          response?: { data?: { message?: string } };
-        };
-        errorMessage =
-          axiosError.response?.data?.message || "로그인이 필요한 서비스입니다.";
-      }
+  //     if (err instanceof Error) {
+  //       console.error("Error details:", err.message);
+  //     } else if (typeof err === "object" && err !== null && "response" in err) {
+  //       const axiosError = err as {
+  //         response?: { data?: { message?: string } };
+  //       };
+  //       errorMessage =
+  //         axiosError.response?.data?.message || "로그인이 필요한 서비스입니다.";
+  //     }
 
-      alert(errorMessage);
-    }
-  };
+  //     alert(errorMessage);
+  //   }
+  // };
 
   const handleAddToCart = async () => {
     try {
@@ -416,7 +416,7 @@ const ClassDetailPage = () => {
                             alert(res.message || "장바구니 추가 실패");
                             return;
                           }
-                        } catch (err) {
+                        } catch {
                           alert("장바구니 추가 중 오류 발생");
                           return;
                         }
@@ -572,19 +572,21 @@ const ClassDetailPage = () => {
                         ))}
 
                       {/* 📊 강의별 진도율 */}
-                      {isEnrolled && lecture.progressRate >= 0 && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${lecture.progressRate}%` }}
-                            ></div>
+                      {isEnrolled &&
+                        typeof lecture.progressRate === "number" &&
+                        lecture.progressRate >= 0 && (
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${lecture.progressRate}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-500 ml-2">
+                              강의 진행률 {lecture.progressRate.toFixed(0)}%
+                            </span>
                           </div>
-                          <span className="text-xs text-gray-500 ml-2">
-                            강의 진행률 {lecture.progressRate.toFixed(0)}%
-                          </span>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>

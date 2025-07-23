@@ -4,6 +4,7 @@ import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
 import { classApi } from "../../apis/classesApi";
 import { getContentType } from "../../utils/getContentType";
+import type { LectureSummary } from "../../types/lecture";
 
 interface LectureForm {
   id?: number;
@@ -21,17 +22,17 @@ interface LectureForm {
   existingVideoObjectKey?: string;
 }
 
-export interface LectureResponse {
-  lectureId: number;
-  title: string;
-  duration: number;
-  order: number;
-  progressRate?: number | null;
-  isCompleted?: boolean | null;
-  videoUrl?: string;
-  fileUrl?: string;
-  videoObjectKey?: string;
-}
+// export interface LectureResponse {
+//   lectureId: number;
+//   title: string;
+//   duration: number;
+//   order: number;
+//   progressRate?: number | null;
+//   isCompleted?: boolean | null;
+//   videoUrl?: string;
+//   fileUrl?: string;
+//   videoObjectKey?: string;
+// }
 
 const INSTRUMENT_DISPLAY_MAP: Record<string, string> = {
   bass: "베이스",
@@ -93,9 +94,12 @@ const CreateLecturePage = () => {
     if (!classId) return;
     const fetchExistingLectures = async () => {
       try {
-        const data: LectureResponse[] = await lectureApi.getLectureList(
+        const data: LectureSummary[] = await lectureApi.getLectureList(
           Number(classId)
         );
+        // const data: LectureResponse[] = await lectureApi.getLectureList(
+        //   Number(classId)
+        // );
         const formatted = data.map((l) => ({
           id: l.lectureId,
           title: l.title,
@@ -105,7 +109,7 @@ const CreateLecturePage = () => {
           existingRawDuration: l.duration,
           existingVideoUrl: l.videoUrl,
           existingFileUrl: l.fileUrl,
-          existingLectureOrder: l.order,
+          existingLectureOrder: l.lectureOrder,
           existingVideoObjectKey: l.videoObjectKey,
         }));
         setLectures(formatted);

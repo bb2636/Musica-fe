@@ -1,3 +1,5 @@
+// lecture.ts
+
 // ✅ 올바른 LectureProgressSaveReq 타입 정의
 export interface LectureProgressSaveReq {
   watchedSeconds: number;
@@ -14,6 +16,8 @@ export interface LectureSummary {
   progressRate?: number; // 시청률 (선택, 0~100)
   videoUrl?: string; // 영상 URL
   fileUrl?: string; // 자료 파일 URL
+  videoObjectKey?: string;
+  fileObjectKey?: string;
   isAccessible?: boolean; // 접근 가능 여부 (프론트 계산용)
 }
 
