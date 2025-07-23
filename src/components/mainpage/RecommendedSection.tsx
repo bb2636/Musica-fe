@@ -33,7 +33,6 @@ const RecommendedSection: React.FC<Props> = ({
           <span role="img" aria-label="추천"></span> 추천 클래스
         </>
       }
-      moreLink="/classes/recommend"
     >
       {classes.map((item) => (
         <ClassCard
@@ -45,8 +44,8 @@ const RecommendedSection: React.FC<Props> = ({
           originalPrice={item.originalPrice}
           rating={item.rating ?? 5}
           ratingCount={item.ratingCount ?? 0}
-          tag={item.tag ?? item.categoryName ?? '기타'}
-          thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+          tag={item.tag ?? item.categoryName ?? "기타"}
+          thumbnailUrl={item.thumbnailUrl ?? "/no-image.png"}
           wishlistCount={wishlistCounts[item.id] ?? item.wishlistCount}
           isInCart={isInCartList.includes(item.id)}
           isPaid={paidClassIds.includes(item.id)} // ✅ 수정: boolean 전달
