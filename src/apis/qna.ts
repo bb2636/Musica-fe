@@ -44,6 +44,11 @@ export const getInstructorAnswersById = (instructorId: number) => {
     return axiosInstance.get<InstructorAnswerDto[]>(`/instructors/${instructorId}/answers`);
 };
 
+// 답변 수정 (강사만)
+export const updateAnswer = (questionId: number, answer: string) => {
+    return axiosInstance.put(`/instructors/answers/${questionId}`, { answer });
+};
+
 // 유저 마이페이지에서 자신의 질문 리스트 조회
 export const getMyQuestions = () => {
     return axiosInstance.get<QuestionDto[]>(`/users/mypage/questions`);
