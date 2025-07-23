@@ -79,79 +79,51 @@ export default function UserMyPage() {
   return (
     <>
       <Header />
-      <div className="bg-neutral-50 min-h-[calc(100vh-120px)] py-10">
+      <div className="bg-white min-h-[calc(100vh-120px)] py-10">
         <div className="max-w-7xl mx-auto flex gap-8 px-4 md:px-8">
           {/* 왼쪽 세로 nav */}
-          <aside className="w-60 bg-white p-6 rounded-xl shadow-sm flex-shrink-0 h-fit">
+          <aside className="w-60 bg-white p-6 rounded-xl shadow-sm flex-shrink-0 h-fit border border-neutral-200">
             <h2 className="text-lg font-bold mb-4 text-black">마이페이지</h2>
             <nav className="space-y-3">
               <Link
                 to="/mypage/users/profile"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/profile"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/profile" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 내 정보 수정
               </Link>
               <Link
                 to="/mypage/users/enrollments"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/enrollments"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/enrollments" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 수강 중인 강의 목록
               </Link>
               <Link
                 to="/mypage/users/wishlist"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/wishlist"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/wishlist" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 찜 목록 전체보기
               </Link>
               <Link
                 to="/mypage/users/questions"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/questions"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/questions" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 내 질문 전체보기
               </Link>
               <Link
                 to="/mypage/users/reviews"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/reviews"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/reviews" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 내 후기 전체보기
               </Link>
               <Link
                 to="/mypage/users/tuner"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/tuner"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/tuner" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 AI 튜너 바로가기
               </Link>
               <Link
                 to="/mypage/users/payments"
-                className={`block transition-colors hover:underline ${
-                    location.pathname === "/mypage/users/payments"
-                        ? "text-blue-800 font-semibold"
-                        : "text-gray-800"
-                }`}
+                className={`block transition-colors rounded-lg px-3 py-2 font-medium text-base ${location.pathname === "/mypage/users/payments" ? "bg-black text-white" : "text-gray-800 hover:bg-neutral-200 hover:text-black"}`}
               >
                 결제 내역
               </Link>

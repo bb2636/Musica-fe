@@ -77,8 +77,8 @@ export default function ProfileEditPage() {
     }
 
     return (
-        <div className="max-w-xl mx-auto p-8">
-            <h2 className="text-xl font-bold mb-6">회원 정보 수정</h2>
+        <div className="max-w-xl mx-auto p-8 bg-white min-h-screen rounded-xl shadow border border-neutral-200 font-sans">
+            <h2 className="text-xl font-bold mb-6 text-black">회원 정보 수정</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                     <label className="block mb-1 text-sm font-medium">이름</label>

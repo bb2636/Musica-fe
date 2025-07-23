@@ -67,9 +67,9 @@ export default function MyWishlistPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-white min-h-screen py-8 px-2 md:px-0 font-sans">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">찜 목록</h2>
+        <h2 className="text-2xl font-bold text-black">찜 목록</h2>
         <span className="text-gray-500">총 {wishlist.length}개</span>
       </div>
 

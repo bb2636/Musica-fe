@@ -233,10 +233,10 @@ export default function AITunerPage() {
     };
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-8 bg-white min-h-screen py-8 px-2 md:px-0">
             <div className="text-center">
-                <h2 className="text-3xl font-bold mb-4">🎵 AI 튜너</h2>
-                <p className="text-gray-600">악기의 음정을 정확하게 맞춰보세요</p>
+                <h2 className="text-3xl font-bold mb-4 text-black">AI 튜너</h2>
+                <p className="text-gray-700">악기의 음정을 정확하게 맞춰보세요</p>
             </div>
 
             {error && (
