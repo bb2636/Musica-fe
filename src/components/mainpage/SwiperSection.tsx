@@ -13,7 +13,7 @@ interface SwiperSectionProps {
 
 const SwiperSection: React.FC<SwiperSectionProps> = ({
   title,
-  // moreLink,
+  moreLink,
   children,
 }) => {
   const swiperRef = useRef<any>(null);
@@ -57,14 +57,14 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
   return (
     <section className="w-full py-8 relative z-10">
       {/* 섹션 제목 + 더 보기 */}
-      {/* <div className="flex items-center justify-between mb-4 px-4 max-w-[1200px] mx-auto">
+      <div className="flex items-center justify-between mb-4 px-4 max-w-[1200px] mx-auto">
         <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
-        {moreLink && (
+        {/* {moreLink && (
           <a href={moreLink} className="text-blue-600 text-xs md:text-sm hover:underline">
             더 보기
           </a>
-        )}
-      </div> */}
+        )} */}
+      </div>
 
       {/* 슬라이더 전체 wrapper */}
       <div className="relative max-w-[1200px] mx-auto px-4">
