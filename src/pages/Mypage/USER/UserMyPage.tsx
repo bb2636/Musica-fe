@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
