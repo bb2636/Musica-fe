@@ -100,9 +100,9 @@ export default function MyQuestionsPage() {
     }
 
     return (
-        <div className="space-y-6 bg-white min-h-screen py-8 px-2 md:px-0">
+        <div className="space-y-6 bg-white min-h-screen py-8 px-2 md:px-0 font-sans">
             <div className="flex items-center justify-between max-w-3xl mx-auto">
-                <h2 className="text-2xl font-bold text-black">내 질문</h2>
+                <h2 className="text-2xl font-bold text-black">질문관리</h2>
                 <span className="text-gray-500">총 {questions.length}개</span>
             </div>
 
