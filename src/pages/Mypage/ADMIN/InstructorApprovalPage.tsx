@@ -247,7 +247,7 @@ export default function InstructorApprovalPage() {
                 <button
                     onClick={fetchInstructors}
                     disabled={loading}
-                    className="px-3 py-1 text-sm bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors disabled:opacity-50"
+                    className="px-3 py-1 text-sm bg-gray-200 text-black rounded hover:bg-gray-300 transition-colors disabled:opacity-50"
                 >
                     🔄 새로고침
                 </button>
@@ -259,7 +259,7 @@ export default function InstructorApprovalPage() {
                     onClick={() => setActiveTab("pending")}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         activeTab === "pending"
-                            ? "bg-blue-500 text-white"
+                            ? "bg-black text-white"
                             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                 >
@@ -269,7 +269,7 @@ export default function InstructorApprovalPage() {
                     onClick={() => setActiveTab("all")}
                     className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                         activeTab === "all"
-                            ? "bg-blue-500 text-white"
+                            ? "bg-black text-white"
                             : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                     }`}
                 >
@@ -289,11 +289,11 @@ export default function InstructorApprovalPage() {
                             <table className="w-full">
                                 <thead>
                                 <tr className="bg-gray-50 border-b">
-                                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">이름</th>
-                                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">이메일</th>
-                                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">가입일</th>
-                                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">상태</th>
-                                    <th className="text-left px-6 py-3 text-sm font-medium text-gray-900">액션</th>
+                                    <th className="text-left px-7 py-3 text-sm font-medium text-gray-900">이름</th>
+                                    <th className="text-left px-20 py-3 text-sm font-medium text-gray-900">이메일</th>
+                                    <th className="text-left px-10 py-3 text-sm font-medium text-gray-900">가입일</th>
+                                    <th className="text-left px-9 py-3 text-sm font-medium text-gray-900">상태</th>
+                                    <th className="text-left px-16 py-3 text-sm font-medium text-gray-900">액션</th>
                                 </tr>
                                 </thead>
                                 <tbody>
