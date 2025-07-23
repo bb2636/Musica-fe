@@ -40,3 +40,11 @@
 .read-the-docs {
   color: #888;
 }
+
+/* 숫자 input 화살표 제거 */
+/* tailwind custom class: no-arrow */
+.no-arrow::-webkit-outer-spin-button,
+.no-arrow::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
