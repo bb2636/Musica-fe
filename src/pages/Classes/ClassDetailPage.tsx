@@ -96,35 +96,35 @@ const ClassDetailPage = () => {
     }
   };
 
-  const handleWishlistToggle = async () => {
-    try {
-      if (isWishlisted) {
-        await wishlistApi.removeFromWishlist(Number(classId));
-        setIsWishlisted(false);
-        alert("찜 목록에서 제거되었습니다.");
-      } else {
-        await wishlistApi.addToWishlist(Number(classId));
-        setIsWishlisted(true);
-        // alert("찜 목록에 추가되었습니다.");
-      }
-    } catch (err) {
-      console.error("찜 목록 처리 실패:", err);
+  // const handleWishlistToggle = async () => {
+  //   try {
+  //     if (isWishlisted) {
+  //       await wishlistApi.removeFromWishlist(Number(classId));
+  //       setIsWishlisted(false);
+  //       alert("찜 목록에서 제거되었습니다.");
+  //     } else {
+  //       await wishlistApi.addToWishlist(Number(classId));
+  //       setIsWishlisted(true);
+  //       // alert("찜 목록에 추가되었습니다.");
+  //     }
+  //   } catch (err) {
+  //     console.error("찜 목록 처리 실패:", err);
 
-      let errorMessage = "로그인이 필요한 서비스입니다.";
+  //     let errorMessage = "로그인이 필요한 서비스입니다.";
 
-      if (err instanceof Error) {
-        console.error("Error details:", err.message);
-      } else if (typeof err === "object" && err !== null && "response" in err) {
-        const axiosError = err as {
-          response?: { data?: { message?: string } };
-        };
-        errorMessage =
-          axiosError.response?.data?.message || "로그인이 필요한 서비스입니다.";
-      }
+  //     if (err instanceof Error) {
+  //       console.error("Error details:", err.message);
+  //     } else if (typeof err === "object" && err !== null && "response" in err) {
+  //       const axiosError = err as {
+  //         response?: { data?: { message?: string } };
+  //       };
+  //       errorMessage =
+  //         axiosError.response?.data?.message || "로그인이 필요한 서비스입니다.";
+  //     }
 
-      alert(errorMessage);
-    }
-  };
+  //     alert(errorMessage);
+  //   }
+  // };
 
   const handleAddToCart = async () => {
     try {
@@ -416,7 +416,7 @@ const ClassDetailPage = () => {
                             alert(res.message || "장바구니 추가 실패");
                             return;
                           }
-                        } catch (err) {
+                        } catch {
                           alert("장바구니 추가 중 오류 발생");
                           return;
                         }
@@ -572,19 +572,21 @@ const ClassDetailPage = () => {
                         ))}
 
                       {/* 📊 강의별 진도율 */}
-                      {isEnrolled && lecture.progressRate >= 0 && (
-                        <div className="flex items-center gap-1 text-gray-600">
-                          <div className="w-24 bg-gray-200 rounded-full h-2">
-                            <div
-                              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${lecture.progressRate}%` }}
-                            ></div>
+                      {isEnrolled &&
+                        typeof lecture.progressRate === "number" &&
+                        lecture.progressRate >= 0 && (
+                          <div className="flex items-center gap-1 text-gray-600">
+                            <div className="w-24 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${lecture.progressRate}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-xs text-gray-500 ml-2">
+                              강의 진행률 {lecture.progressRate.toFixed(0)}%
+                            </span>
                           </div>
-                          <span className="text-xs text-gray-500 ml-2">
-                            강의 진행률 {lecture.progressRate.toFixed(0)}%
-                          </span>
-                        </div>
-                      )}
+                        )}
                     </div>
                   </div>
                 </div>

@@ -51,7 +51,7 @@ const LectureWatchPage = () => {
             toast.success("💾 진도 저장 완료!");
           }
         }
-      } catch (error) {
+      } catch {
         if (forceImmediate && isMountedRef.current) {
           toast.error("진도 저장에 실패했습니다.");
         }
@@ -80,7 +80,7 @@ const LectureWatchPage = () => {
         const res = await lectureApi.getLectureDetail(parsedLectureId);
         setLecture(res);
         setCompleted(res.isCompleted);
-      } catch (error) {
+      } catch {
         toast.error("강의 정보를 불러올 수 없습니다.");
       } finally {
         setLoading(false);
@@ -94,7 +94,7 @@ const LectureWatchPage = () => {
           lecture?.classId || 0
         );
         setLectureList(res);
-      } catch (e) {
+      } catch {
         toast.error("강의 목록을 불러올 수 없습니다.");
       }
     };
