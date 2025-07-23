@@ -162,6 +162,18 @@ const Signup = () => {
                 >
                     Kakao로 회원가입
                 </button>
+
+                {/* 로그인 이동 안내 */}
+                <div className="mt-6 text-center">
+                  <span className="text-sm text-gray-600 mr-2">이미 계정이 있으신가요?</span>
+                  <button
+                    type="button"
+                    className="text-sm text-blue-600 hover:underline font-semibold"
+                    onClick={() => navigate('/auth?mode=login')}
+                  >
+                    로그인
+                  </button>
+                </div>
             </form>
         </div>
     );

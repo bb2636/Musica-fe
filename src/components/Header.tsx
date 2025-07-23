@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import logo from "../assets/musica-logo.png";
 import cartIcon from "../assets/cart.png";
 import { commonApi } from "../apis/commonApi";
@@ -7,6 +7,7 @@ import type { CategoryOption, DifficultyOption } from "../types/common";
 
 const Header: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const isLoggedIn = !!localStorage.getItem("accessToken");
   const userRole = (localStorage.getItem("userRole") ?? "").toUpperCase();
   const isUser = userRole === "USER";
@@ -267,15 +268,15 @@ const Header: React.FC = () => {
           ) : (
             <>
               <span
-                onClick={() => navigate("/auth")}
-                className="cursor-pointer hover:underline font-normal"
+                onClick={() => navigate("/auth?mode=login")}
+                className={`cursor-pointer hover:underline font-normal ${location.pathname === "/auth" && (location.search.includes("mode=login") || location.search === "" ) ? "text-white font-bold underline" : ""}`}
               >
                 로그인
               </span>
               <span className="text-gray-400 text-lg select-none">|</span>
               <span
-                onClick={() => navigate("/auth")}
-                className="cursor-pointer hover:underline font-normal"
+                onClick={() => navigate("/auth?mode=signup")}
+                className={`cursor-pointer hover:underline font-normal ${location.pathname === "/auth" && location.search.includes("mode=signup") ? "text-white font-bold underline" : ""}`}
               >
                 회원가입
               </span>

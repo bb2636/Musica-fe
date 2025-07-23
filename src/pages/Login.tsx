@@ -38,14 +38,11 @@ const Login = () => {
           console.log("🔍 로그인 성공 - Role 저장:", role);
         }
 
-        alert("로그인 성공");
-
         // ✅ role에 따른 페이지 이동
         if (role === "ADMIN") {
           navigate("/mypage/admin");
         } else if (role === "INSTRUCTOR") {
-          // 승인 전 강사일 경우에는 아래에서 걸러짐
-          navigate("/main");
+          navigate("/mypage/instructor");
         } else {
           navigate("/main");
         }
