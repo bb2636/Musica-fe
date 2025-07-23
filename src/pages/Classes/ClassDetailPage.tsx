@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { classApi } from "../../apis/classesApi";
-import { wishlistApi } from "../../apis/WishlistApi.ts";
+// import { wishlistApi } from "../../apis/WishlistApi.ts";
 import { cartApi } from "../../apis/cart";
 import { reviewApi } from "../../apis/reviewApi";
 import type { ReviewDetail, ReviewSummaryCard } from "../../types/review";
@@ -21,7 +21,7 @@ const ClassDetailPage = () => {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+  // const [isWishlisted, setIsWishlisted] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -39,7 +39,7 @@ const ClassDetailPage = () => {
         loadClassDetail(),
         loadReviews(),
         loadReviewSummaries(),
-        checkWishlistStatus(),
+        // checkWishlistStatus(),
         checkCartStatus(),
       ]);
     } catch (err) {
@@ -77,15 +77,15 @@ const ClassDetailPage = () => {
     }
   };
 
-  const checkWishlistStatus = async () => {
-    try {
-      const wishlist = await wishlistApi.getMyWishlist();
-      const isLiked = wishlist.some((item) => item.classId === Number(classId));
-      setIsWishlisted(isLiked);
-    } catch (err) {
-      console.error("찜 목록 확인 실패:", err);
-    }
-  };
+  // const checkWishlistStatus = async () => {
+  //   try {
+  //     const wishlist = await wishlistApi.getMyWishlist();
+  //     const isLiked = wishlist.some((item) => item.classId === Number(classId));
+  //     setIsWishlisted(isLiked);
+  //   } catch (err) {
+  //     console.error("찜 목록 확인 실패:", err);
+  //   }
+  // };
 
   const checkCartStatus = async () => {
     try {
