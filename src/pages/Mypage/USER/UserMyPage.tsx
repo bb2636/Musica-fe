@@ -80,6 +80,84 @@ export default function UserMyPage() {
   return (
     <>
       <Header />
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        <div className="flex gap-8">
+          <aside className="w-60 bg-gray-50 p-6 rounded-xl shadow-sm">
+            <h2 className="text-lg font-bold mb-4">마이페이지</h2>
+            <nav className="space-y-3">
+              <Link
+                to="/mypage/users/profile"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/profile"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 정보 수정
+              </Link>
+              <Link
+                to="/mypage/users/enrollments"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/enrollments"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                수강 중인 강의 목록
+              </Link>
+              <Link
+                to="/mypage/users/wishlist"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/wishlist"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                찜 목록 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/questions"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/questions"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 질문 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/reviews"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/reviews"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 후기 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/tuner"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/tuner"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                AI 튜너 바로가기
+              </Link>
+              <Link
+                to="/mypage/users/payments"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/payments"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                결제 내역
+              </Link>
+            </nav>
+          </aside>
+
       <div className="bg-white min-h-[calc(100vh-120px)] py-10">
         <div className="max-w-7xl mx-auto flex gap-8 px-4 md:px-8">
           <UserSidebar />
@@ -110,7 +188,7 @@ export default function UserMyPage() {
                   <Card title="수강 중인 강의" desc="내가 결제한 강의 보기" link="/mypage/users/enrollments">
                     {enrollments.length > 0 ? (
                       <ul className="space-y-2">
-                        {enrollments.slice(0, 2).map(e => (
+                        {enrollments.slice(0, 2).map((e) => (
                           <li
                             key={(e as any).class_id}
                             className="flex items-center gap-3 bg-neutral-100 rounded p-2 cursor-pointer hover:bg-neutral-200 transition"
@@ -120,22 +198,37 @@ export default function UserMyPage() {
                               src={(e as any).thumbnailUrl}
                               alt={(e as any).title}
                               className="w-12 h-12 object-cover rounded"
-                              onError={ev => (ev.currentTarget.src = '/default-thumbnail.png')}
+                              onError={(ev) =>
+                                (ev.currentTarget.src =
+                                  "/default-thumbnail.png")
+                              }
                             />
                             <div className="flex-1 min-w-0">
-                              <div className="font-semibold truncate text-black">{(e as any).title}</div>
-                              <div className="text-xs text-gray-500 truncate">강사: {(e as any).instructorName}</div>
-                              <div className="text-xs text-gray-500">진도율: {(e as any).progress}%</div>
+                              <div className="font-semibold truncate">
+                                {(e as any).title}
+                              </div>
+                              <div className="text-xs text-gray-500 truncate">
+                                강사: {(e as any).instructorName}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                진도율: {(e as any).progress}%
+                              </div>
                             </div>
-                            <div className="text-sm font-bold whitespace-nowrap text-black">{(e as any).amount?.toLocaleString()}원</div>
+                            <div className="text-sm font-bold whitespace-nowrap">
+                              {(e as any).amount?.toLocaleString()}원
+                            </div>
                           </li>
                         ))}
                         {enrollments.length > 2 && (
-                          <li className="text-xs text-gray-500">외 {enrollments.length - 2}개 더...</li>
+                          <li className="text-xs text-gray-500">
+                            외 {enrollments.length - 2}개
+                          </li>
                         )}
                       </ul>
                     ) : (
-                      <p className="text-gray-500">수강 중인 강의가 없습니다.</p>
+                      <p className="text-gray-500">
+                        수강 중인 강의가 없습니다.
+                      </p>
                     )}
                   </Card>
 
@@ -152,7 +245,7 @@ export default function UserMyPage() {
                         ))}
                         {wishlist.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {wishlist.length - 3}개 더...
+                            외 {wishlist.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -174,7 +267,7 @@ export default function UserMyPage() {
                         ))}
                         {questions.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {questions.length - 3}개 더...
+                            외 {questions.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -196,7 +289,7 @@ export default function UserMyPage() {
                         ))}
                         {reviews.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {reviews.length - 3}개 더...
+                            외 {reviews.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -263,39 +356,39 @@ const PaymentSummary: React.FC = () => {
   }, []);
 
   return (
-      <div
-          onClick={() => navigate("payments")}
-          className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
-      >
-        {/* ✅ 카드 헤더 스타일 통일 */}
-        <div className="flex items-center space-x-2 mb-3">
-          <span className="text-3xl">💳</span>
-          <div>
-            <div className="font-semibold text-sm text-gray-800">결제 내역</div>
-            <div className="text-xs text-gray-500">최근 결제 3건</div>
-          </div>
-        </div>
-
-        {/* ✅ 카드 본문 내용 */}
-        <div className="text-sm text-gray-700">
-          {payments.length === 0 ? (
-              <div className="text-gray-400">결제 내역이 없습니다.</div>
-          ) : (
-              <ul className="space-y-1">
-                {payments.map((item) => (
-                    <li
-                        key={item.paymentId}
-                        className="flex justify-between py-1 border-b last:border-b-0"
-                    >
-                      <span className="truncate">{item.title}</span>
-                      <span className="font-semibold">
-                  {item.amount.toLocaleString()}원
-                </span>
-                    </li>
-                ))}
-              </ul>
-          )}
+    <div
+      onClick={() => navigate("payments")}
+      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
+    >
+      {/* ✅ 카드 헤더 스타일 통일 */}
+      <div className="flex items-center space-x-2 mb-3">
+        <span className="text-3xl">💳</span>
+        <div>
+          <div className="font-semibold text-sm text-gray-800">결제 내역</div>
+          <div className="text-xs text-gray-500">최근 결제 3건</div>
         </div>
       </div>
+
+      {/* ✅ 카드 본문 내용 */}
+      <div className="text-sm text-gray-700">
+        {payments.length === 0 ? (
+          <div className="text-gray-400">결제 내역이 없습니다.</div>
+        ) : (
+          <ul className="space-y-1">
+            {payments.map((item) => (
+              <li
+                key={item.paymentId}
+                className="flex justify-between py-1 border-b last:border-b-0"
+              >
+                <span className="truncate">{item.title}</span>
+                <span className="font-semibold">
+                  {item.amount.toLocaleString()}원
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
   );
 };

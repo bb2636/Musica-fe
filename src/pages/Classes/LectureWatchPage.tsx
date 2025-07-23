@@ -78,6 +78,20 @@ const LectureWatchPage = () => {
     }, 5000);
   }, [saveProgress]);
 
+  // ✅ 1. 시청 정보 초기화용 useEffect (여기에 추가!)
+  useEffect(() => {
+    // 강의 ID가 바뀌면 시청 정보 초기화
+    setWatchedSeconds(0);
+    setDuration(0);
+    setCompleted(false);
+
+    // 영상도 처음부터 시작하게 하려면 (선택 사항)
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+  }, [parsedLectureId]);
+
+  // ✅ 2. 강의 정보 불러오기 (이미 있는 코드)
   // Q&A 불러오기
   const fetchQuestions = useCallback(async () => {
     if (!lecture?.classId) return;
@@ -154,6 +168,7 @@ const LectureWatchPage = () => {
     });
   }, [parsedLectureId, lecture?.classId]);
 
+  // ✅ 3. 마운트/언마운트 관리
   useEffect(() => {
     isMountedRef.current = true;
     return () => {

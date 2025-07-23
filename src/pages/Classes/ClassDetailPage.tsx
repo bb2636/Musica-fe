@@ -466,7 +466,7 @@ const ClassDetailPage = () => {
                 onClick={() => setShowFullDescription(!showFullDescription)}
                 className="mt-3 text-blue-600 hover:text-blue-800 text-sm font-medium underline"
               >
-                {showFullDescription ? "접기" : "더보기"}
+                {/* {showFullDescription ? "접기" : "더보기"} */}
               </button>
             )}
         </div>
