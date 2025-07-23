@@ -7,7 +7,7 @@ export default function AdminDashboardWrapper() {
     const [pending, setPending] = useState(0);
 
     useEffect(() => {
-        axiosInstance.get("/admin/instructors")
+        axiosInstance.get("/admin/instructors/all")
             .then(res => {
                 setTotal(res.data.length);
                 setPending(res.data.filter((i: any) => i.approvalStatus === "PENDING").length);

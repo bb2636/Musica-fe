@@ -118,7 +118,7 @@ export default function ProfileEditPage() {
                 </div>
                 <button
                     type="submit"
-                    className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded"
+                    className="w-full bg-black text-white hover:bg-gray-300 hover:text-black py-2 rounded"
                 >
                     수정하기
                 </button>

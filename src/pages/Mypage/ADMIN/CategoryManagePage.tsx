@@ -227,13 +227,13 @@ export default function CategoryManagePage() {
                     <span className="text-sm text-gray-600">총 {categories.length}개</span>
                     <button
                         onClick={() => openModal()}
-                        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                        className="px-4 py-2 bg-black text-white rounded hover:bg-gray-300 hover:text-black transition-colors"
                     >
                         + 새 카테고리
                     </button>
                     <button
                         onClick={fetchCategories}
-                        className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
+                        className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-300 hover:text-black transition-colors"
                     >
                         🔄 새로고침
                     </button>
