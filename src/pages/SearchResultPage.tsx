@@ -137,7 +137,7 @@ const SearchResultPage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
-      <div className="max-w-[1400px] mx-auto px-4 py-8 min-h-[60vh]">
+      <div className="max-w-6xl mx-auto px-6 py-8 min-h-[60vh]">
         <h2 className="text-2xl font-bold mb-6">검색 결과</h2>
         {loading || paidClassIdsLoading ? (
           <div className="text-center text-lg py-20">로딩 중...</div>
@@ -145,26 +145,27 @@ const SearchResultPage: React.FC = () => {
           <div className="text-center text-gray-500 py-20">검색 결과가 없습니다</div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-6">
+            <div className="flex flex-wrap justify-center gap-x-6 gap-y-8">
               {pageData.content.map((cls) => (
-                <ClassCard
-                  key={cls.id}
-                  id={cls.id}
-                  title={cls.title}
-                  instructor={cls.instructorName}
-                  price={cls.classPrice}
-                  rating={cls.averageRating}
-                  ratingCount={cls.ratingCount}
-                  thumbnailUrl={cls.thumbnailUrl}
-                  onToggleWish={() => handleToggleWish(cls.id)}
-                  onToggleCart={() => handleToggleCart(cls.id)}
-                  wishedClassIds={wishedClassIds}
-                  wishlistCount={wishlistCounts[cls.id] ?? cls.wishlistCount}
-                  isProcessingWishSet={wishProcessingSet}
-                  isProcessingCartSet={cartProcessingSet}
-                  isInCart={cartClassIds.includes(cls.id)}
-                  isPaid={paidClassIds.includes(cls.id)} // ✅ 수강중 표시용
-                />
+                <div key={cls.id} className="w-full sm:w-[260px]">
+                  <ClassCard
+                    id={cls.id}
+                    title={cls.title}
+                    instructor={cls.instructorName}
+                    price={cls.classPrice}
+                    rating={cls.averageRating}
+                    ratingCount={cls.ratingCount}
+                    thumbnailUrl={cls.thumbnailUrl}
+                    onToggleWish={() => handleToggleWish(cls.id)}
+                    onToggleCart={() => handleToggleCart(cls.id)}
+                    wishedClassIds={wishedClassIds}
+                    wishlistCount={wishlistCounts[cls.id] ?? cls.wishlistCount}
+                    isProcessingWishSet={wishProcessingSet}
+                    isProcessingCartSet={cartProcessingSet}
+                    isInCart={cartClassIds.includes(cls.id)}
+                    isPaid={paidClassIds.includes(cls.id)} // ✅ 수강중 표시용
+                  />
+                </div>
               ))}
             </div>
             {renderPagination()}
