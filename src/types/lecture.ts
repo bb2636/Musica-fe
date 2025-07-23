@@ -43,6 +43,7 @@ export interface LectureCreateReq {
 }
 
 export interface LectureDetail extends LectureSummary {
+  id: number; // 실제 응답에 맞게 추가
   classId: number;
   watchedSeconds: number;
   isCompleted: boolean;

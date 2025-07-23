@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchMyQuestions } from '../../../apis/user';
+import { updateQuestion, deleteQuestion } from '../../../apis/qna';
 
 interface Question {
     id: number;
@@ -13,22 +14,58 @@ export default function MyQuestionsPage() {
     const [questions, setQuestions] = useState<Question[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [editingId, setEditingId] = useState<number | null>(null);
+    const [editingText, setEditingText] = useState<string>("");
+
+    const loadQuestions = async () => {
+        try {
+            const response = await fetchMyQuestions();
+            console.log('[QNA] 내 질문 API 응답:', response?.data);
+            const mapped = (response?.data ?? []).map((q: any) => ({
+              id: q.questionId,
+              content: q.question,
+              createdAt: q.createdAt,
+              classTitle: q.classTitle,
+              lectureTitle: q.lectureTitle,
+            }));
+            setQuestions(mapped);
+        } catch (err) {
+            setError('질문 목록을 불러오는데 실패했습니다.');
+            console.error('질문 목록 로딩 실패:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const loadQuestions = async () => {
-            try {
-                const response = await fetchMyQuestions();
-                setQuestions(response?.data ?? []);
-            } catch (err) {
-                setError('질문 목록을 불러오는데 실패했습니다.');
-                console.error('질문 목록 로딩 실패:', err);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         loadQuestions();
     }, []);
+
+    const handleEdit = (q: Question) => {
+        setEditingId(q.id);
+        setEditingText(q.content);
+    };
+
+    const handleUpdate = async (id: number) => {
+        try {
+            await updateQuestion(id, { question: editingText });
+            setEditingId(null);
+            setEditingText("");
+            loadQuestions();
+        } catch (e) {
+            alert('질문 수정에 실패했습니다.');
+        }
+    };
+
+    const handleDelete = async (id: number) => {
+        if (!window.confirm('정말 삭제하시겠습니까?')) return;
+        try {
+            await deleteQuestion(id);
+            loadQuestions();
+        } catch (e) {
+            alert('질문 삭제에 실패했습니다.');
+        }
+    };
 
     if (loading) {
         return (
@@ -94,19 +131,53 @@ export default function MyQuestionsPage() {
                             </div>
 
                             <div className="text-gray-800 leading-relaxed">
-                                {question.content}
+                                {editingId === question.id ? (
+                                  <input
+                                    className="border rounded px-2 py-1 text-sm w-full"
+                                    value={editingText}
+                                    onChange={e => setEditingText(e.target.value)}
+                                    autoFocus
+                                  />
+                                ) : (
+                                  question.content
+                                )}
                             </div>
 
                             <div className="mt-4 flex space-x-2">
                                 <button className="bg-blue-500 text-white py-2 px-4 rounded text-sm hover:bg-blue-600">
                                     강의로 이동
                                 </button>
-                                <button className="bg-gray-500 text-white py-2 px-4 rounded text-sm hover:bg-gray-600">
-                                    수정
-                                </button>
-                                <button className="bg-red-500 text-white py-2 px-4 rounded text-sm hover:bg-red-600">
-                                    삭제
-                                </button>
+                                {editingId === question.id ? (
+                                  <>
+                                    <button
+                                      className="bg-green-500 text-white py-2 px-4 rounded text-sm hover:bg-green-600"
+                                      onClick={() => handleUpdate(question.id)}
+                                    >
+                                      저장
+                                    </button>
+                                    <button
+                                      className="bg-gray-400 text-white py-2 px-4 rounded text-sm hover:bg-gray-500"
+                                      onClick={() => setEditingId(null)}
+                                    >
+                                      취소
+                                    </button>
+                                  </>
+                                ) : (
+                                  <>
+                                    <button
+                                      className="bg-gray-500 text-white py-2 px-4 rounded text-sm hover:bg-gray-600"
+                                      onClick={() => handleEdit(question)}
+                                    >
+                                      수정
+                                    </button>
+                                    <button
+                                      className="bg-red-500 text-white py-2 px-4 rounded text-sm hover:bg-red-600"
+                                      onClick={() => handleDelete(question.id)}
+                                    >
+                                      삭제
+                                    </button>
+                                  </>
+                                )}
                             </div>
                         </div>
                     ))}

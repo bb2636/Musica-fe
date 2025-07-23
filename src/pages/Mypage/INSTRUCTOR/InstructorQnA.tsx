@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { instructorApi } from "../../../apis/instructorApi";
+import { getInstructorAnswers, updateAnswer } from '../../../apis/qna';
+import type { InstructorAnswerDto } from '../../../types/qna';
 
 interface Question {
   id: number;
@@ -15,22 +17,31 @@ interface Question {
 const InstructorQnA = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<"ALL" | "PENDING" | "ANSWERED">("ALL");
   const [answerText, setAnswerText] = useState<{ [key: number]: string }>({});
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingAnswer, setEditingAnswer] = useState<string>("");
+  const [myAnswers, setMyAnswers] = useState<InstructorAnswerDto[]>([]);
+  const [editingMyAnswerId, setEditingMyAnswerId] = useState<number | null>(null);
+  const [editingMyAnswer, setEditingMyAnswer] = useState<string>("");
 
   useEffect(() => {
     fetchQuestions();
-  }, [filter]);
+    getInstructorAnswers().then(res => setMyAnswers(res.data));
+  }, []);
 
   const fetchQuestions = async () => {
     setLoading(true);
     try {
-      const params: { status?: "PENDING" | "ANSWERED" } =
-        filter !== "ALL" ? { status: filter } : {};
+      const params: { status: "PENDING" } = { status: "PENDING" };
       console.log("✅ 요청 params 확인:", params); // 🔍 파라미터 확인
       const data = await instructorApi.getQuestions(params);
       console.log("✅ 응답 데이터:", data); // 🔍 응답 확인
-      setQuestions(data || []);
+      // id 필드 보장: questionId가 있으면 id로 매핑
+      const mapped = (data || []).map((q: any) => ({
+        ...q,
+        id: q.id ?? q.questionId,
+      }));
+      setQuestions(mapped);
     } catch (error) {
       console.error("질문 목록 로드 실패:", error);
     } finally {
@@ -46,14 +57,68 @@ const InstructorQnA = () => {
     }
 
     try {
+      console.log("[QNA] 답변 등록 시도:", { questionId, answer });
       await instructorApi.answerQuestion(questionId, answer);
       setAnswerText((prev) => ({ ...prev, [questionId]: "" }));
       fetchQuestions(); // 목록 새로고침
       alert("답변이 등록되었습니다.");
     } catch (error) {
-      console.error("답변 등록 실패:", error);
+      console.error("[QNA] 답변 등록 실패:", error);
       alert("답변 등록에 실패했습니다.");
     }
+  };
+
+  const handleEditAnswer = (questionId: number, currentAnswer: string | undefined) => {
+    setEditingId(questionId);
+    setEditingAnswer(currentAnswer ?? "");
+  };
+
+  const handleUpdateAnswer = async (questionId: number) => {
+    if (!editingAnswer.trim()) {
+      alert("수정할 답변을 입력해주세요.");
+      return;
+    }
+    try {
+      await instructorApi.answerQuestion(questionId, editingAnswer);
+      setEditingId(null);
+      setEditingAnswer("");
+      fetchQuestions();
+      alert("답변이 수정되었습니다.");
+    } catch (error) {
+      alert("답변 수정에 실패했습니다.");
+    }
+  };
+
+  const handleEditMyAnswer = (idx: number, currentAnswer: string) => {
+    setEditingMyAnswerId(idx);
+    setEditingMyAnswer(currentAnswer);
+  };
+
+  const handleUpdateMyAnswer = async (answer: InstructorAnswerDto, idx: number) => {
+    if (!editingMyAnswer.trim()) {
+      alert("수정할 답변을 입력해주세요.");
+      return;
+    }
+    try {
+      if (!answer.questionId) {
+        alert("질문 ID를 찾을 수 없습니다. (수정 불가)");
+        return;
+      }
+      await updateAnswer(answer.questionId, editingMyAnswer);
+      setEditingMyAnswerId(null);
+      setEditingMyAnswer("");
+      getInstructorAnswers().then(res => setMyAnswers(res.data));
+      alert("답변이 수정되었습니다.");
+    } catch (error) {
+      alert("답변 수정에 실패했습니다.");
+    }
+  };
+
+  // 날짜 포맷 함수
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
   if (loading) {
@@ -66,91 +131,139 @@ const InstructorQnA = () => {
   }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold">질의응답 관리</h2>
-        <select
-          value={filter}
-          onChange={(e) =>
-            setFilter(e.target.value as "ALL" | "PENDING" | "ANSWERED")
-          }
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="ALL">전체</option>
-          <option value="PENDING">미답변</option>
-          <option value="ANSWERED">답변완료</option>
-        </select>
+    <div className="p-6 max-w-7xl mx-auto space-y-10">
+      <div>
+        <h2 className="text-xl font-semibold text-black flex items-center gap-2 mb-2">
+          질의응답 관리
+        </h2>
+        <p className="text-gray-700 mb-4">아래는 아직 답변하지 않은 질문 목록입니다.</p>
       </div>
 
-      <div className="space-y-4">
-        {questions.map((question) => (
-          <div
-            key={question.id}
-            className="border border-gray-200 rounded-lg p-6"
-          >
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="font-semibold text-lg">{question.className}</h3>
-                <p className="text-sm text-gray-600">
-                  {question.studentName} • {question.createdAt}
-                </p>
-              </div>
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  question.status === "PENDING"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : "bg-green-100 text-green-800"
-                }`}
-              >
-                {question.status === "PENDING" ? "미답변" : "답변완료"}
-              </span>
-            </div>
-
-            <div className="bg-gray-50 rounded-lg p-4 mb-4">
-              <p className="text-gray-700">{question.question}</p>
-            </div>
-
-            {question.answer ? (
-              <div className="bg-blue-50 rounded-lg p-4">
-                <p className="text-blue-900 font-medium mb-2">답변:</p>
-                <p className="text-blue-800">{question.answer}</p>
-                {question.answeredAt && (
-                  <p className="text-xs text-blue-600 mt-2">
-                    답변일: {question.answeredAt}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-3">
-                <textarea
-                  value={answerText[question.id] || ""}
-                  onChange={(e) =>
-                    setAnswerText((prev) => ({
-                      ...prev,
-                      [question.id]: e.target.value,
-                    }))
-                  }
-                  placeholder="답변을 입력하세요..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                />
-                <button
-                  onClick={() => handleAnswer(question.id)}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                >
-                  답변 등록
-                </button>
-              </div>
-            )}
+      {/* 미답변 질문 표 */}
+      <div className="bg-white p-6 rounded-lg shadow">
+        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <span className="px-3 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">미답변만 표시</span>
+        </h3>
+        {questions.length === 0 ? (
+          <div className="text-center text-gray-400 py-20">미답변 질문이 없습니다.</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto text-sm text-left">
+              <thead className="border-b text-gray-700 bg-gray-100 text-center">
+                <tr>
+                  <th className="px-4 py-2">강의명</th>
+                  <th className="px-4 py-2">질문</th>
+                  <th className="px-4 py-2">질문자</th>
+                  <th className="px-4 py-2">질문일</th>
+                  <th className="px-4 py-2">답변</th>
+                </tr>
+              </thead>
+              <tbody>
+                {questions.map((question) => (
+                  <tr key={question.id} className="border-b hover:bg-gray-50">
+                    <td className="px-4 py-2 font-semibold text-center text-black">{question.className}</td>
+                    <td className="px-4 py-2 text-gray-900">{question.question}</td>
+                    <td className="px-4 py-2 text-gray-700 text-center">{question.studentName}</td>
+                    <td className="px-4 py-2 text-gray-500 text-center">{formatDate(question.createdAt)}</td>
+                    <td className="px-4 py-2 w-64">
+                      {editingId === question.id ? (
+                        <div className="space-y-2">
+                          <textarea
+                            value={editingAnswer}
+                            onChange={e => setEditingAnswer(e.target.value)}
+                            placeholder="답변을 입력하세요..."
+                            className="w-full p-2 border rounded text-black bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                            rows={3}
+                          />
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => handleUpdateAnswer(question.id)}
+                              className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-1 rounded transition"
+                            >
+                              저장
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-1 rounded transition"
+                            >
+                              취소
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => handleEditAnswer(question.id, question.answer)}
+                          className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-1 rounded transition"
+                        >
+                          답변 등록
+                        </button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
+        )}
       </div>
 
-      {questions.length === 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500">질문이 없습니다.</p>
-        </div>
-      )}
+      {/* 내가 답변한 Q&A 섹션 */}
+      <div>
+        <h3 className="text-xl font-bold mb-4 text-black flex items-center gap-2">
+          내가 답변한 Q&A
+        </h3>
+        {myAnswers.length === 0 ? (
+          <div className="text-gray-400">아직 답변한 Q&A가 없습니다.</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {myAnswers.map((a, idx) => (
+              <div key={idx} className="border rounded-lg bg-white shadow hover:shadow-md transition p-6 flex flex-col justify-between">
+                <div>
+                  <div className="font-semibold mb-1 text-black">{a.title}</div>
+                  <div className="mb-2 text-gray-900 font-medium">Q. {a.question}</div>
+                </div>
+                <div>
+                  {editingMyAnswerId === idx ? (
+                    <div className="mb-2">
+                      <textarea
+                        value={editingMyAnswer}
+                        onChange={e => setEditingMyAnswer(e.target.value)}
+                        className="w-full p-2 border rounded mb-2 text-black bg-gray-50 focus:outline-none focus:ring-2 focus:ring-black"
+                        rows={3}
+                      />
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleUpdateMyAnswer(a, idx)}
+                          className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg transition"
+                        >
+                          저장
+                        </button>
+                        <button
+                          onClick={() => setEditingMyAnswerId(null)}
+                          className="w-full bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 rounded-lg transition"
+                        >
+                          취소
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="mb-2 text-gray-900">A. {a.answer}</div>
+                      <button
+                        onClick={() => handleEditMyAnswer(idx, a.answer)}
+                        className="px-3 py-1 bg-gray-800 text-white rounded hover:bg-black text-sm font-semibold"
+                      >
+                        수정
+                      </button>
+                    </>
+                  )}
+                </div>
+                <div className="text-xs text-gray-400 mt-2">{a.createdAt && formatDate(a.createdAt)}</div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -46,9 +46,6 @@ export default function UserMyPage() {
 
   const isMainPage = location.pathname === "/mypage/users";
 
-  console.log("🔍 UserMyPage - 현재 경로:", location.pathname);
-  console.log("🔍 UserMyPage - isMainPage:", isMainPage);
-
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -82,95 +79,28 @@ export default function UserMyPage() {
   return (
     <>
       <Header />
-      <div className="max-w-7xl mx-auto p-8 space-y-8">
-        <div className="flex gap-8">
-          <aside className="w-60 bg-gray-50 p-6 rounded-xl shadow-sm">
-            <h2 className="text-lg font-bold mb-4">마이페이지</h2>
+      <div className="bg-neutral-50 min-h-[calc(100vh-120px)] py-10">
+        <div className="max-w-7xl mx-auto flex gap-8 px-4 md:px-8">
+          {/* 왼쪽 세로 nav */}
+          <aside className="w-60 bg-white p-6 rounded-xl shadow-sm flex-shrink-0 h-fit">
+            <h2 className="text-lg font-bold mb-4 text-black">마이페이지</h2>
             <nav className="space-y-3">
-              <Link
-                to="/mypage/users/profile"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/profile"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                내 정보 수정
-              </Link>
-              <Link
-                to="/mypage/users/enrollments"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/enrollments"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                수강 중인 강의 목록
-              </Link>
-              <Link
-                to="/mypage/users/wishlist"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/wishlist"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                찜 목록 전체보기
-              </Link>
-              <Link
-                to="/mypage/users/questions"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/questions"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                내 질문 전체보기
-              </Link>
-              <Link
-                to="/mypage/users/reviews"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/reviews"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                내 후기 전체보기
-              </Link>
-              <Link
-                to="/mypage/users/tuner"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/tuner"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                AI 튜너 바로가기
-              </Link>
-              <Link
-                to="/mypage/users/payments"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/payments"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                결제 내역
-              </Link>
+              <SidebarLink to="/mypage/users/profile" label="내 정보" />
+              <SidebarLink to="/mypage/users/enrollments" label="수강 강의" />
+              <SidebarLink to="/mypage/users/wishlist" label="찜 목록" />
+              <SidebarLink to="/mypage/users/questions" label="내 질문" />
+              <SidebarLink to="/mypage/users/reviews" label="내 후기" />
+              <SidebarLink to="/mypage/users/tuner" label="AI 튜너" />
+              <SidebarLink to="/mypage/users/payments" label="결제 내역" />
             </nav>
           </aside>
-
+          {/* 오른쪽 메인 콘텐츠 */}
           <main className="flex-1">
             <Outlet />
             {isMainPage && (
               <>
-                <div className="grid grid-cols-2 gap-6 mt-8">
-                  <Card
-                    emoji="👤"
-                    title="내 정보"
-                    desc="회원 정보 수정하기"
-                    link="/mypage/users/profile"
-                  >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                  <Card title="내 정보" desc="회원 정보 수정하기" link="/mypage/users/profile">
                     {profile ? (
                       <div className="space-y-1">
                         <p>
@@ -188,18 +118,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="📘"
-                    title="수강 중인 강의"
-                    desc="내가 결제한 강의 보기"
-                    link="/mypage/users/enrollments"
-                  >
+                  <Card title="수강 중인 강의" desc="내가 결제한 강의 보기" link="/mypage/users/enrollments">
                     {enrollments.length > 0 ? (
                       <ul className="space-y-2">
                         {enrollments.slice(0, 2).map(e => (
                           <li
                             key={(e as any).class_id}
-                            className="flex items-center gap-3 bg-gray-50 rounded p-2 cursor-pointer hover:bg-gray-200 transition"
+                            className="flex items-center gap-3 bg-neutral-100 rounded p-2 cursor-pointer hover:bg-neutral-200 transition"
                             onClick={() => window.location.href = `/classes/${(e as any).class_id}`}
                           >
                             <img
@@ -209,11 +134,11 @@ export default function UserMyPage() {
                               onError={ev => (ev.currentTarget.src = '/default-thumbnail.png')}
                             />
                             <div className="flex-1 min-w-0">
-                              <div className="font-semibold truncate">{(e as any).title}</div>
+                              <div className="font-semibold truncate text-black">{(e as any).title}</div>
                               <div className="text-xs text-gray-500 truncate">강사: {(e as any).instructorName}</div>
                               <div className="text-xs text-gray-500">진도율: {(e as any).progress}%</div>
                             </div>
-                            <div className="text-sm font-bold whitespace-nowrap">{(e as any).amount?.toLocaleString()}원</div>
+                            <div className="text-sm font-bold whitespace-nowrap text-black">{(e as any).amount?.toLocaleString()}원</div>
                           </li>
                         ))}
                         {enrollments.length > 2 && (
@@ -225,18 +150,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="❤️"
-                    title="찜 목록"
-                    desc="관심 강의 모아보기"
-                    link="/mypage/users/wishlist"
-                  >
+                  <Card title="찜 목록" desc="관심 강의 모아보기" link="/mypage/users/wishlist">
                     {wishlist.length > 0 ? (
                       <ul className="space-y-1">
                         {wishlist.slice(0, 3).map((w) => (
                           <li
                             key={w.classId}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {w.title}
                           </li>
@@ -252,18 +172,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="❓"
-                    title="내 질문"
-                    desc="강의에 남긴 질문 확인"
-                    link="/mypage/users/questions"
-                  >
+                  <Card title="내 질문" desc="강의에 남긴 질문 확인" link="/mypage/users/questions">
                     {questions.length > 0 ? (
                       <ul className="space-y-1">
                         {questions.slice(0, 3).map((q) => (
                           <li
                             key={q.id}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {q.content}
                           </li>
@@ -279,18 +194,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="⭐"
-                    title="내 후기"
-                    desc="작성한 후기 모아보기"
-                    link="/mypage/users/reviews"
-                  >
+                  <Card title="내 후기" desc="작성한 후기 모아보기" link="/mypage/users/reviews">
                     {reviews.length > 0 ? (
                       <ul className="space-y-1">
                         {reviews.slice(0, 3).map((r) => (
                           <li
                             key={r.id}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {r.comment}
                           </li>
@@ -306,12 +216,7 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="🎵"
-                    title="AI 튜너"
-                    desc="마이크로 조율하는 AI 튜너"
-                    link="/mypage/users/tuner"
-                  >
+                  <Card title="AI 튜너" desc="마이크로 조율하는 AI 튜너" link="/mypage/users/tuner">
                     <p>실시간 음정 분석</p>
                     <p>마이크만 있으면 OK!</p>
                   </Card>
@@ -328,14 +233,13 @@ export default function UserMyPage() {
 }
 
 interface CardProps {
-  emoji: string;
   title: string;
   desc: string;
   link: string;
   children: React.ReactNode;
 }
 
-const Card = ({ emoji, title, desc, link, children }: CardProps) => {
+const Card = ({ title, desc, link, children }: CardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -345,17 +249,14 @@ const Card = ({ emoji, title, desc, link, children }: CardProps) => {
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
+      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 border border-neutral-200"
     >
-      <div className="flex items-center space-x-2 mb-3">
-        <span className="text-3xl">{emoji}</span>
-        <div>
-          <div className="font-semibold text-sm text-gray-800">{title}</div>
-          <div className="text-xs text-gray-500">{desc}</div>
-        </div>
+      <div className="mb-3">
+        <div className="font-semibold text-base text-black mb-1">{title}</div>
+        <div className="text-xs text-gray-500">{desc}</div>
       </div>
       <div
-        className="text-sm text-gray-700"
+        className="text-sm text-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -369,15 +270,15 @@ const PaymentSummary: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3))); // 최근 3건만
+    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3)));
   }, []);
 
   return (
-    <div className="bg-white rounded shadow p-4 mb-6">
+    <div className="bg-white rounded shadow p-4 mb-6 mt-8 border border-neutral-200">
       <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg">최근 결제 내역</h3>
+        <h3 className="font-bold text-lg text-black">최근 결제 내역</h3>
         <button
-          className="text-blue-600 text-sm"
+          className="text-gray-800 text-sm hover:underline"
           onClick={() => navigate("payments")}
         >
           전체 보기 &gt;
@@ -390,10 +291,10 @@ const PaymentSummary: React.FC = () => {
           {payments.map((item) => (
             <li
               key={item.paymentId}
-              className="flex justify-between py-1 border-b last:border-b-0"
+              className="flex justify-between py-1 border-b last:border-b-0 text-gray-800"
             >
               <span>{item.title}</span>
-              <span className="font-semibold">
+              <span className="font-semibold text-black">
                 {item.amount.toLocaleString()}원
               </span>
             </li>
@@ -403,3 +304,20 @@ const PaymentSummary: React.FC = () => {
     </div>
   );
 };
+
+function SidebarLink({ to, label }: { to: string; label: string }) {
+  const location = useLocation();
+  const isActive = location.pathname === to;
+  return (
+    <Link
+      to={to}
+      className={`block px-3 py-2 rounded-lg font-medium transition-colors text-left text-base ${
+        isActive
+          ? "bg-black text-white"
+          : "text-gray-800 hover:bg-neutral-200 hover:text-black"
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}

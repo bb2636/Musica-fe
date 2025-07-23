@@ -4,6 +4,7 @@
 export interface CreateQuestionReqDto {
     userId?: number;
     classId: number;
+    lectureId?: number;
     question: string;
 }
 
@@ -43,13 +44,9 @@ export interface CreateAnswerResDto {
 
 // 강사 답변 조회
 export interface InstructorAnswerDto {
-    answerId: number;
     questionId: number;
-    classId: number;
-    lectureId?: number;
-    userId: number;
     question: string;
+    title: string;
     answer: string;
-    createdAt: string;
-    answeredAt: string;
+    createdAt: string; // LocalDateTime → string (ISO 포맷)
 } 

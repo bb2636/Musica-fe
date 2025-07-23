@@ -100,18 +100,20 @@ export const instructorApi = {
 
   /**
    * 📝 질문에 대한 답변 등록
-   * POST /api/instructors/questions/{questionId}/answer
+   * PUT /api/instructors/answers
    *
    * @param questionId - 질문 ID
    * @param answer - 답변 내용 (text)
    *
    * 백엔드가 아래와 같은 형태의 요청을 받는다고 가정:
    * {
+   *   "questionId": 1,
    *   "answer": "답변 내용입니다"
    * }
    */
   answerQuestion: async (questionId: number, answer: string): Promise<void> => {
-    await axiosInstance.post(`/instructors/questions/${questionId}/answer`, {
+    await axiosInstance.put(`/instructors/answers`, {
+      questionId,
       answer,
     });
   },
