@@ -17,17 +17,32 @@ const role = localStorage.getItem("userRole") ?? "";
 const isUser = role.toUpperCase() === "USER";
 const MainPage: React.FC = () => {
   const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
-  const [recommendedClasses, setRecommendedClasses] = useState<MainpageClassItem[]>([]);
+  const [recommendedClasses, setRecommendedClasses] = useState<
+    MainpageClassItem[]
+  >([]);
   const [popularClasses, setPopularClasses] = useState<MainpageClassItem[]>([]);
   const [recentClasses, setRecentClasses] = useState<MainpageClassItem[]>([]);
-  const [reviewSummaryCards, setReviewSummaryCards] = useState<ReviewSummaryCard[]>([]);
+  const [reviewSummaryCards, setReviewSummaryCards] = useState<
+    ReviewSummaryCard[]
+  >([]);
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
   const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   // 커스텀 훅 사용
-  const { wishedClassIds, wishlistCounts, processingSet: wishProcessingSet, fetchWishlist, toggleWish } = useWishlist();
-  const { cartItems, processingSet: cartProcessingSet, fetchCart, toggleCart } = useCart();
+  const {
+    wishedClassIds,
+    wishlistCounts,
+    processingSet: wishProcessingSet,
+    fetchWishlist,
+    toggleWish,
+  } = useWishlist();
+  const {
+    cartItems,
+    processingSet: cartProcessingSet,
+    fetchCart,
+    toggleCart,
+  } = useCart();
   const cartClassIds = cartItems.map((item) => item.classId);
 
   const mapClassData = (data: any[]): MainpageClassItem[] => {
@@ -52,10 +67,10 @@ const MainPage: React.FC = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
-    
+
     if (token) {
-    fetchWishlist(); // ✅ 커스텀 훅 사용
-    fetchCart();     // ✅ 커스텀 훅 사용
+      fetchWishlist(); // ✅ 커스텀 훅 사용
+      fetchCart(); // ✅ 커스텀 훅 사용
     }
 
     if (token && isUser) {
@@ -72,10 +87,12 @@ const MainPage: React.FC = () => {
     } else {
       setPaidClassIdsLoading(false);
     }
-    
+
     axiosInstance
       .get("/main/reviews/summary")
-      .then((res) => setReviewSummaryCards(Array.isArray(res.data) ? res.data : []))
+      .then((res) =>
+        setReviewSummaryCards(Array.isArray(res.data) ? res.data : [])
+      )
       .catch(() => setReviewSummaryCards([]));
     axiosInstance
       .get("/main/popular")
@@ -100,8 +117,10 @@ const MainPage: React.FC = () => {
   }, []);
 
   // Section에 전달할 핸들러
-  const handleToggleWish = (id: number) => toggleWish(id, wishedClassIds.includes(id));
-  const handleToggleCart = (id: number) => toggleCart(id, cartClassIds.includes(id));
+  const handleToggleWish = (id: number) =>
+    toggleWish(id, wishedClassIds.includes(id));
+  const handleToggleCart = (id: number) =>
+    toggleCart(id, cartClassIds.includes(id));
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">

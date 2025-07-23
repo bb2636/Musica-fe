@@ -1,3 +1,4 @@
+// class.ts
 import type { LectureSummary } from "./lecture";
 
 // ✅ 사용자 관련 수강 정보

@@ -66,7 +66,7 @@ const InstructorReviewList = () => {
   const [reviews, setReviews] = useState<InstructorReview[]>([]);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const [classId, _setClassId] = useState<number | undefined>();
+  const [classId] = useState<number | undefined>();
   const [sort, setSort] = useState("createdAt,desc");
 
   const fetchReviews = async (
@@ -127,16 +127,20 @@ const InstructorReviewList = () => {
           {reviews.map((review) => (
             <li
               key={review.reviewId}
-              className="bg-neutral-900 text-white p-4 rounded-lg shadow"
+              className="bg-white text-gray-800 p-4 rounded-xl shadow-md border border-gray-200"
             >
-              <p className="font-semibold">
+              <p className="font-semibold text-lg">
                 {review.classTitle} - {review.lectureTitle}
               </p>
-              <p className="text-sm mt-1">
-                ⭐️ {review.rating}점 by {review.reviewerName}
+              <div className="flex justify-between items-center mt-1 text-sm text-gray-600">
+                <span>
+                  ⭐️ {review.rating}점 by {review.reviewerName}
+                </span>
+                <span>{review.createdAt.slice(0, 10)}</span>
+              </div>
+              <p className="mt-3 text-gray-700 whitespace-pre-wrap">
+                {review.comment}
               </p>
-              <p className="text-xs text-gray-400">{review.createdAt}</p>
-              <p className="mt-2">{review.comment}</p>
             </li>
           ))}
         </ul>

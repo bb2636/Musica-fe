@@ -39,7 +39,7 @@ const InstructorSettingsPage = () => {
   const handleSubmit = async () => {
     setIsSaving(true);
 
-    if (form.newPassword === form.currentPassword) {
+    if (form.newPassword && form.newPassword === form.currentPassword) {
       alert("새 비밀번호는 현재 비밀번호와 다르게 입력해주세요.");
       setIsSaving(false);
       return;
@@ -60,9 +60,9 @@ const InstructorSettingsPage = () => {
   if (!info) return <div className="text-center mt-20">로딩 중...</div>;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-50 px-4">
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-2xl">
-        <h2 className="text-3xl font-bold mb-8 text-center">강사 정보 수정</h2>
+    <div className="flex justify-center items-start px-6 py-12 bg-gray-50 min-h-screen">
+      <div className="bg-white shadow rounded-lg p-8 w-full max-w-2xl">
+        <h2 className="text-2xl font-bold mb-6 text-center">강사 정보 수정</h2>
 
         {/* 이름 */}
         <div className="mb-6">
@@ -85,6 +85,7 @@ const InstructorSettingsPage = () => {
             value={form.email}
             onChange={handleChange}
             className="w-full border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            readOnly
           />
         </div>
 
@@ -131,13 +132,15 @@ const InstructorSettingsPage = () => {
         </div>
 
         {/* 저장 버튼 */}
-        <button
-          onClick={handleSubmit}
-          disabled={isSaving}
-          className="w-full bg-neutral-900 text-white py-3 rounded-md font-semibold hover:bg-black transition disabled:opacity-50"
-        >
-          {isSaving ? "저장 중..." : "저장"}
-        </button>
+        <div className="flex justify-end">
+          <button
+            onClick={handleSubmit}
+            disabled={isSaving}
+            className="bg-neutral-900 text-white px-6 py-3 rounded-md font-semibold hover:bg-black transition disabled:opacity-50"
+          >
+            {isSaving ? "저장 중..." : "저장"}
+          </button>
+        </div>
       </div>
     </div>
   );
