@@ -131,12 +131,19 @@ const CreateClassPage = () => {
         file.name,
         contentType
       );
+      console.log('Presigned URL:', uploadUrl);
+      console.log('Content-Type for PUT:', contentType);
 
-      await fetch(uploadUrl, {
+      const putRes = await fetch(uploadUrl, {
         method: "PUT",
         body: file,
         headers: { "Content-Type": contentType },
       });
+      console.log('PUT Response:', putRes);
+      if (!putRes.ok) {
+        const errorText = await putRes.text();
+        console.error('PUT Error Response Body:', errorText);
+      }
 
       setThumbnailUrl(fileUrl);
     } catch (e) {
