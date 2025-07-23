@@ -49,17 +49,6 @@ const CartPage: React.FC = () => {
     fetchCart();
   }, []);
 
-  const handleClearCart = async () => {
-    if (!window.confirm('장바구니를 모두 비우시겠습니까?')) return;
-    try {
-      await clearCart();
-      setActionMsg('장바구니가 비워졌습니다.');
-      fetchCart();
-    } catch {
-      setActionMsg('장바구니 비우기에 실패했습니다.');
-    }
-  };
-
   const handleDeleteSelected = async () => {
     if (selected.length === 0) return;
     if (!window.confirm('선택한 클래스를 삭제하시겠습니까?')) return;

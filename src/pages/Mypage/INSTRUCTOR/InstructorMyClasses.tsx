@@ -169,7 +169,7 @@ const InstructorMyClasses = () => {
             <div
               key={c.id}
               className="border rounded-lg overflow-hidden shadow hover:shadow-md transition cursor-pointer"
-              onClick={() => navigate(`/classes/${c.id}`)}
+              onClick={() => navigate(`/mypage/instructor/classes/${c.id}/lectures/create`)}
             >
               <img
                 src={
