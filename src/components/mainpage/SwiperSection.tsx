@@ -7,13 +7,13 @@ import "swiper/css/navigation";
 
 interface SwiperSectionProps {
   title: React.ReactNode;
-  moreLink?: string;
+  // moreLink?: string;
   children: React.ReactNode; // 단일 노드든 배열이든 허용
 }
 
 const SwiperSection: React.FC<SwiperSectionProps> = ({
   title,
-  moreLink,
+  // moreLink,
   children,
 }) => {
   const swiperRef = useRef<any>(null);
