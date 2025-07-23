@@ -49,25 +49,6 @@ const InstructorQnA = () => {
     }
   };
 
-  const handleAnswer = async (questionId: number) => {
-    const answer = answerText[questionId];
-    if (!answer?.trim()) {
-      alert("답변을 입력해주세요.");
-      return;
-    }
-
-    try {
-      console.log("[QNA] 답변 등록 시도:", { questionId, answer });
-      await instructorApi.answerQuestion(questionId, answer);
-      setAnswerText((prev) => ({ ...prev, [questionId]: "" }));
-      fetchQuestions(); // 목록 새로고침
-      alert("답변이 등록되었습니다.");
-    } catch (error) {
-      console.error("[QNA] 답변 등록 실패:", error);
-      alert("답변 등록에 실패했습니다.");
-    }
-  };
-
   const handleEditAnswer = (questionId: number, currentAnswer: string | undefined) => {
     setEditingId(questionId);
     setEditingAnswer(currentAnswer ?? "");
@@ -94,7 +75,7 @@ const InstructorQnA = () => {
     setEditingMyAnswer(currentAnswer);
   };
 
-  const handleUpdateMyAnswer = async (answer: InstructorAnswerDto, idx: number) => {
+  const handleUpdateMyAnswer = async (answer: InstructorAnswerDto) => {
     if (!editingMyAnswer.trim()) {
       alert("수정할 답변을 입력해주세요.");
       return;
@@ -233,7 +214,7 @@ const InstructorQnA = () => {
                       />
                       <div className="flex gap-2">
                         <button
-                          onClick={() => handleUpdateMyAnswer(a, idx)}
+                          onClick={() => handleUpdateMyAnswer(a)}
                           className="w-full bg-black hover:bg-gray-800 text-white font-semibold py-2 rounded-lg transition"
                         >
                           저장

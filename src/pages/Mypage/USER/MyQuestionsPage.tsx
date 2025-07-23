@@ -21,8 +21,6 @@ export default function MyQuestionsPage() {
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editingText, setEditingText] = useState<string>("");
 
-    const navigate = useNavigate();
-
     const loadQuestions = async () => {
         try {
             const response = await fetchMyQuestions();
