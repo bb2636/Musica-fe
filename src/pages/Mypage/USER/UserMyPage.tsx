@@ -1,4 +1,4 @@
-import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Header from "../../../components/Header";
 import Footer from "../../../components/Footer";
@@ -12,6 +12,7 @@ import type { WishlistItem } from "../../../types/WishlistItem";
 import { enrollmentApi } from "../../../apis/enrollmentApi";
 import type { Enrollment } from "../../../types/enrollment";
 import { getPayments } from "../../../apis/payment";
+import UserSidebar from "../../../components/layout/UserSidebar";
 
 interface MyQuestionItem {
   id: number;
@@ -45,9 +46,6 @@ export default function UserMyPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 
   const isMainPage = location.pathname === "/mypage/users";
-
-  console.log("🔍 UserMyPage - 현재 경로:", location.pathname);
-  console.log("🔍 UserMyPage - isMainPage:", isMainPage);
 
   useEffect(() => {
     const loadData = async () => {
@@ -160,17 +158,16 @@ export default function UserMyPage() {
             </nav>
           </aside>
 
+      <div className="bg-white min-h-[calc(100vh-120px)] py-10">
+        <div className="max-w-7xl mx-auto flex gap-8 px-4 md:px-8">
+          <UserSidebar />
+          {/* 오른쪽 메인 콘텐츠 */}
           <main className="flex-1">
             <Outlet />
             {isMainPage && (
               <>
-                <div className="grid grid-cols-2 gap-6 mt-8">
-                  <Card
-                    emoji="👤"
-                    title="내 정보"
-                    desc="회원 정보 수정하기"
-                    link="/mypage/users/profile"
-                  >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                  <Card title="내 정보" desc="회원 정보 수정하기" link="/mypage/users/profile">
                     {profile ? (
                       <div className="space-y-1">
                         <p>
@@ -188,23 +185,14 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="📘"
-                    title="수강 중인 강의"
-                    desc="내가 결제한 강의 보기"
-                    link="/mypage/users/enrollments"
-                  >
+                  <Card title="수강 중인 강의" desc="내가 결제한 강의 보기" link="/mypage/users/enrollments">
                     {enrollments.length > 0 ? (
                       <ul className="space-y-2">
                         {enrollments.slice(0, 2).map((e) => (
                           <li
                             key={(e as any).class_id}
-                            className="flex items-center gap-3 bg-gray-50 rounded p-2 cursor-pointer hover:bg-gray-200 transition"
-                            onClick={() =>
-                              (window.location.href = `/classes/${
-                                (e as any).class_id
-                              }`)
-                            }
+                            className="flex items-center gap-3 bg-neutral-100 rounded p-2 cursor-pointer hover:bg-neutral-200 transition"
+                            onClick={() => window.location.href = `/classes/${(e as any).class_id}`}
                           >
                             <img
                               src={(e as any).thumbnailUrl}
@@ -244,18 +232,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="❤️"
-                    title="찜 목록"
-                    desc="관심 강의 모아보기"
-                    link="/mypage/users/wishlist"
-                  >
+                  <Card title="찜 목록" desc="관심 강의 모아보기" link="/mypage/users/wishlist">
                     {wishlist.length > 0 ? (
                       <ul className="space-y-1">
                         {wishlist.slice(0, 3).map((w) => (
                           <li
                             key={w.classId}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {w.title}
                           </li>
@@ -271,18 +254,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="❓"
-                    title="내 질문"
-                    desc="강의에 남긴 질문 확인"
-                    link="/mypage/users/questions"
-                  >
+                  <Card title="내 질문" desc="강의에 남긴 질문 확인" link="/mypage/users/questions">
                     {questions.length > 0 ? (
                       <ul className="space-y-1">
                         {questions.slice(0, 3).map((q) => (
                           <li
                             key={q.id}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {q.content}
                           </li>
@@ -298,18 +276,13 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="⭐"
-                    title="내 후기"
-                    desc="작성한 후기 모아보기"
-                    link="/mypage/users/reviews"
-                  >
+                  <Card title="내 후기" desc="작성한 후기 모아보기" link="/mypage/users/reviews">
                     {reviews.length > 0 ? (
                       <ul className="space-y-1">
                         {reviews.slice(0, 3).map((r) => (
                           <li
                             key={r.id}
-                            className="text-sm text-gray-600 truncate"
+                            className="text-sm text-gray-700 truncate"
                           >
                             • {r.comment}
                           </li>
@@ -325,12 +298,7 @@ export default function UserMyPage() {
                     )}
                   </Card>
 
-                  <Card
-                    emoji="🎵"
-                    title="AI 튜너"
-                    desc="마이크로 조율하는 AI 튜너"
-                    link="/mypage/users/tuner"
-                  >
+                  <Card title="AI 튜너" desc="마이크로 조율하는 AI 튜너" link="/mypage/users/tuner">
                     <p>실시간 음정 분석</p>
                     <p>마이크만 있으면 OK!</p>
                   </Card>
@@ -347,14 +315,13 @@ export default function UserMyPage() {
 }
 
 interface CardProps {
-  emoji: string;
   title: string;
   desc: string;
   link: string;
   children: React.ReactNode;
 }
 
-const Card = ({ emoji, title, desc, link, children }: CardProps) => {
+const Card = ({ title, desc, link, children }: CardProps) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -364,17 +331,14 @@ const Card = ({ emoji, title, desc, link, children }: CardProps) => {
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
+      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 border border-neutral-200"
     >
-      <div className="flex items-center space-x-2 mb-3">
-        <span className="text-3xl">{emoji}</span>
-        <div>
-          <div className="font-semibold text-sm text-gray-800">{title}</div>
-          <div className="text-xs text-gray-500">{desc}</div>
-        </div>
+      <div className="mb-3">
+        <div className="font-semibold text-base text-black mb-1">{title}</div>
+        <div className="text-xs text-gray-500">{desc}</div>
       </div>
       <div
-        className="text-sm text-gray-700"
+        className="text-sm text-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -388,7 +352,7 @@ const PaymentSummary: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3))); // 최근 3건만
+    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3)));
   }, []);
 
   return (

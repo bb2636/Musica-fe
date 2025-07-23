@@ -25,8 +25,8 @@ const EnrollmentsPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4">
-      <h2 className="text-2xl font-bold mb-6">수강 중인 강의 목록</h2>
+    <div className="max-w-3xl mx-auto py-8 px-4 bg-white min-h-screen">
+      <h2 className="text-2xl font-bold mb-6 text-black">수강 중인 강의 목록</h2>
       {loading ? (
         <div className="text-gray-500 text-center py-20">로딩 중...</div>
       ) : error ? (

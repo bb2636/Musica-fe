@@ -7,9 +7,9 @@ interface Props {
 
 const ReviewSummaryCard: React.FC<Props> = ({ review }) => {
   return (
-    <div className="w-full max-w-[800px] max-w-[90%] mx-auto bg-white px-8 py-10 rounded-xl shadow text-center flex flex-col items-center">
+    <div className="w-full max-w-[800px] max-w-[90%] mx-auto bg-white px-8 py-10 rounded-xl shadow text-center flex flex-col items-center border border-neutral-200 font-sans">
       {/* summary - 가장 강조 */}
-      <div className="text-xl font-semibold text-gray-900 mb-6">{review.summary}</div>
+      <div className="text-xl font-semibold text-black mb-6">{review.summary}</div>
       {/* 별점 */}
       <div className="flex items-center justify-center gap-1 mb-2">
         {[...Array(5)].map((_, i) => (

@@ -75,11 +75,11 @@ const MyEnrollmentsPage: React.FC = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 bg-white min-h-screen py-8 px-2 md:px-0 font-sans">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-gray-900">수강 중인 강의</h1>
-                    <p className="text-gray-600 mt-1">총 {enrollments.length}개의 강의를 수강하고 있습니다</p>
+                    <h1 className="text-2xl font-bold text-black">수강 중인 강의</h1>
+                    <p className="text-gray-700 mt-1">총 {enrollments.length}개의 강의를 수강하고 있습니다</p>
                 </div>
             </div>
 

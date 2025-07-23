@@ -1,9 +1,34 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import LoginForm from './Login';
 import SignupForm from './Signup';
 
 const AuthPage = () => {
-    const [mode, setMode] = useState<'login' | 'signup'>('signup');
+    const location = useLocation();
+    const navigate = useNavigate();
+    // 초기값을 쿼리에서 바로 파싱
+    const [mode, setMode] = useState<'login' | 'signup'>(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlMode = params.get('mode');
+        return urlMode === 'login' ? 'login' : 'signup';
+    });
+
+    // URL 쿼리 → 상태 반영
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const urlMode = params.get('mode');
+        if (urlMode === 'login' || urlMode === 'signup') {
+            setMode(urlMode);
+        }
+    }, [location.search]);
+
+    // 상태 → URL 쿼리 반영 (탭 클릭 시)
+    const handleTab = (nextMode: 'login' | 'signup') => {
+        setMode(nextMode);
+        const params = new URLSearchParams(location.search);
+        params.set('mode', nextMode);
+        navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+    };
 
     return (
         <div className="flex justify-center items-start py-10">
@@ -17,7 +42,7 @@ const AuthPage = () => {
                 {/* 탭 버튼 */}
                 <div className="flex mb-4 border rounded-md overflow-hidden">
                     <button
-                        onClick={() => setMode('login')}
+                        onClick={() => handleTab('login')}
                         className={`flex-1 py-2 text-sm font-semibold transition ${
                             mode === 'login'
                                 ? 'bg-black text-white'
@@ -27,7 +52,7 @@ const AuthPage = () => {
                         로그인
                     </button>
                     <button
-                        onClick={() => setMode('signup')}
+                        onClick={() => handleTab('signup')}
                         className={`flex-1 py-2 text-sm font-semibold transition ${
                             mode === 'signup'
                                 ? 'bg-black text-white'

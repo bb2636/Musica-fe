@@ -23,7 +23,7 @@ const ReviewSummarySection: React.FC<Props> = ({ reviews }) => {
 
   if (!reviews || reviews.length === 0) {
     return (
-      <section className="w-full py-16 bg-[#f9f9f9]">
+      <section className="w-full py-16 bg-white font-sans">
         <div className="max-w-[1000px] mx-auto">
           <div className="text-center text-gray-400 py-16">표시할 후기가 없습니다.</div>
         </div>
@@ -32,11 +32,11 @@ const ReviewSummarySection: React.FC<Props> = ({ reviews }) => {
   }
 
   return (
-    <section className="w-full py-16 bg-[#f9f9f9]">
+    <section className="w-full py-16 bg-white font-sans">
       <div className="max-w-[1000px] mx-auto relative">
         {/* ← 버튼 (항상 표시) */}
         <button
-          className="absolute z-20 top-1/2 -translate-y-1/2 -left-8 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
+          className="absolute z-20 top-1/2 -translate-y-1/2 -left-8 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center border border-neutral-200"
           onClick={handlePrev}
           aria-label="이전"
           type="button"
@@ -47,7 +47,7 @@ const ReviewSummarySection: React.FC<Props> = ({ reviews }) => {
         </button>
         {/* → 버튼 (항상 표시) */}
         <button
-          className="absolute z-20 top-1/2 -translate-y-1/2 -right-8 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
+          className="absolute z-20 top-1/2 -translate-y-1/2 -right-8 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center border border-neutral-200"
           onClick={handleNext}
           aria-label="다음"
           type="button"
