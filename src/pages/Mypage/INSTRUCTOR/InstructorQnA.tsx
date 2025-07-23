@@ -17,7 +17,6 @@ interface Question {
 const InstructorQnA = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
-  const [answerText, setAnswerText] = useState<{ [key: number]: string }>({});
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingAnswer, setEditingAnswer] = useState<string>("");
   const [myAnswers, setMyAnswers] = useState<InstructorAnswerDto[]>([]);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchMyQuestions } from '../../../apis/user';
 import { updateQuestion, deleteQuestion } from '../../../apis/qna';
-import { useNavigate } from 'react-router-dom';
 
 interface Question {
     id: number;
