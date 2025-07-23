@@ -8,6 +8,8 @@ import type { CategoryOption, DifficultyOption } from "../types/common";
 const Header: React.FC = () => {
   const navigate = useNavigate();
   const isLoggedIn = !!localStorage.getItem("accessToken");
+  const userRole = (localStorage.getItem("userRole") ?? "").toUpperCase();
+  const isUser = userRole === "USER";
 
   // 통합 검색 상태
   const [sort, setSort] = useState<string>("latest");
@@ -237,7 +239,7 @@ const Header: React.FC = () => {
 
         {/* 우측: 장바구니, MY, 로그아웃/로그인 */}
         <div className="flex items-center gap-4 text-sm">
-          {isLoggedIn && (
+          {isLoggedIn && isUser && (
             <button
               onClick={() => navigate("/cart")}
               className="hover:opacity-80 mr-2"

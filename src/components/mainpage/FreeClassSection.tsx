@@ -13,6 +13,7 @@ interface Props {
   isProcessingCartSet?: Set<number>;
   paidClassIds: number[];
   wishlistCounts: Record<number, number>;
+  isUser?: boolean;
 }
 
 const FreeClassSection: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const FreeClassSection: React.FC<Props> = ({
   isProcessingCartSet,
   paidClassIds,
   wishlistCounts,
+  isUser = true,
 }) => {
   return (
     <SwiperSection
@@ -53,7 +55,8 @@ const FreeClassSection: React.FC<Props> = ({
           wishedClassIds={wishedClassIds}
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
-          isPaid={paidClassIds.includes(item.id)} // ✅ 핵심
+          isPaid={paidClassIds.includes(item.id)}
+          isUser={isUser}
         />
       ))}
     </SwiperSection>

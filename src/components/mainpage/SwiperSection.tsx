@@ -47,7 +47,7 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
 
   if (childCount === 0) {
     return (
-      <section className="w-full py-8 text-center text-gray-400">
+      <section className="w-full py-8 text-center text-gray-400 bg-white font-sans">
         <h2 className="text-xl md:text-2xl font-bold mb-4">{title}</h2>
         <p>표시할 클래스가 없습니다.</p>
       </section>
@@ -55,10 +55,10 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
   }
 
   return (
-    <section className="w-full py-8 relative z-10">
+    <section className="w-full py-8 relative z-10 bg-white font-sans">
       {/* 섹션 제목 + 더 보기 */}
       <div className="flex items-center justify-between mb-4 px-4 max-w-[1200px] mx-auto">
-        <h2 className="text-xl md:text-2xl font-bold">{title}</h2>
+        <h2 className="text-xl md:text-2xl font-bold text-black">{title}</h2>
         {/* {moreLink && (
           <a href={moreLink} className="text-blue-600 text-xs md:text-sm hover:underline">
             더 보기
@@ -70,7 +70,7 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
       <div className="relative max-w-[1200px] mx-auto px-4">
         {!isAtStart && (
           <button
-            className="absolute z-20 top-1/2 -translate-y-1/2 -left-6 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center"
+            className="absolute z-20 top-1/2 -translate-y-1/2 -left-6 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center border border-neutral-200"
             onClick={handlePrev}
             aria-label="이전"
             type="button"
@@ -90,7 +90,7 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
 
         {!isAtEnd && (
           <button
-            className="absolute z-20 top-1/2 -translate-y-1/2 -right-6 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center"
+            className="absolute z-20 top-1/2 -translate-y-1/2 -right-6 bg-white shadow rounded-full w-10 h-10 flex items-center justify-center border border-neutral-200"
             onClick={handleNext}
             aria-label="다음"
             type="button"
