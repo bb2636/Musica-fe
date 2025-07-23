@@ -89,70 +89,70 @@ export default function UserMyPage() {
             <nav className="space-y-3">
               <Link
                 to="/mypage/users/profile"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/profile"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/profile"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 내 정보 수정
               </Link>
               <Link
                 to="/mypage/users/enrollments"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/enrollments"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/enrollments"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 수강 중인 강의 목록
               </Link>
               <Link
                 to="/mypage/users/wishlist"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/wishlist"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/wishlist"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 찜 목록 전체보기
               </Link>
               <Link
                 to="/mypage/users/questions"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/questions"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/questions"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 내 질문 전체보기
               </Link>
               <Link
                 to="/mypage/users/reviews"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/reviews"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/reviews"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 내 후기 전체보기
               </Link>
               <Link
                 to="/mypage/users/tuner"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/tuner"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/tuner"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 AI 튜너 바로가기
               </Link>
               <Link
                 to="/mypage/users/payments"
-                className={`block hover:underline transition-colors ${
-                  location.pathname === "/mypage/users/payments"
-                    ? "text-blue-800 font-semibold"
-                    : "text-blue-600 hover:text-blue-800"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/payments"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
                 }`}
               >
                 결제 내역
@@ -373,33 +373,39 @@ const PaymentSummary: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded shadow p-4 mb-6">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg">최근 결제 내역</h3>
-        <button
-          className="text-blue-600 text-sm"
+      <div
           onClick={() => navigate("payments")}
-        >
-          전체 보기 &gt;
-        </button>
+          className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
+      >
+        {/* ✅ 카드 헤더 스타일 통일 */}
+        <div className="flex items-center space-x-2 mb-3">
+          <span className="text-3xl">💳</span>
+          <div>
+            <div className="font-semibold text-sm text-gray-800">결제 내역</div>
+            <div className="text-xs text-gray-500">최근 결제 3건</div>
+          </div>
+        </div>
+
+        {/* ✅ 카드 본문 내용 */}
+        <div className="text-sm text-gray-700">
+          {payments.length === 0 ? (
+              <div className="text-gray-400">결제 내역이 없습니다.</div>
+          ) : (
+              <ul className="space-y-1">
+                {payments.map((item) => (
+                    <li
+                        key={item.paymentId}
+                        className="flex justify-between py-1 border-b last:border-b-0"
+                    >
+                      <span className="truncate">{item.title}</span>
+                      <span className="font-semibold">
+                  {item.amount.toLocaleString()}원
+                </span>
+                    </li>
+                ))}
+              </ul>
+          )}
+        </div>
       </div>
-      {payments.length === 0 ? (
-        <div className="text-gray-400 text-sm">결제 내역이 없습니다.</div>
-      ) : (
-        <ul>
-          {payments.map((item) => (
-            <li
-              key={item.paymentId}
-              className="flex justify-between py-1 border-b last:border-b-0"
-            >
-              <span>{item.title}</span>
-              <span className="font-semibold">
-                {item.amount.toLocaleString()}원
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
   );
 };

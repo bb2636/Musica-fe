@@ -282,7 +282,7 @@ export default function AITunerPage() {
                         className={`px-8 py-3 rounded-lg font-medium transition-colors ${
                             isListening
                                 ? 'bg-red-500 hover:bg-red-600 text-white'
-                                : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                : 'bg-black text-white hover:bg-gray-300 hover:text-black'
                         }`}
                     >
                         {isListening ? '🛑 정지' : '🎤 시작'}

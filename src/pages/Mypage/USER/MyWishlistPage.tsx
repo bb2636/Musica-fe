@@ -99,14 +99,14 @@ export default function MyWishlistPage() {
                 {item.title}
               </h3>
               {item.price && (
-                <div className="text-blue-600 font-bold">
+                <div className="text-black font-bold">
                   {item.price.toLocaleString()}원
                 </div>
               )}
               <div className="flex gap-x-2">
                 {/* ✅ 클래스 상세페이지 이동 */}
                 <button
-                  className="flex-1 bg-blue-500 text-white py-2 px-3 rounded text-sm hover:bg-blue-600"
+                  className="flex-1 bg-black text-white py-2 px-3 rounded text-sm hover:bg-gray-400"
                   onClick={() => navigate(`/classes/${item.classId}`)}
                 >
                   클래스 보기
@@ -114,7 +114,7 @@ export default function MyWishlistPage() {
 
                 {/* ✅ 찜 해제 */}
                 <button
-                  className="flex-1 bg-red-500 text-white py-2 px-3 rounded text-sm hover:bg-red-600"
+                  className="flex-1 bg-red-400 text-white py-2 px-3 rounded text-sm hover:bg-red-600"
                   onClick={() => handleRemove(item.classId)}
                 >
                   찜 해제
