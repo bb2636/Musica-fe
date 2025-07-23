@@ -22,7 +22,6 @@ interface ClassCardProps {
   isPaid?: boolean; // ✅ 여기만 남기고
   isProcessingWishSet?: Set<number>;
   isProcessingCartSet?: Set<number>;
-  isUser?: boolean;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({
