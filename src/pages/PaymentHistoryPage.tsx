@@ -132,39 +132,59 @@ const PaymentHistoryPage: React.FC = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              {payments.map((item, idx) => (
-                <div
-                  key={item.paymentId ?? `payment-${idx}`}
-                  className="flex items-center rounded p-4 gap-4"
-                >
-                  <img
-                    src={item.thumbnailUrl}
-                    alt={item.title}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold">{item.title}</div>
-                    <div className="text-sm text-gray-500">
-                      결제일: {formatDate(item.paidAt)}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      상태:{" "}
-                      {typeof item.status === "object" && "name" in item.status
-                        ? item.status.name
-                        : item.status}
-                    </div>
-                  </div>
-                  <div className="text-lg font-bold mr-4">
-                    {item.amount.toLocaleString()}원
-                  </div>
-                  <button
-                    className="px-4 py-1 bg-black text-white rounded hover:bg-gray-300 hover:text-black transition text-sm"
-                    onClick={() => handleDetail(item.paymentId)}
+              {payments.map((item, idx) => {
+                let statusName: string;
+                if (typeof item.status === "object" && item.status && "name" in item.status) {
+                  statusName = item.status.name;
+                } else if (typeof item.status === "string") {
+                  // 'PaymentStatus(id=1, name=PAID)' 같은 문자열에서 name 값만 추출
+                  const match = item.status.match(/name=([A-Z_]+)/);
+                  statusName = match ? match[1] : item.status;
+                } else {
+                  statusName = String(item.status);
+                }
+                const isPaid = statusName === "PAID";
+                return (
+                  <div
+                    key={item.paymentId ?? `payment-${idx}`}
+                    className="relative bg-white border border-neutral-200 shadow rounded-xl p-4 min-h-[140px] flex flex-col justify-start"
                   >
-                    결제 내역 상세보기
-                  </button>
-                </div>
-              ))}
+                    {/* 날짜: 카드 왼쪽 상단에 고정 */}
+                    <div className="absolute left-4 top-3 text-xs font-semibold text-black bg-gray-100 px-2 py-0.5 rounded z-10">
+                      {formatDate(item.paidAt)}
+                    </div>
+                    {/* 썸네일+가격+제목: 가로 정렬, 제목은 이미지와 수직 중앙 정렬 */}
+                    <div className="flex items-start pt-8 pb-2 pr-24">
+                      <div className="flex flex-col items-start">
+                        <img
+                          src={item.thumbnailUrl}
+                          alt={item.title}
+                          className="w-16 h-16 object-cover rounded-lg shadow"
+                        />
+                        <div className="text-lg font-bold mt-2">
+                          {item.amount.toLocaleString()}원
+                        </div>
+                      </div>
+                      <div className="ml-3 flex-1 flex items-center h-16">
+                        <div className="font-semibold text-base truncate w-full">{item.title}</div>
+                      </div>
+                    </div>
+                    {/* 상태 + 버튼: 카드 오른쪽 하단에 세로 정렬 */}
+                    <div className="absolute right-4 bottom-4 flex flex-col items-end">
+                      <div className={`mb-2 text-sm font-bold ${isPaid ? 'text-green-600' : 'text-gray-400'}`}
+                        >
+                        {isPaid ? '성공' : statusName}
+                      </div>
+                      <button
+                        className="px-4 py-1.5 bg-black text-white rounded-lg hover:bg-gray-300 hover:text-black transition text-sm font-semibold"
+                        onClick={() => handleDetail(item.paymentId)}
+                      >
+                        결제 내역 상세보기
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
 

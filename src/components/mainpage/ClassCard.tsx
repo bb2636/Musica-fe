@@ -22,6 +22,7 @@ interface ClassCardProps {
   isPaid?: boolean; // ✅ 여기만 남기고
   isProcessingWishSet?: Set<number>;
   isProcessingCartSet?: Set<number>;
+  isUser?: boolean;
 }
 
 const ClassCard: React.FC<ClassCardProps> = ({
@@ -42,6 +43,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
   isPaid = false, // ✅ 기본값 false
   isProcessingWishSet,
   isProcessingCartSet,
+  isUser = true,
 }) => {
   const navigate = useNavigate();
   const isLoggedIn = Boolean(localStorage.getItem("accessToken"));

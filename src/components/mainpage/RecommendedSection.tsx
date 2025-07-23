@@ -13,6 +13,7 @@ interface Props {
   isProcessingCartSet?: Set<number>;
   paidClassIds: number[];
   wishlistCounts: Record<number, number>;
+  isUser?: boolean;
 }
 
 const RecommendedSection: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const RecommendedSection: React.FC<Props> = ({
   isProcessingCartSet,
   paidClassIds,
   wishlistCounts,
+  isUser = true,
 }) => {
   return (
     <SwiperSection
@@ -48,12 +50,13 @@ const RecommendedSection: React.FC<Props> = ({
           thumbnailUrl={item.thumbnailUrl ?? "/no-image.png"}
           wishlistCount={wishlistCounts[item.id] ?? item.wishlistCount}
           isInCart={isInCartList.includes(item.id)}
-          isPaid={paidClassIds.includes(item.id)} // ✅ 수정: boolean 전달
+          isPaid={paidClassIds.includes(item.id)}
           onToggleWish={onToggleWish}
           onToggleCart={onToggleCart}
           wishedClassIds={wishedClassIds}
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
+          isUser={isUser}
         />
       ))}
     </SwiperSection>

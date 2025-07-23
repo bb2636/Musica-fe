@@ -142,6 +142,7 @@ const MainPage: React.FC = () => {
                 isProcessingCartSet={cartProcessingSet}
                 paidClassIds={paidClassIds}
                 wishlistCounts={wishlistCounts}
+                isUser={isUser}
               />
             )}
 
@@ -156,6 +157,7 @@ const MainPage: React.FC = () => {
               isProcessingCartSet={cartProcessingSet}
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
+              isUser={isUser}
             />
 
             <RecentSection
@@ -168,6 +170,7 @@ const MainPage: React.FC = () => {
               isProcessingCartSet={cartProcessingSet}
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
+              isUser={isUser}
             />
 
             <ReviewSummarySection reviews={reviewSummaryCards} />
@@ -182,6 +185,7 @@ const MainPage: React.FC = () => {
               isProcessingCartSet={cartProcessingSet}
               paidClassIds={paidClassIds}
               wishlistCounts={wishlistCounts}
+              isUser={isUser}
             />
           </>
         )}

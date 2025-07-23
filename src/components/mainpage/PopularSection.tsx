@@ -13,6 +13,7 @@ interface Props {
   isProcessingCartSet?: Set<number>;
   paidClassIds: number[]; // ✅ 전달받음
   wishlistCounts: Record<number, number>; // 찜 수 상태 추가
+  isUser?: boolean;
 }
 
 const PopularSection: React.FC<Props> = ({
@@ -25,6 +26,7 @@ const PopularSection: React.FC<Props> = ({
   isProcessingCartSet,
   paidClassIds,
   wishlistCounts, // props로 받아오기
+  isUser = true,
 }) => {
   return (
     <SwiperSection
@@ -54,6 +56,7 @@ const PopularSection: React.FC<Props> = ({
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
           isPaid={paidClassIds.includes(item.id)} // ✅ 이 부분이 핵심!
+          isUser={isUser}
         />
       ))}
     </SwiperSection>
