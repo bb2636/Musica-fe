@@ -56,7 +56,6 @@ const FreeClassSection: React.FC<Props> = ({
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
           isPaid={paidClassIds.includes(item.id)}
-          isUser={isUser}
         />
       ))}
     </SwiperSection>

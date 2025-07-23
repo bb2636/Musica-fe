@@ -56,7 +56,6 @@ const PopularSection: React.FC<Props> = ({
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
           isPaid={paidClassIds.includes(item.id)} // ✅ 이 부분이 핵심!
-          isUser={isUser}
         />
       ))}
     </SwiperSection>

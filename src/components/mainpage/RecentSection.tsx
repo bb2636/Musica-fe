@@ -56,7 +56,6 @@ const RecentSection: React.FC<Props> = ({
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
           isPaid={paidClassIds.includes(item.id)} // ✅ 핵심 포인트!
-          isUser={isUser}
         />
       ))}
     </SwiperSection>

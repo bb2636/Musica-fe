@@ -56,7 +56,6 @@ const RecommendedSection: React.FC<Props> = ({
           wishedClassIds={wishedClassIds}
           isProcessingWishSet={isProcessingWishSet}
           isProcessingCartSet={isProcessingCartSet}
-          isUser={isUser}
         />
       ))}
     </SwiperSection>
