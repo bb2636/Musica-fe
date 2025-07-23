@@ -33,7 +33,6 @@ const RecentSection: React.FC<Props> = ({
           <span role="img" aria-label="최신"></span> 최신 클래스
         </>
       }
-      moreLink="/classes/recent"
     >
       {classes.map((item) => (
         <ClassCard
@@ -45,8 +44,8 @@ const RecentSection: React.FC<Props> = ({
           originalPrice={item.originalPrice}
           rating={item.rating ?? 5}
           ratingCount={item.ratingCount ?? 0}
-          tag={item.tag ?? item.categoryName ?? '기타'}
-          thumbnailUrl={item.thumbnailUrl ?? '/no-image.png'}
+          tag={item.tag ?? item.categoryName ?? "기타"}
+          thumbnailUrl={item.thumbnailUrl ?? "/no-image.png"}
           wishlistCount={wishlistCounts[item.id] ?? item.wishlistCount}
           isInCart={isInCartList.includes(item.id)}
           onToggleWish={onToggleWish}

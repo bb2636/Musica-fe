@@ -1,6 +1,11 @@
 import axiosInstance from "../apis/axiosInstance";
-import type {DashboardData, InstructorInfo, Question, Settlement} from "../types/instructor.ts";
-import type {Review} from "../types/review.ts";
+import type {
+  DashboardData,
+  InstructorInfo,
+  Question,
+  Settlement,
+} from "../types/instructor.ts";
+import type { Review } from "../types/review.ts";
 
 export const instructorApi = {
   /**
@@ -36,7 +41,7 @@ export const instructorApi = {
     classId: number,
     data: {
       title: string;
-      descriptionHtml: string;
+      descriptionHtml?: string;
       categoryId: number;
       difficultyId: number;
       classPrice: number;

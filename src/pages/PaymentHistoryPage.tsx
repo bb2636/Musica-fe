@@ -135,7 +135,7 @@ const PaymentHistoryPage: React.FC = () => {
               {payments.map((item, idx) => (
                 <div
                   key={item.paymentId ?? `payment-${idx}`}
-                  className="flex items-center bg-gray-100 rounded p-4 gap-4"
+                  className="flex items-center rounded p-4 gap-4"
                 >
                   <img
                     src={item.thumbnailUrl}
@@ -158,7 +158,7 @@ const PaymentHistoryPage: React.FC = () => {
                     {item.amount.toLocaleString()}원
                   </div>
                   <button
-                    className="px-4 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
+                    className="px-4 py-1 bg-black text-white rounded hover:bg-gray-300 hover:text-black transition text-sm"
                     onClick={() => handleDetail(item.paymentId)}
                   >
                     결제 내역 상세보기

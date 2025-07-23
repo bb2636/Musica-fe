@@ -262,14 +262,17 @@ const CreateClassPage = () => {
             type="text"
             inputMode="numeric"
             pattern="[0-9]*"
-            value={classPrice ?? ""}
+            value={
+              classPrice !== undefined ? classPrice.toLocaleString("ko-KR") : ""
+            }
             onChange={(e) => {
               const raw = e.target.value;
-              const onlyNums = raw.replace(/[^0-9]/g, ""); // 숫자만 남김
+              const onlyNums = raw.replace(/[^\d]/g, ""); // 숫자만 추출
               const num = Number(onlyNums);
-              setClassPrice(!isNaN(num) ? num : undefined);
+              setClassPrice(!isNaN(num) ? num : undefined); // 0은 OK, NaN만 undefined 처리
             }}
             className="border p-2 rounded w-full"
+            placeholder="가격을 입력하세요 (숫자만)"
           />
         </div>
       </div>

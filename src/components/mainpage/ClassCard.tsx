@@ -1,8 +1,8 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import jjimbefore from '../../assets/jjimbefore.png';
-import jjimafter from '../../assets/jjimafter.png';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart } from "lucide-react";
+import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
+import { HeartIcon as OutlineHeartIcon } from "@heroicons/react/24/outline";
 
 interface ClassCardProps {
   id: number;
@@ -111,7 +111,9 @@ const ClassCard: React.FC<ClassCardProps> = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          <div className="text-gray-400 w-full h-full flex items-center justify-center">No Image</div>
+          <div className="text-gray-400 w-full h-full flex items-center justify-center">
+            No Image
+          </div>
         )}
       </div>
       {/* 정보 영역 */}
@@ -119,7 +121,9 @@ const ClassCard: React.FC<ClassCardProps> = ({
         {tag && (
           <div className="text-xs text-blue-600 font-semibold">{tag}</div>
         )}
-        <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep">{title}</h3>
+        <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep">
+          {title}
+        </h3>
         {instructor && (
           <div className="text-sm text-gray-500">{instructor}</div>
         )}
@@ -136,12 +140,19 @@ const ClassCard: React.FC<ClassCardProps> = ({
             ₩{price.toLocaleString()}
           </span>
           <div className="flex items-center gap-2">
-            <button onClick={handleToggleWish} type="button">
+            {/* <button onClick={handleToggleWish} type="button">
               <img
                 src={isWished ? jjimafter : jjimbefore}
                 alt="찜"
                 className="w-6 h-6"
               />
+            </button> */}
+            <button onClick={handleToggleWish} type="button">
+              {isWished ? (
+                <SolidHeartIcon className="w-6 h-6 text-red-500" />
+              ) : (
+                <OutlineHeartIcon className="w-6 h-6 text-red-500" />
+              )}
             </button>
             {isPaid ? (
               <span className="px-3 py-1 text-sm text-gray-500 bg-gray-200 rounded-full cursor-not-allowed">
@@ -150,7 +161,10 @@ const ClassCard: React.FC<ClassCardProps> = ({
             ) : (
               <button onClick={handleToggleCart} type="button">
                 {isInCart ? (
-                  <ShoppingCart className="w-6 h-6 text-blue-600 fill-blue-600" fill="currentColor" />
+                  <ShoppingCart
+                    className="w-6 h-6 text-blue-600 fill-blue-600"
+                    fill="currentColor"
+                  />
                 ) : (
                   <ShoppingCart className="w-6 h-6 text-blue-600" />
                 )}
@@ -159,7 +173,9 @@ const ClassCard: React.FC<ClassCardProps> = ({
           </div>
         </div>
         {originalPrice && (
-          <span className="text-xs line-through text-gray-400">₩{originalPrice.toLocaleString()}</span>
+          <span className="text-xs line-through text-gray-400">
+            ₩{originalPrice.toLocaleString()}
+          </span>
         )}
       </div>
     </div>

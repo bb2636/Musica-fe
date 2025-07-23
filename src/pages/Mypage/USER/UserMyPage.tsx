@@ -85,13 +85,76 @@ export default function UserMyPage() {
           <aside className="w-60 bg-white p-6 rounded-xl shadow-sm flex-shrink-0 h-fit">
             <h2 className="text-lg font-bold mb-4 text-black">마이페이지</h2>
             <nav className="space-y-3">
-              <SidebarLink to="/mypage/users/profile" label="내 정보" />
-              <SidebarLink to="/mypage/users/enrollments" label="수강 강의" />
-              <SidebarLink to="/mypage/users/wishlist" label="찜 목록" />
-              <SidebarLink to="/mypage/users/questions" label="내 질문" />
-              <SidebarLink to="/mypage/users/reviews" label="내 후기" />
-              <SidebarLink to="/mypage/users/tuner" label="AI 튜너" />
-              <SidebarLink to="/mypage/users/payments" label="결제 내역" />
+              <Link
+                to="/mypage/users/profile"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/profile"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                내 정보 수정
+              </Link>
+              <Link
+                to="/mypage/users/enrollments"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/enrollments"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                수강 중인 강의 목록
+              </Link>
+              <Link
+                to="/mypage/users/wishlist"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/wishlist"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                찜 목록 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/questions"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/questions"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                내 질문 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/reviews"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/reviews"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                내 후기 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/tuner"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/tuner"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                AI 튜너 바로가기
+              </Link>
+              <Link
+                to="/mypage/users/payments"
+                className={`block transition-colors hover:underline ${
+                    location.pathname === "/mypage/users/payments"
+                        ? "text-blue-800 font-semibold"
+                        : "text-gray-800"
+                }`}
+              >
+                결제 내역
+              </Link>
             </nav>
           </aside>
           {/* 오른쪽 메인 콘텐츠 */}
@@ -274,50 +337,39 @@ const PaymentSummary: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white rounded shadow p-4 mb-6 mt-8 border border-neutral-200">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="font-bold text-lg text-black">최근 결제 내역</h3>
-        <button
-          className="text-gray-800 text-sm hover:underline"
+      <div
           onClick={() => navigate("payments")}
-        >
-          전체 보기 &gt;
-        </button>
+          className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
+      >
+        {/* ✅ 카드 헤더 스타일 통일 */}
+        <div className="flex items-center space-x-2 mb-3">
+          <span className="text-3xl">💳</span>
+          <div>
+            <div className="font-semibold text-sm text-gray-800">결제 내역</div>
+            <div className="text-xs text-gray-500">최근 결제 3건</div>
+          </div>
+        </div>
+
+        {/* ✅ 카드 본문 내용 */}
+        <div className="text-sm text-gray-700">
+          {payments.length === 0 ? (
+              <div className="text-gray-400">결제 내역이 없습니다.</div>
+          ) : (
+              <ul className="space-y-1">
+                {payments.map((item) => (
+                    <li
+                        key={item.paymentId}
+                        className="flex justify-between py-1 border-b last:border-b-0"
+                    >
+                      <span className="truncate">{item.title}</span>
+                      <span className="font-semibold">
+                  {item.amount.toLocaleString()}원
+                </span>
+                    </li>
+                ))}
+              </ul>
+          )}
+        </div>
       </div>
-      {payments.length === 0 ? (
-        <div className="text-gray-400 text-sm">결제 내역이 없습니다.</div>
-      ) : (
-        <ul>
-          {payments.map((item) => (
-            <li
-              key={item.paymentId}
-              className="flex justify-between py-1 border-b last:border-b-0 text-gray-800"
-            >
-              <span>{item.title}</span>
-              <span className="font-semibold text-black">
-                {item.amount.toLocaleString()}원
-              </span>
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
   );
 };
-
-function SidebarLink({ to, label }: { to: string; label: string }) {
-  const location = useLocation();
-  const isActive = location.pathname === to;
-  return (
-    <Link
-      to={to}
-      className={`block px-3 py-2 rounded-lg font-medium transition-colors text-left text-base ${
-        isActive
-          ? "bg-black text-white"
-          : "text-gray-800 hover:bg-neutral-200 hover:text-black"
-      }`}
-    >
-      {label}
-    </Link>
-  );
-}

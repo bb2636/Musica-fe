@@ -38,7 +38,7 @@ const EnrollmentsPage: React.FC = () => {
           {enrollments.map((e: any) => (
             <div
               key={e.class_id}
-              className="flex items-center bg-gray-100 rounded p-4 gap-4 shadow hover:shadow-lg transition cursor-pointer"
+              className="flex items-center rounded p-4 gap-4 shadow hover:shadow-lg transition cursor-pointer"
               onClick={() => navigate(`/classes/${e.class_id}`)}
             >
               <img
