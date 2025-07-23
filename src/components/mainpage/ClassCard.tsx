@@ -1,7 +1,5 @@
 import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import jjimbefore from "../../assets/jjimbefore.png";
-import jjimafter from "../../assets/jjimafter.png";
 import { ShoppingCart } from "lucide-react";
 import { HeartIcon as SolidHeartIcon } from "@heroicons/react/24/solid";
 import { HeartIcon as OutlineHeartIcon } from "@heroicons/react/24/outline";
