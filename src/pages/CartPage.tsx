@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { getCart, clearCart, deleteCartItems } from '../apis/cart';
+import { getCart, deleteCartItems } from '../apis/cart';
 import { loadTossPayments } from '@tosspayments/payment-sdk';
 
 interface CartItem {
