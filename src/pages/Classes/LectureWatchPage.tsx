@@ -130,6 +130,33 @@ const LectureWatchPage = () => {
     };
   }, []);
 
+  // ✅ 4. 수강 완료 자동 감지 (requestAnimationFrame)
+  useEffect(() => {
+    let animationFrameId: number;
+    let hasTriggeredCompletion = false;
+
+    const checkCompletion = () => {
+      if (!isMountedRef.current || !videoRef.current || !duration || completed)
+        return;
+
+      const currentTime = videoRef.current.currentTime;
+      const progressRate = (currentTime / duration) * 100;
+
+      if (progressRate >= 90 && !hasTriggeredCompletion) {
+        hasTriggeredCompletion = true;
+        saveProgress(true); // 바로 완료 처리
+      }
+
+      animationFrameId = requestAnimationFrame(checkCompletion);
+    };
+
+    animationFrameId = requestAnimationFrame(checkCompletion);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [duration, completed, saveProgress]);
+
   const handleTimeUpdate = () => {
     if (!isMountedRef.current || !videoRef.current) return;
     const currentTime = videoRef.current.currentTime;

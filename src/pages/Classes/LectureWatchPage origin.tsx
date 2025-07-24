@@ -215,7 +215,10 @@ const LectureWatchPage = () => {
                   <div className="flex items-center justify-between">
                     <span className="truncate font-medium">{lec.title}</span>
                     {lec.isCompleted && (
-                      <span className="text-green-600 text-xs">✔ 완료</span>
+                      <span className="flex items-center gap-1 text-green-600 text-xs whitespace-nowrap">
+                        <span>✔</span>
+                        <span>완료</span>
+                      </span>
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">

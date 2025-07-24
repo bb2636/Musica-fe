@@ -156,7 +156,7 @@ export default function UserMyPage() {
                         ))}
                         {enrollments.length > 2 && (
                           <li className="text-xs text-gray-500">
-                            외 {enrollments.length - 2}개 더...
+                            외 {enrollments.length - 2}개
                           </li>
                         )}
                       </ul>
@@ -185,7 +185,7 @@ export default function UserMyPage() {
                         ))}
                         {wishlist.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {wishlist.length - 3}개 더...
+                            외 {wishlist.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -212,7 +212,7 @@ export default function UserMyPage() {
                         ))}
                         {questions.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {questions.length - 3}개 더...
+                            외 {questions.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -239,7 +239,7 @@ export default function UserMyPage() {
                         ))}
                         {reviews.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {reviews.length - 3}개 더...
+                            외 {reviews.length - 3}개
                           </li>
                         )}
                       </ul>
