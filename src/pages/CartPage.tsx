@@ -39,7 +39,7 @@ const CartPage: React.FC = () => {
       setCart(res.data);
       setSelected([]);
       console.log("가져온 카트 아이템:", res.data.cartItems);
-    } catch (err) {
+    } catch {
       setError("장바구니 정보를 불러오지 못했습니다.");
     } finally {
       setLoading(false);
