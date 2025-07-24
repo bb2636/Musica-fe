@@ -25,7 +25,9 @@ const MainPage: React.FC = () => {
   >([]);
   const [freeClasses, setFreeClasses] = useState<MainpageClassItem[]>([]);
   const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
+  // 커스텀 훅 사용
   const {
     wishedClassIds,
     wishlistCounts,
@@ -33,19 +35,17 @@ const MainPage: React.FC = () => {
     fetchWishlist,
     toggleWish,
   } = useWishlist();
-
   const {
     cartItems,
     processingSet: cartProcessingSet,
     fetchCart,
     toggleCart,
   } = useCart();
-
   const cartClassIds = cartItems.map((item) => item.classId);
 
   const mapClassData = (data: any[]): MainpageClassItem[] => {
     if (!Array.isArray(data)) return [];
-    return data.map((item) => ({
+    const mapped = data.map((item) => ({
       id: item.id,
       title: item.title,
       price: item.price,
@@ -59,24 +59,25 @@ const MainPage: React.FC = () => {
       studentCount: item.studentCount ?? 0,
       wishlistCount: item.wishlistCount ?? 0,
     }));
+    return mapped;
   };
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    const role = localStorage.getItem("userRole");
-    const isUser = role?.toUpperCase() === "USER";
-    const isLoggedIn = !!token;
+    const role = localStorage.getItem("userRole") ?? "";
+    const isUser = role.toUpperCase() === "USER";
 
-    if (isLoggedIn) {
+    setIsLoggedIn(!!token);
+
+    if (token) {
       fetchWishlist();
       fetchCart();
     }
 
-    if (isLoggedIn && isUser) {
+    if (token && isUser) {
       getEnrolledClasses()
         .then((classes) => {
           const ids = classes.map((item) => item.classId);
-          console.log("✅ 결제된 클래스 ID:", ids);
           setPaidClassIds(ids);
         })
         .finally(() => {
@@ -85,53 +86,38 @@ const MainPage: React.FC = () => {
 
       axiosInstance
         .get("/main/recommend")
-        .then((res) => {
-          console.log("✅ 추천 클래스 응답:", res.data);
-          setRecommendedClasses(mapClassData(res.data));
-        })
-        .catch((err) => {
-          console.error("❌ 추천 클래스 에러:", err);
-          setRecommendedClasses([]);
-        });
+        .then((res) => setRecommendedClasses(mapClassData(res.data)))
+        .catch(() => setRecommendedClasses([]));
     } else {
       setPaidClassIdsLoading(false);
       setRecommendedClasses([]);
     }
 
-    // 공용 섹션 데이터 요청
     axiosInstance
       .get("/main/reviews/summary")
       .then((res) =>
         setReviewSummaryCards(Array.isArray(res.data) ? res.data : [])
       )
       .catch(() => setReviewSummaryCards([]));
-
     axiosInstance
       .get("/main/popular")
       .then((res) => setPopularClasses(mapClassData(res.data)))
       .catch(() => setPopularClasses([]));
-
     axiosInstance
       .get("/main/latest")
       .then((res) => setRecentClasses(mapClassData(res.data)))
       .catch(() => setRecentClasses([]));
-
     axiosInstance
       .get("/main/classes/free")
       .then((res) => setFreeClasses(mapClassData(res.data)))
       .catch(() => setFreeClasses([]));
   }, []);
 
+  // Section에 전달할 핸들러
   const handleToggleWish = (id: number) =>
     toggleWish(id, wishedClassIds.includes(id));
   const handleToggleCart = (id: number) =>
     toggleCart(id, cartClassIds.includes(id));
-
-  // 로그인 상태 및 권한 확인 (렌더링 조건)
-  const token = localStorage.getItem("accessToken");
-  const role = localStorage.getItem("userRole");
-  const isUser = role?.toUpperCase() === "USER";
-  const isLoggedIn = !!token;
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -141,7 +127,7 @@ const MainPage: React.FC = () => {
           <div className="text-center text-gray-500">로딩 중...</div>
         ) : (
           <>
-            {/* 추천 클래스 (로그인 유저 + 데이터 존재) */}
+            {/* 추천 클래스 (유저 + 로그인 + 데이터 있음) */}
             {isLoggedIn && isUser && recommendedClasses.length > 0 && (
               <RecommendedSection
                 classes={recommendedClasses}
@@ -156,6 +142,7 @@ const MainPage: React.FC = () => {
               />
             )}
 
+            {/* 인기, 최신, 무료 클래스 섹션들 */}
             <PopularSection
               classes={popularClasses}
               onToggleWish={handleToggleWish}

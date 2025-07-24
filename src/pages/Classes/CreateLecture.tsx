@@ -82,10 +82,7 @@ const CreateLecturePage = () => {
   const [recommendedMap, setRecommendedMap] = useState<
     Record<number, string[]>
   >({});
-
-  const isSubmitting = false;
-  const isDone = false;
-
+  const [isSubmitting, setIsSubmitting] = useState(false); // ✅ 상태 선언
   const [activeSubmittingIndex, setActiveSubmittingIndex] = useState<
     number | null
   >(null);
@@ -98,9 +95,6 @@ const CreateLecturePage = () => {
         const data: LectureSummary[] = await lectureApi.getLectureList(
           Number(classId)
         );
-        // const data: LectureResponse[] = await lectureApi.getLectureList(
-        //   Number(classId)
-        // );
         const formatted = data.map((l) => ({
           id: l.lectureId,
           title: l.title,
@@ -114,9 +108,9 @@ const CreateLecturePage = () => {
           existingVideoObjectKey: l.videoObjectKey,
         }));
         setLectures(formatted);
-        // 👇 클래스 카테고리 추가 조회
+
         const classDetail = await classApi.getClassDetail(Number(classId));
-        setClassCategory(classDetail.categoryName); // 예: "피아노"
+        setClassCategory(classDetail.categoryName);
       } catch (err) {
         console.error("기존 강의 불러오기 실패:", err);
       }
@@ -298,169 +292,214 @@ const CreateLecturePage = () => {
 
   return (
     <div className="p-6 max-w-6xl mx-auto space-y-8">
-      {/* ✅ 클래스 정보 수정 섹션 추가 */}
       {classId && <ClassEditSection classId={Number(classId)} />}
-      <h1 className="text-2xl font-bold">강의 등록</h1>
+      <h1 className="text-2xl font-bold text-gray-900">강의 등록</h1>
+
       {lectures.map((lecture, idx) => (
-        <div key={idx} className="mb-6 border p-4 rounded space-y-2 bg-gray-50">
+        <div
+          key={idx}
+          className="mb-6 border border-gray-200 p-4 rounded-lg bg-white shadow hover:shadow-md transition"
+        >
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold">강의 {idx + 1}</h3>
+            <h3 className="font-semibold text-lg text-gray-800">
+              강의 {idx + 1}
+            </h3>
             <button
               onClick={() => handleDeleteLecture(idx)}
-              className="text-red-500 text-sm"
+              className="text-red-500 text-sm hover:underline"
             >
               삭제
             </button>
           </div>
-          <input
-            type="text"
-            placeholder="강의 제목"
-            value={lecture.title}
-            onChange={(e) => handleLectureChange(idx, "title", e.target.value)}
-            className="border p-2 rounded w-full"
-          />
-          <input
-            type="text"
-            readOnly
-            placeholder="재생 시간 (예: 15:30)"
-            value={lecture.duration}
-            className="border p-2 rounded w-full"
-          />
-          <label className="block font-medium">강의 영상</label>
-          <input
-            type="file"
-            accept="video/*"
-            onChange={(e) => handleVideoDuration(idx, e)}
-          />
-          {!lecture.videoFile && lecture.existingVideoUrl && (
-            <p className="text-xs text-gray-400">* 기존 영상이 있습니다</p>
-          )}
-          <label className="block font-medium">강의 자료 (PDF)</label>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={(e) =>
-              handleLectureChange(idx, "pdfFile", e.target.files?.[0])
-            }
-          />
-          {!lecture.pdfFile && lecture.existingFileUrl && (
-            <p className="text-xs text-gray-400">* 기존 자료가 있습니다</p>
-          )}
-          {lecture.id && recommendedMap[lecture.id] && (
-            <div className="mt-2 p-2 bg-white border rounded">
-              <p className="text-sm font-medium text-gray-700">추천 악기:</p>
-              <ul className="list-disc pl-5 text-sm text-gray-600">
-                {recommendedMap[lecture.id].map((cat) => (
-                  <li key={cat}>{cat}</li>
-                ))}
-              </ul>
-              {/* ✅ 분석 결과 요약 메시지 */}
-              {classCategory && (
-                <p className="text-sm mt-2 text-gray-800">
-                  이 클래스의 카테고리는{" "}
-                  <span className="font-semibold">{classCategory}</span>입니다.
-                  <br />
-                  영상 분석 결과{" "}
-                  <span className="font-semibold">
-                    {recommendedMap[lecture.id].join(", ")}
-                  </span>{" "}
-                  악기가 감지되었습니다.
-                  <br /> <span className="font-semibold">
-                    {classCategory}
-                  </span>{" "}
-                  카테고리에 적합한 영상인지 확인해 주세요.
-                </p>
-              )}
-            </div>
-          )}
-          <div className="flex justify-end">
-            <button
-              onClick={async () => {
-                setActiveSubmittingIndex(idx);
-                try {
-                  await registerLecture(lecture, idx);
-                } finally {
-                  setActiveSubmittingIndex(null);
-                }
-              }}
-              className={`mt-2 text-sm px-3 py-1 rounded transition ${
-                lecture.id
-                  ? "bg-gray-300 hover:bg-gray-400 text-gray-800"
-                  : "bg-gradient-to-r from-neutral-900 to-gray-950 hover:brightness-110 text-white"
-              } ${
-                activeSubmittingIndex === idx
-                  ? "opacity-50 cursor-not-allowed"
-                  : ""
-              }`}
-              disabled={
-                isSubmitting ||
-                activeSubmittingIndex !== null ||
-                !isModifiedLecture(lecture)
+
+          <div className="space-y-3 mt-2">
+            <input
+              type="text"
+              placeholder="강의 제목"
+              value={lecture.title}
+              onChange={(e) =>
+                handleLectureChange(idx, "title", e.target.value)
               }
-            >
-              {activeSubmittingIndex === idx
-                ? lecture.id
-                  ? "수정 중..."
-                  : "등록 중..."
-                : lecture.id
-                ? "수정하기"
-                : "등록하기"}
-            </button>
+              className="border p-2 rounded w-full text-sm"
+            />
+            <input
+              type="text"
+              readOnly
+              placeholder="재생 시간 (예: 15:30)"
+              value={lecture.duration}
+              className="border p-2 rounded w-full text-sm bg-gray-100"
+            />
+            <label className="block font-medium text-sm">강의 영상</label>
+            <input
+              type="file"
+              accept="video/*"
+              onChange={(e) => handleVideoDuration(idx, e)}
+            />
+            {!lecture.videoFile && lecture.existingVideoUrl && (
+              <p className="text-xs text-gray-400">* 기존 영상이 있습니다</p>
+            )}
+            <label className="block font-medium text-sm">강의 자료 (PDF)</label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) =>
+                handleLectureChange(idx, "pdfFile", e.target.files?.[0])
+              }
+            />
+            {!lecture.pdfFile && lecture.existingFileUrl && (
+              <p className="text-xs text-gray-400">* 기존 자료가 있습니다</p>
+            )}
+
+            {lecture.id && recommendedMap[lecture.id] && (
+              <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded animate-fade-in">
+                <p className="text-sm font-medium text-blue-800">추천 악기:</p>
+                <ul className="list-disc pl-5 text-sm text-blue-700">
+                  {recommendedMap[lecture.id].map((cat) => (
+                    <li key={cat}>{cat}</li>
+                  ))}
+                </ul>
+                {classCategory && (
+                  <p className="text-sm mt-2 text-gray-700">
+                    이 클래스의 카테고리는{" "}
+                    <span className="font-semibold">{classCategory}</span>
+                    입니다.
+                    <br />
+                    영상 분석 결과{" "}
+                    <span className="font-semibold">
+                      {recommendedMap[lecture.id].join(", ")}
+                    </span>{" "}
+                    악기가 감지되었습니다. <br />
+                    <span className="font-semibold">{classCategory}</span>에
+                    적합한 강의인지 확인해 주세요.
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                onClick={async () => {
+                  setActiveSubmittingIndex(idx);
+                  setIsSubmitting(true);
+                  try {
+                    await registerLecture(lecture, idx);
+                  } catch (err) {
+                    console.error("등록 오류:", err);
+                    alert("강의 등록 중 오류가 발생했습니다.");
+                  } finally {
+                    setActiveSubmittingIndex(null);
+                    setIsSubmitting(false);
+                  }
+                }}
+                className={`mt-2 text-sm px-4 py-1.5 rounded transition font-semibold ${
+                  lecture.id
+                    ? "bg-gray-300 hover:bg-gray-400 text-gray-800"
+                    : "bg-blue-600 hover:bg-blue-700 text-white"
+                } ${
+                  activeSubmittingIndex === idx
+                    ? "opacity-50 cursor-not-allowed"
+                    : ""
+                }`}
+                disabled={
+                  isSubmitting ||
+                  activeSubmittingIndex !== null ||
+                  !isModifiedLecture(lecture)
+                }
+              >
+                {activeSubmittingIndex === idx
+                  ? lecture.id
+                    ? "수정 중..."
+                    : "등록 중..."
+                  : lecture.id
+                  ? "수정하기"
+                  : "등록하기"}
+              </button>
+            </div>
           </div>
         </div>
       ))}
+
       <button
         type="button"
         onClick={handleAddLecture}
-        className="bg-gray-200 px-4 py-2 rounded"
+        className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition"
       >
         + 강의 추가
       </button>
 
-      {isDone && (
-        <div className="mt-6 bg-green-100 border border-green-300 p-4 rounded">
-          <p className="text-green-800 font-semibold">
-            강의 등록이 완료되었습니다!
-          </p>
-          <p className="text-sm mt-1">아래 추천 악기를 확인해보세요.</p>
-          <button
-            onClick={() => navigate("/mypage/instructor/classes")}
-            className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            클래스 목록으로 이동
-          </button>
-        </div>
-      )}
-
-      {isSubmitting && (
-        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow text-center">
-            <svg
-              className="animate-spin h-6 w-6 text-blue-600 mx-auto mb-2"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
+      {/* ✅ 등록 완료 메시지 */}
+      {!isSubmitting &&
+        lectures.length > 0 &&
+        lectures.every((lec) => lec.id) && (
+          <div className="mt-6 bg-white border border-green-400 p-6 rounded shadow-lg animate-fade-in">
+            <div className="flex items-center gap-3 mb-2">
+              <svg
+                className="h-6 w-6 text-green-600"
+                fill="none"
                 stroke="currentColor"
-                strokeWidth="4"
-              ></circle>
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8z"
-              ></path>
-            </svg>
-            <p className="text-sm font-medium">
-              강의를 등록/수정하고 있습니다. 잠시만 기다려주세요...
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              <p className="text-green-800 font-bold text-lg">
+                모든 강의가 성공적으로 등록되었습니다!
+              </p>
+            </div>
+            <p className="text-gray-700 text-sm mb-4">
+              추천 악기 분석 결과도 함께 확인해 보세요.
+            </p>
+            <div className="text-right">
+              <button
+                onClick={() => navigate("/mypage/instructor/classes")}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              >
+                클래스 목록으로 이동
+              </button>
+            </div>
+          </div>
+        )}
+
+      {/* ✅ 로딩 오버레이 */}
+      {isSubmitting && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in">
+          <div className="bg-white px-10 py-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 w-80 text-center border border-gray-200">
+            {/* 로딩 애니메이션 */}
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+
+            {/* 제목 */}
+            <h2 className="text-lg font-bold text-gray-800">
+              강의 분석 중입니다
+            </h2>
+
+            {/* 설명 */}
+            <p className="text-sm text-gray-600 leading-relaxed">
+              🎶 악기 분석을 진행 중입니다 🥁
+              <br />
+              잠시만 기다려 주세요!
             </p>
           </div>
         </div>
       )}
+      {/* {isSubmitting && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 bg-white px-8 py-6 rounded-lg shadow-xl">
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-base font-semibold text-gray-800">
+              강의 분석 중입니다
+            </p>
+            <p className="text-sm text-gray-600 text-center">
+              🎶악기 분석을 진행 중입니다.
+              <br />
+              잠시만 기다려 주세요...
+            </p>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };
