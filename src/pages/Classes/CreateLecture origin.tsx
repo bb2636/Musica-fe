@@ -4,6 +4,7 @@ import { uploadApi } from "../../apis/uploadApi";
 import { lectureApi } from "../../apis/lectureApi";
 import { classApi } from "../../apis/classesApi";
 import { getContentType } from "../../utils/getContentType";
+import ClassEditSection from "../../components/ClassEditSection";
 import type { LectureSummary } from "../../types/lecture";
 
 interface LectureForm {
@@ -296,7 +297,9 @@ const CreateLecturePage = () => {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto space-y-6">
+    <div className="p-6 max-w-6xl mx-auto space-y-8">
+      {/* ✅ 클래스 정보 수정 섹션 추가 */}
+      {classId && <ClassEditSection classId={Number(classId)} />}
       <h1 className="text-2xl font-bold">강의 등록</h1>
       {lectures.map((lecture, idx) => (
         <div key={idx} className="mb-6 border p-4 rounded space-y-2 bg-gray-50">

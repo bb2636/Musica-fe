@@ -40,11 +40,11 @@ const Login = () => {
 
         // ✅ role에 따른 페이지 이동
         if (role === "ADMIN") {
-          setTimeout(() => navigate("/mypage/admin"), 100);
+          navigate("/mypage/admin");
         } else if (role === "INSTRUCTOR") {
-          setTimeout(() => navigate("/mypage/instructor"), 100);
+          navigate("/mypage/instructor");
         } else {
-          setTimeout(() => navigate("/main"), 100); // ✅ 추천 클래스 문제 해결
+          navigate("/main");
         }
       } else {
         alert("로그인 실패: 토큰이 없습니다");
