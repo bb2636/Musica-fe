@@ -109,30 +109,30 @@ const SwiperSection: React.FC<SwiperSectionProps> = ({
         )}
 
         <div className="overflow-hidden relative z-10">
-          <Swiper
-            modules={[Navigation]}
-            onSwiper={(swiper) => {
-              swiperRef.current = swiper;
-              setIsAtStart(swiper.isBeginning);
-              setIsAtEnd(swiper.isEnd);
-            }}
-            onSlideChange={handleSlideChange}
-            slidesPerView={5}
-            slidesPerGroup={5}
-            spaceBetween={24}
-            loop={false}
-            watchSlidesProgress
-            watchOverflow={false}
-            className="w-full"
-            breakpoints={{
-              1025: { slidesPerView: 5, slidesPerGroup: 5 },
-              769: { slidesPerView: 3, slidesPerGroup: 3 },
-              641: { slidesPerView: 2, slidesPerGroup: 2 },
-              0: { slidesPerView: 1, slidesPerGroup: 1 },
-            }}
-          >
+        <Swiper
+          modules={[Navigation]}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper;
+            setIsAtStart(swiper.isBeginning);
+            setIsAtEnd(swiper.isEnd);
+          }}
+          onSlideChange={handleSlideChange}
+          slidesPerView={4}
+          slidesPerGroup={4}
+          spaceBetween={20}
+          loop={false}
+          watchSlidesProgress
+          watchOverflow={false}
+          allowSlideNext={true} // ✅ 핵심 추가
+          breakpoints={{
+            1025: { slidesPerView: 4, slidesPerGroup: 4 },
+            769: { slidesPerView: 3, slidesPerGroup: 3 },
+            641: { slidesPerView: 2, slidesPerGroup: 2 },
+            0: { slidesPerView: 1, slidesPerGroup: 1 },
+          }}
+        >
             {React.Children.map(children, (child, idx) => (
-              <SwiperSlide key={idx} className="!w-[260px] shrink-0">
+              <SwiperSlide key={idx}> {/** className="!w-[260px] shrink-0" */}
                 <div className="w-full">{child}</div>
               </SwiperSlide>
             ))}
