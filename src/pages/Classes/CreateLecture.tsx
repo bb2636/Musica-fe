@@ -466,6 +466,26 @@ const CreateLecturePage = () => {
 
       {/* ✅ 로딩 오버레이 */}
       {isSubmitting && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in">
+          <div className="bg-white px-10 py-8 rounded-2xl shadow-2xl flex flex-col items-center gap-4 w-80 text-center border border-gray-200">
+            {/* 로딩 애니메이션 */}
+            <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+
+            {/* 제목 */}
+            <h2 className="text-lg font-bold text-gray-800">
+              강의 분석 중입니다
+            </h2>
+
+            {/* 설명 */}
+            <p className="text-sm text-gray-600 leading-relaxed">
+              🎶 악기 분석을 진행 중입니다 🥁
+              <br />
+              잠시만 기다려 주세요!
+            </p>
+          </div>
+        </div>
+      )}
+      {/* {isSubmitting && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4 bg-white px-8 py-6 rounded-lg shadow-xl">
             <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -479,7 +499,7 @@ const CreateLecturePage = () => {
             </p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 };
