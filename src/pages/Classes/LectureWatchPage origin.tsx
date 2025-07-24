@@ -1,72 +1,49 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { lectureApi } from "../../apis/lectureApi";
-import type { LectureDetail } from "../../types/lecture";
+import type { LectureDetail, LectureSummary } from "../../types/lecture";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "../../components/Header";
 
 const LectureWatchPage = () => {
   const { lectureId } = useParams();
   const parsedLectureId = Number(lectureId);
+  const navigate = useNavigate();
   const videoRef = useRef<HTMLVideoElement>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true); // 마운트 상태 추적
+  const isMountedRef = useRef(true);
 
   const [lecture, setLecture] = useState<LectureDetail | null>(null);
+  const [lectureList, setLectureList] = useState<LectureSummary[]>([]);
   const [duration, setDuration] = useState<number>(0);
   const [watchedSeconds, setWatchedSeconds] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // ✅ 진도 저장 함수 (안전성 강화)
   const saveProgress = useCallback(
     async (forceImmediate = false) => {
-      // 컴포넌트가 언마운트되었으면 return
-      if (!isMountedRef.current) {
-        console.log("🚫 Component unmounted, skipping save");
+      if (
+        !isMountedRef.current ||
+        !parsedLectureId ||
+        !videoRef.current ||
+        !duration
+      )
         return;
-      }
-
-      console.log("🟡 saveProgress called");
-
-      // 조건 체크를 더 안전하게
-      if (!parsedLectureId || isNaN(parsedLectureId)) {
-        console.log("❌ Invalid lectureId:", parsedLectureId);
-        return;
-      }
-
-      if (!videoRef.current) {
-        console.log("❌ Video ref not available");
-        return;
-      }
-
-      if (!duration || duration <= 0) {
-        console.log("❌ Duration not valid:", duration);
-        return;
-      }
 
       const currentTime = videoRef.current.currentTime;
-
-      // currentTime이 유효한지 체크
-      if (isNaN(currentTime) || currentTime < 0) {
-        console.log("❌ Invalid currentTime:", currentTime);
-        return;
-      }
+      if (isNaN(currentTime) || currentTime < 0) return;
 
       const progressRate = (currentTime / duration) * 100;
       const isNowCompleted = progressRate >= 95;
 
       const payload = {
-        watchedSeconds: Math.floor(currentTime), // 정수로 변환
+        watchedSeconds: Math.floor(currentTime),
         completed: isNowCompleted,
       };
 
-      console.log("📤 Saving progress:", payload);
-
       try {
         await lectureApi.saveProgress(parsedLectureId, payload);
-        console.log("✅ 진도 저장 완료:", payload);
-
         if (isMountedRef.current) {
           if (isNowCompleted && !completed) {
             toast.success("🎉 강의 수강 완료!");
@@ -75,8 +52,7 @@ const LectureWatchPage = () => {
             toast.success("💾 진도 저장 완료!");
           }
         }
-      } catch (error) {
-        console.error("❌ 진도 저장 실패:", error);
+      } catch {
         if (forceImmediate && isMountedRef.current) {
           toast.error("진도 저장에 실패했습니다.");
         }
@@ -85,7 +61,6 @@ const LectureWatchPage = () => {
     [parsedLectureId, duration, completed]
   );
 
-  // ✅ 디바운스된 진도 저장 (5초마다)
   const debouncedSaveProgress = useCallback(() => {
     if (!isMountedRef.current) return;
 
@@ -99,182 +74,160 @@ const LectureWatchPage = () => {
     }, 5000);
   }, [saveProgress]);
 
-  // ✅ 강의 정보 불러오기
+  // ✅ 1. 시청 정보 초기화용 useEffect (여기에 추가!)
   useEffect(() => {
-    if (!parsedLectureId || isNaN(parsedLectureId)) {
-      console.log("❌ Invalid lectureId in fetch:", parsedLectureId);
-      return;
-    }
+    // 강의 ID가 바뀌면 시청 정보 초기화
+    setWatchedSeconds(0);
+    setDuration(0);
+    setCompleted(false);
 
+    // 영상도 처음부터 시작하게 하려면 (선택 사항)
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+    }
+  }, [parsedLectureId]);
+
+  // ✅ 2. 강의 정보 불러오기 (이미 있는 코드)
+  useEffect(() => {
     const fetchLecture = async () => {
       try {
         setLoading(true);
-        console.log("📥 Fetching lecture:", parsedLectureId);
         const res = await lectureApi.getLectureDetail(parsedLectureId);
-        console.log("📦 Lecture data:", res);
-
-        if (isMountedRef.current) {
-          setLecture(res);
-          setCompleted(res.isCompleted);
-        }
-      } catch (error) {
-        console.error("❌ 강의 정보 로드 실패:", error);
-        if (isMountedRef.current) {
-          toast.error("강의 정보를 불러올 수 없습니다.");
-        }
+        setLecture(res);
+        setCompleted(res.isCompleted);
+      } catch {
+        toast.error("강의 정보를 불러올 수 없습니다.");
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-        }
+        setLoading(false);
       }
     };
 
-    fetchLecture();
-  }, [parsedLectureId]);
+    const fetchLectureList = async () => {
+      if (!parsedLectureId || isNaN(parsedLectureId)) return;
+      try {
+        const res = await lectureApi.getLectureListForStudent(
+          lecture?.classId || 0
+        );
+        setLectureList(res);
+      } catch {
+        toast.error("강의 목록을 불러올 수 없습니다.");
+      }
+    };
 
-  // ✅ 마운트 상태 관리 및 정리
+    fetchLecture().then(() => {
+      if (lecture?.classId) fetchLectureList();
+    });
+  }, [parsedLectureId, lecture?.classId]);
+
+  // ✅ 3. 마운트/언마운트 관리
   useEffect(() => {
     isMountedRef.current = true;
-
     return () => {
-      console.log("🧹 Component unmounting, cleaning up...");
       isMountedRef.current = false;
       if (saveTimeoutRef.current) {
         clearTimeout(saveTimeoutRef.current);
-        saveTimeoutRef.current = null;
       }
     };
   }, []);
 
-  // ✅ 영상 재생 시간 추적
   const handleTimeUpdate = () => {
     if (!isMountedRef.current || !videoRef.current) return;
-
     const currentTime = videoRef.current.currentTime;
     if (isNaN(currentTime)) return;
-
     setWatchedSeconds(currentTime);
     debouncedSaveProgress();
   };
 
-  // ✅ 영상 일시정지 시 진도 저장
   const handlePause = () => {
-    console.log("⏸️ Video paused");
     if (!isMountedRef.current) return;
-
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
     saveProgress(true);
   };
 
-  // ✅ 영상 재생 시작할 때도 저장
   const handlePlay = () => {
-    console.log("▶️ Video played");
     if (!isMountedRef.current) return;
     saveProgress();
   };
 
-  // ✅ 메타데이터 로드 처리
   const handleLoadedMetadata = (e: React.SyntheticEvent<HTMLVideoElement>) => {
     if (!isMountedRef.current) return;
-
     const video = e.currentTarget;
     const videoDuration = video.duration;
-
-    console.log("📦 Metadata loaded. duration:", videoDuration);
-
-    if (isNaN(videoDuration) || videoDuration <= 0) {
-      console.log("❌ Invalid video duration:", videoDuration);
-      return;
-    }
-
+    if (isNaN(videoDuration) || videoDuration <= 0) return;
     setDuration(videoDuration);
-
-    if (lecture && lecture.watchedSeconds && lecture.watchedSeconds > 0) {
+    if (lecture?.watchedSeconds) {
       video.currentTime = Math.min(lecture.watchedSeconds, videoDuration);
-      console.log("⏭️ Set video time to:", lecture.watchedSeconds);
     }
   };
 
-  if (loading) {
-    return (
-      <div className="p-4 flex justify-center items-center min-h-64">
-        <div className="text-lg">강의를 불러오는 중...</div>
-      </div>
-    );
-  }
-
-  if (!lecture) {
-    return (
-      <div className="p-4 text-center">
-        <div className="text-lg text-red-500">강의를 찾을 수 없습니다.</div>
-      </div>
-    );
+  if (loading || !lecture) {
+    return <div className="p-4">강의 정보를 불러오는 중입니다...</div>;
   }
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-semibold mb-4">{lecture.title}</h2>
-
-      {/* 디버그 정보 */}
-      <div className="mb-4 p-2 bg-gray-100 text-sm rounded">
-        <div>📊 Debug Info:</div>
-        <div>- Lecture ID: {parsedLectureId}</div>
-        <div>- Duration: {duration}</div>
-        <div>- Watched: {Math.floor(watchedSeconds)}</div>
-        <div>- Completed: {completed ? "Yes" : "No"}</div>
-        <div>- Video URL: {lecture.videoUrl ? "Available" : "Missing"}</div>
-      </div>
-
-      {completed && (
-        <div className="mb-4 p-3 bg-green-100 text-green-800 rounded-lg">
-          ✅ 이 강의는 수강 완료되었습니다!
+    <>
+      <Header />
+      <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6">
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold mb-4">{lecture.title}</h1>
+          <video
+            ref={videoRef}
+            controls
+            src={lecture.videoUrl}
+            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={handleTimeUpdate}
+            onPause={handlePause}
+            onPlay={handlePlay}
+            onEnded={() => saveProgress(true)}
+            className="w-full aspect-video bg-black rounded-lg shadow"
+          />
+          <div className="bg-gray-50 rounded p-4 shadow-sm mt-4">
+            <p className="text-sm">
+              진도율: {Math.round((watchedSeconds / duration) * 100)}%
+            </p>
+            <progress
+              value={watchedSeconds}
+              max={duration}
+              className="w-full h-2 mt-1"
+            />
+          </div>
         </div>
-      )}
-
-      <video
-        ref={videoRef}
-        controls
-        src={lecture.videoUrl}
-        onLoadedMetadata={handleLoadedMetadata}
-        onTimeUpdate={handleTimeUpdate}
-        onPause={handlePause}
-        onPlay={handlePlay}
-        onEnded={() => saveProgress(true)}
-        onError={(e) => {
-          console.error("❌ Video error:", e);
-          toast.error("비디오 로드에 실패했습니다.");
-        }}
-        className="w-full max-w-4xl rounded-lg shadow"
-      />
-
-      <div className="mt-4 space-y-2">
-        <div>
-          ⏱ 현재 시청 시간: {Math.floor(watchedSeconds)}초 / 총{" "}
-          {Math.floor(duration)}초
-        </div>
-        <div>
-          📊 진도율:{" "}
-          {duration > 0 ? Math.round((watchedSeconds / duration) * 100) : 0}%
-        </div>
-        <progress
-          value={watchedSeconds}
-          max={duration}
-          className="w-full h-3"
-        />
+        <aside className="w-full lg:w-80">
+          <div className="bg-white shadow rounded-lg p-4">
+            <h2 className="text-lg font-semibold mb-3">강의 목록</h2>
+            <ul className="space-y-2">
+              {lectureList.map((lec) => (
+                <li
+                  key={lec.lectureId}
+                  onClick={() =>
+                    navigate(
+                      `/classes/${lecture.classId}/lectures/${lec.lectureId}`
+                    )
+                  }
+                  className={`p-3 rounded border cursor-pointer transition hover:bg-gray-100 ${
+                    lec.lectureId === lecture.lectureId
+                      ? "bg-blue-50 border-blue-500"
+                      : "border-gray-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="truncate font-medium">{lec.title}</span>
+                    {lec.isCompleted && (
+                      <span className="text-green-600 text-xs">✔ 완료</span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    ⏱ {Math.floor(lec.duration / 60)}분 {lec.duration % 60}초
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </aside>{" "}
       </div>
-
-      {/* 수동 저장 버튼 */}
-      <div className="mt-4">
-        <button
-          onClick={() => saveProgress(true)}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-        >
-          💾 진도 저장
-        </button>
-      </div>
-    </div>
+    </>
   );
 };
 

@@ -86,36 +86,41 @@ export default function MyWishlistPage() {
           {wishlist.map((item) => (
             <div
               key={item.classId}
-              className="bg-white rounded-lg shadow p-4 hover:shadow-lg transition-shadow"
+              className="bg-white rounded-xl shadow p-4 flex flex-col justify-between h-[360px] hover:shadow-lg transition-shadow"
             >
-              {item.thumbnailUrl && (
+              {/* 썸네일 */}
+              <div className="w-full aspect-[4/3] bg-gray-100 mb-3 overflow-hidden rounded">
                 <img
-                  src={item.thumbnailUrl}
+                  src={item.thumbnailUrl || "/default-thumbnail.png"}
                   alt={item.title}
-                  className="w-full h-32 object-cover rounded mb-3"
+                  className="w-full h-full object-cover"
+                  onError={(e) =>
+                    (e.currentTarget.src = "/default-thumbnail.png")
+                  }
                 />
-              )}
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">
-                {item.title}
-              </h3>
-              {item.price && (
-                <div className="text-black font-bold">
-                  {item.price.toLocaleString()}원
-                </div>
-              )}
-              <div className="flex gap-x-2">
-                {/* ✅ 클래스 상세페이지 이동 */}
+              </div>
+
+              {/* 제목 + 가격 */}
+              <div className="flex-1">
+                <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 min-h-[3rem]">
+                  {item.title}
+                </h3>
+                <p className="text-base font-bold text-gray-900 mt-2">
+                  {item.price > 0 ? `₩${item.price.toLocaleString()}` : "무료"}
+                </p>
+              </div>
+
+              {/* 버튼 영역 */}
+              <div className="mt-4 flex gap-2">
                 <button
-                  className="flex-1 bg-black text-white py-2 px-3 rounded text-sm hover:bg-gray-400"
                   onClick={() => navigate(`/classes/${item.classId}`)}
+                  className="flex-1 bg-black text-white text-sm py-1.5 rounded hover:bg-gray-800"
                 >
                   클래스 보기
                 </button>
-
-                {/* ✅ 찜 해제 */}
                 <button
-                  className="flex-1 bg-red-400 text-white py-2 px-3 rounded text-sm hover:bg-red-600"
                   onClick={() => handleRemove(item.classId)}
+                  className="flex-1 bg-rose-400 text-white text-sm py-1.5 rounded hover:bg-rose-500"
                 >
                   찜 해제
                 </button>

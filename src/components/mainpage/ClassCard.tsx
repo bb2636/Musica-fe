@@ -104,7 +104,7 @@ const ClassCard: React.FC<ClassCardProps> = ({
       className="relative flex flex-col transition-shadow duration-200 rounded-xl overflow-hidden bg-white shadow-sm hover:shadow-md hover:-translate-y-[1px] transform cursor-pointer h-[400px]"
     >
       {/* 썸네일 */}
-      <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100 h-[240px] flex items-center justify-center">
+      <div className="aspect-[4/3] w-full overflow-hidden bg-gray-100 flex items-center justify-center">
         {thumbnailUrl ? (
           <img
             src={thumbnailUrl}
@@ -117,67 +117,69 @@ const ClassCard: React.FC<ClassCardProps> = ({
           </div>
         )}
       </div>
-      {/* 정보 영역 */}
-      <div className="p-4 flex flex-col">
-        {tag && (
-          <div className="text-xs text-blue-600 font-semibold">{tag}</div>
-        )}
-        <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep">
-          {title}
-        </h3>
-        {instructor && (
-          <div className="text-sm text-gray-500">{instructor}</div>
-        )}
-        <div className="flex justify-between text-xs text-gray-600 mt-1">
-          <div>❤️ {wishlistCount}명 찜</div>
-          <div className="flex items-center gap-1">
-            <span className="text-yellow-400">★</span>
-            <span>{rating.toFixed(1)}</span>
-            <span className="text-gray-400">({ratingCount})</span>
+
+      {/* 정보 + 버튼 영역 */}
+      <div className="p-4 flex flex-col justify-between flex-1">
+        {/* 상단: 카테고리, 제목, 강사, 찜/평점 */}
+        <div>
+          {tag && (
+            <div className="text-xs text-blue-600 font-semibold">{tag}</div>
+          )}
+          <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep min-h-[48px]">
+            {title}
+          </h3>
+          {/* <h3 className="text-base font-semibold leading-tight mt-3 line-clamp-2 break-keep">
+            {title}
+          </h3> */}
+          {instructor && (
+            <div className="text-sm text-gray-500">{instructor}</div>
+          )}
+          <div className="flex justify-between text-xs text-gray-600 mt-1">
+            <div>❤️ {wishlistCount}명 찜</div>
+            <div className="flex items-center gap-1">
+              <span className="text-yellow-400">★</span>
+              <span>{rating.toFixed(1)}</span>
+              <span className="text-gray-400">({ratingCount})</span>
+            </div>
           </div>
         </div>
-        <div className="flex justify-between items-center mt-2">
-          <span className="font-semibold text-lg text-gray-900">
-            ₩{price.toLocaleString()}
-          </span>
-          <div className="flex items-center gap-2">
-            {/* <button onClick={handleToggleWish} type="button">
-              <img
-                src={isWished ? jjimafter : jjimbefore}
-                alt="찜"
-                className="w-6 h-6"
-              />
-            </button> */}
+
+        {/* 하단: 가격 + 버튼 */}
+        <div className="mt-3">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold text-gray-900">
+              ₩{price.toLocaleString()}
+            </span>
+            {originalPrice && originalPrice !== price && (
+              <span className="text-sm line-through text-gray-400">
+                ₩{originalPrice.toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center justify-between mt-1">
             <button onClick={handleToggleWish} type="button">
               {isWished ? (
-                <SolidHeartIcon className="w-6 h-6 text-red-500" />
+                <SolidHeartIcon className="w-5 h-5 text-red-500" />
               ) : (
-                <OutlineHeartIcon className="w-6 h-6 text-red-500" />
+                <OutlineHeartIcon className="w-5 h-5 text-red-500" />
               )}
             </button>
             {isPaid ? (
-              <span className="px-3 py-1 text-sm text-gray-500 bg-gray-200 rounded-full cursor-not-allowed">
-                수강중
+              <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 border border-gray-300 rounded-full whitespace-nowrap">
+                수강 중
               </span>
             ) : (
               <button onClick={handleToggleCart} type="button">
                 {isInCart ? (
-                  <ShoppingCart
-                    className="w-6 h-6 text-blue-600 fill-blue-600"
-                    fill="currentColor"
-                  />
+                  <ShoppingCart className="w-5 h-5 text-blue-600 fill-blue-600" />
                 ) : (
-                  <ShoppingCart className="w-6 h-6 text-blue-600" />
+                  <ShoppingCart className="w-5 h-5 text-blue-600" />
                 )}
               </button>
             )}
           </div>
         </div>
-        {originalPrice && (
-          <span className="text-xs line-through text-gray-400">
-            ₩{originalPrice.toLocaleString()}
-          </span>
-        )}
       </div>
     </div>
   );

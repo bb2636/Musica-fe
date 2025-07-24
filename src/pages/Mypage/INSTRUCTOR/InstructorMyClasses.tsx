@@ -179,23 +179,25 @@ const InstructorMyClasses = () => {
                 alt={c.title}
                 className="w-full h-40 object-cover"
               />
-              <div className="p-4">
-                <h3 className="text-lg font-medium mb-1">{c.title}</h3>
-                <p className="text-sm text-gray-500 mb-1">
-                  카테고리: {c.category}
-                </p>
-                <p className="text-sm text-gray-500 mb-1">
-                  난이도: {DIFFICULTY_DISPLAY_MAP[c.difficulty] ?? c.difficulty}
-                </p>
-                <p className="text-sm text-gray-500 mb-1">
-                  강의 수: {c.totalLectureCount}개
-                </p>
-                <p className="text-right text-gray-800 font-semibold mb-2">
-                  {c.classPrice.toLocaleString()}원
-                </p>
+              <div className="p-4 flex flex-col justify-between h-60">
+                <div>
+                  <h3 className="text-lg font-medium mb-1">{c.title}</h3>
+                  <p className="text-sm text-gray-500 mb-1">
+                    카테고리: {c.category}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    난이도:{" "}
+                    {DIFFICULTY_DISPLAY_MAP[c.difficulty] ?? c.difficulty}
+                  </p>
+                  <p className="text-sm text-gray-500 mb-1">
+                    강의 수: {c.totalLectureCount}개
+                  </p>
+                  <p className="text-right text-gray-800 font-semibold mt-2">
+                    {c.classPrice.toLocaleString()}원
+                  </p>
+                </div>
 
-                {/* ✅ 수정 / 삭제 버튼 (파랑/빨강 강조) */}
-                <div className="flex gap-2">
+                <div className="mt-3 flex gap-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -214,11 +216,10 @@ const InstructorMyClasses = () => {
                         "정말로 이 클래스를 삭제하시겠습니까?"
                       );
                       if (!confirmed) return;
-
                       try {
                         await instructorApi.deleteClass(c.id);
                         alert("클래스가 삭제되었습니다.");
-                        fetchClasses(); // 🔄 목록 새로고침
+                        fetchClasses();
                       } catch (err) {
                         console.error("삭제 실패:", err);
                         alert("클래스 삭제에 실패했습니다.");
@@ -229,41 +230,6 @@ const InstructorMyClasses = () => {
                     삭제
                   </button>
                 </div>
-                {/* ✅ 수정 / 삭제 버튼 (검정, 회색) */}
-                {/* <div className="flex gap-2">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(
-                        `/mypage/instructor/classes/${c.id}/lectures/create`
-                      );
-                    }}
-                    className="w-full bg-neutral-200 hover:bg-neutral-300 text-sm text-gray-900 py-1 rounded transition"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={async (e) => {
-                      e.stopPropagation();
-                      const confirmed = window.confirm(
-                        "정말로 이 클래스를 삭제하시겠습니까?"
-                      );
-                      if (!confirmed) return;
-
-                      try {
-                        await instructorApi.deleteClass(c.id);
-                        alert("클래스가 삭제되었습니다.");
-                        fetchClasses(); // 🔄 목록 새로고침
-                      } catch (err) {
-                        console.error("삭제 실패:", err);
-                        alert("클래스 삭제에 실패했습니다.");
-                      }
-                    }}
-                    className="w-full bg-neutral-400 hover:bg-neutral-600 text-sm text-white py-1 rounded transition"
-                  >
-                    삭제
-                  </button>
-                </div> */}
               </div>
             </div>
           ))}

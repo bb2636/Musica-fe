@@ -17,19 +17,27 @@ interface PageResult<T> {
   size: number;
 }
 
-const PAGE_SIZE = 30;
+const PAGE_SIZE = 20;
 
 const SearchResultPage: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
-  const [pageData, setPageData] = useState<PageResult<SearchClassItem> | null>(null);
+  const [pageData, setPageData] = useState<PageResult<SearchClassItem> | null>(
+    null
+  );
 
   // ✅ 수강중 클래스 ID 목록
   const [paidClassIds, setPaidClassIds] = useState<number[]>([]);
   const [paidClassIdsLoading, setPaidClassIdsLoading] = useState(true);
 
   // 커스텀 훅
-  const { wishedClassIds, wishlistCounts, processingSet: wishProcessingSet, toggleWish, fetchWishlist } = useWishlist(); // ✅ fetchWishlist 포함
+  const {
+    wishedClassIds,
+    wishlistCounts,
+    processingSet: wishProcessingSet,
+    toggleWish,
+    fetchWishlist,
+  } = useWishlist(); // ✅ fetchWishlist 포함
   const { cartItems, processingSet: cartProcessingSet, toggleCart } = useCart();
   const cartClassIds = cartItems.map((item) => item.classId);
 
@@ -63,8 +71,12 @@ const SearchResultPage: React.FC = () => {
   // 쿼리 파라미터
   const keyword = searchParams.get("keyword") || "";
   const sort = searchParams.get("sort") || "latest";
-  const categoryId = searchParams.get("categoryId") ? Number(searchParams.get("categoryId")) : undefined;
-  const difficultyId = searchParams.get("difficultyId") ? Number(searchParams.get("difficultyId")) : undefined;
+  const categoryId = searchParams.get("categoryId")
+    ? Number(searchParams.get("categoryId"))
+    : undefined;
+  const difficultyId = searchParams.get("difficultyId")
+    ? Number(searchParams.get("difficultyId"))
+    : undefined;
   const page = searchParams.get("page") ? Number(searchParams.get("page")) : 0;
 
   // 클래스 목록 불러오기
@@ -82,7 +94,7 @@ const SearchResultPage: React.FC = () => {
         if (difficultyId !== undefined) params.difficultyId = difficultyId;
         const res = await classApi.getAllClasses(params);
         setPageData(res);
-      } catch (err) {
+      } catch {
         setPageData(null);
       } finally {
         setLoading(false);
@@ -91,10 +103,13 @@ const SearchResultPage: React.FC = () => {
     fetchData();
   }, [keyword, sort, categoryId, difficultyId, page]);
 
-  const goToPage = useCallback((p: number) => {
-    searchParams.set("page", String(p));
-    setSearchParams(searchParams);
-  }, [searchParams, setSearchParams]);
+  const goToPage = useCallback(
+    (p: number) => {
+      searchParams.set("page", String(p));
+      setSearchParams(searchParams);
+    },
+    [searchParams, setSearchParams]
+  );
 
   const renderPagination = () => {
     if (!pageData) return null;
@@ -112,10 +127,24 @@ const SearchResultPage: React.FC = () => {
     }
     return (
       <div className="flex items-center justify-center gap-1 mt-8">
-        <button onClick={() => goToPage(0)} disabled={currentPage === 0} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&lt;&lt;</button>
-        <button onClick={() => goToPage(currentPage - 1)} disabled={currentPage === 0} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&lt;</button>
+        <button
+          onClick={() => goToPage(0)}
+          disabled={currentPage === 0}
+          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
+        >
+          &lt;&lt;
+        </button>
+        <button
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={currentPage === 0}
+          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
+        >
+          &lt;
+        </button>
         {pages.map((p) => (
-          <button key={p} onClick={() => goToPage(p)}
+          <button
+            key={p}
+            onClick={() => goToPage(p)}
             className={`px-3 py-1 rounded transition text-sm font-semibold ${
               currentPage === p
                 ? "bg-neutral-900 text-white"
@@ -125,14 +154,28 @@ const SearchResultPage: React.FC = () => {
             {p + 1}
           </button>
         ))}
-        <button onClick={() => goToPage(currentPage + 1)} disabled={currentPage === maxPage} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&gt;</button>
-        <button onClick={() => goToPage(maxPage)} disabled={currentPage === maxPage} className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40">&gt;&gt;</button>
+        <button
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={currentPage === maxPage}
+          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
+        >
+          &gt;
+        </button>
+        <button
+          onClick={() => goToPage(maxPage)}
+          disabled={currentPage === maxPage}
+          className="px-2 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-40"
+        >
+          &gt;&gt;
+        </button>
       </div>
     );
   };
 
-  const handleToggleWish = (id: number) => toggleWish(id, wishedClassIds.includes(id));
-  const handleToggleCart = (id: number) => toggleCart(id, cartClassIds.includes(id));
+  const handleToggleWish = (id: number) =>
+    toggleWish(id, wishedClassIds.includes(id));
+  const handleToggleCart = (id: number) =>
+    toggleCart(id, cartClassIds.includes(id));
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -142,12 +185,14 @@ const SearchResultPage: React.FC = () => {
         {loading || paidClassIdsLoading ? (
           <div className="text-center text-lg py-20">로딩 중...</div>
         ) : !pageData || pageData.content.length === 0 ? (
-          <div className="text-center text-gray-500 py-20">검색 결과가 없습니다</div>
+          <div className="text-center text-gray-500 py-20">
+            검색 결과가 없습니다
+          </div>
         ) : (
           <>
-            <div className="flex flex-wrap justify-center gap-x-6 gap-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {pageData.content.map((cls) => (
-                <div key={cls.id} className="w-full sm:w-[260px]">
+                <div key={cls.id}>
                   <ClassCard
                     id={cls.id}
                     title={cls.title}
@@ -163,7 +208,7 @@ const SearchResultPage: React.FC = () => {
                     isProcessingWishSet={wishProcessingSet}
                     isProcessingCartSet={cartProcessingSet}
                     isInCart={cartClassIds.includes(cls.id)}
-                    isPaid={paidClassIds.includes(cls.id)} // ✅ 수강중 표시용
+                    isPaid={paidClassIds.includes(cls.id)}
                   />
                 </div>
               ))}

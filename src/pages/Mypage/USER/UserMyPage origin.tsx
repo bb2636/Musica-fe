@@ -1,19 +1,17 @@
-// UserMyPage.tsx
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import React, { useEffect, useState } from "react";
-import Header from "../../../components/Header";
-import Footer from "../../../components/Footer";
+import Header from "../../../components/Header.tsx";
+import Footer from "../../../components/Footer.tsx";
 import {
   fetchMyProfile,
   fetchMyQuestions,
   fetchMyReviews,
 } from "../../../apis/user.ts";
-import { wishlistApi } from "../../../apis/WishlistApi";
-import type { WishlistItem } from "../../../types/WishlistItem";
-import { enrollmentApi } from "../../../apis/enrollmentApi";
-import type { Enrollment } from "../../../types/enrollment";
-import { getPayments } from "../../../apis/payment";
-import UserSidebar from "../../../components/layout/UserSidebar.tsx";
+import { wishlistApi } from "../../../apis/WishlistApi.ts";
+import type { WishlistItem } from "../../../types/WishlistItem.ts";
+import { enrollmentApi } from "../../../apis/enrollmentApi.ts";
+import type { Enrollment } from "../../../types/enrollment.ts";
+import { getPayments } from "../../../apis/payment.ts";
 
 interface MyQuestionItem {
   id: number;
@@ -28,6 +26,7 @@ interface Profile {
   email: string;
   level?: string;
 }
+
 interface PaymentItem {
   paymentId: number;
   title: string;
@@ -46,6 +45,9 @@ export default function UserMyPage() {
   const [enrollments, setEnrollments] = useState<Enrollment[]>([]);
 
   const isMainPage = location.pathname === "/mypage/users";
+
+  console.log("🔍 UserMyPage - 현재 경로:", location.pathname);
+  console.log("🔍 UserMyPage - isMainPage:", isMainPage);
 
   useEffect(() => {
     const loadData = async () => {
@@ -80,14 +82,89 @@ export default function UserMyPage() {
   return (
     <>
       <Header />
-      <div className="bg-white min-h-[calc(100vh-120px)] py-10">
-        <div className="max-w-7xl mx-auto flex gap-8 px-4 md:px-8">
-          <UserSidebar />
+      <div className="max-w-7xl mx-auto p-8 space-y-8">
+        <div className="flex gap-8">
+          <aside className="w-60 bg-gray-50 p-6 rounded-xl shadow-sm">
+            <h2 className="text-lg font-bold mb-4">마이페이지</h2>
+            <nav className="space-y-3">
+              <Link
+                to="/mypage/users/profile"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/profile"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 정보 수정
+              </Link>
+              <Link
+                to="/mypage/users/enrollments"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/enrollments"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                수강 중인 강의 목록
+              </Link>
+              <Link
+                to="/mypage/users/wishlist"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/wishlist"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                찜 목록 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/questions"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/questions"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 질문 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/reviews"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/reviews"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                내 후기 전체보기
+              </Link>
+              <Link
+                to="/mypage/users/tuner"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/tuner"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                AI 튜너 바로가기
+              </Link>
+              <Link
+                to="/mypage/users/payments"
+                className={`block transition-colors hover:underline ${
+                  location.pathname === "/mypage/users/payments"
+                    ? "text-blue-800 font-semibold"
+                    : "text-gray-800"
+                }`}
+              >
+                결제 내역
+              </Link>
+            </nav>
+          </aside>
+
           <main className="flex-1">
             <Outlet />
             {isMainPage && (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                <div className="grid grid-cols-2 gap-6 mt-8">
                   <Card
                     emoji="👤"
                     title="내 정보"
@@ -122,7 +199,7 @@ export default function UserMyPage() {
                         {enrollments.slice(0, 2).map((e) => (
                           <li
                             key={(e as any).class_id}
-                            className="flex items-center gap-3 bg-neutral-100 rounded p-2 cursor-pointer hover:bg-neutral-200 transition"
+                            className="flex items-center gap-3 bg-gray-50 rounded p-2 cursor-pointer hover:bg-gray-200 transition"
                             onClick={() =>
                               (window.location.href = `/classes/${
                                 (e as any).class_id
@@ -156,7 +233,7 @@ export default function UserMyPage() {
                         ))}
                         {enrollments.length > 2 && (
                           <li className="text-xs text-gray-500">
-                            외 {enrollments.length - 2}개 더...
+                            외 {enrollments.length - 2}개
                           </li>
                         )}
                       </ul>
@@ -178,14 +255,14 @@ export default function UserMyPage() {
                         {wishlist.slice(0, 3).map((w) => (
                           <li
                             key={w.classId}
-                            className="text-sm text-gray-700 truncate"
+                            className="text-sm text-gray-600 truncate"
                           >
                             • {w.title}
                           </li>
                         ))}
                         {wishlist.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {wishlist.length - 3}개 더...
+                            외 {wishlist.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -205,14 +282,14 @@ export default function UserMyPage() {
                         {questions.slice(0, 3).map((q) => (
                           <li
                             key={q.id}
-                            className="text-sm text-gray-700 truncate"
+                            className="text-sm text-gray-600 truncate"
                           >
                             • {q.content}
                           </li>
                         ))}
                         {questions.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {questions.length - 3}개 더...
+                            외 {questions.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -232,14 +309,14 @@ export default function UserMyPage() {
                         {reviews.slice(0, 3).map((r) => (
                           <li
                             key={r.id}
-                            className="text-sm text-gray-700 truncate"
+                            className="text-sm text-gray-600 truncate"
                           >
                             • {r.comment}
                           </li>
                         ))}
                         {reviews.length > 3 && (
                           <li className="text-xs text-gray-500">
-                            외 {reviews.length - 3}개 더...
+                            외 {reviews.length - 3}개
                           </li>
                         )}
                       </ul>
@@ -270,7 +347,7 @@ export default function UserMyPage() {
 }
 
 interface CardProps {
-  emoji?: string;
+  emoji: string;
   title: string;
   desc: string;
   link: string;
@@ -287,17 +364,17 @@ const Card = ({ emoji, title, desc, link, children }: CardProps) => {
   return (
     <div
       onClick={handleClick}
-      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105 border border-neutral-200"
+      className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
     >
       <div className="flex items-center space-x-2 mb-3">
-        {emoji && <span className="text-3xl">{emoji}</span>}
+        <span className="text-3xl">{emoji}</span>
         <div>
           <div className="font-semibold text-sm text-gray-800">{title}</div>
           <div className="text-xs text-gray-500">{desc}</div>
         </div>
       </div>
       <div
-        className="text-sm text-gray-800"
+        className="text-sm text-gray-700"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
@@ -311,7 +388,7 @@ const PaymentSummary: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3)));
+    getPayments("ALL").then((res) => setPayments(res.data.slice(0, 3))); // 최근 3건만
   }, []);
 
   return (
@@ -319,6 +396,7 @@ const PaymentSummary: React.FC = () => {
       onClick={() => navigate("payments")}
       className="cursor-pointer bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-200 hover:scale-105"
     >
+      {/* ✅ 카드 헤더 스타일 통일 */}
       <div className="flex items-center space-x-2 mb-3">
         <span className="text-3xl">💳</span>
         <div>
@@ -326,6 +404,8 @@ const PaymentSummary: React.FC = () => {
           <div className="text-xs text-gray-500">최근 결제 3건</div>
         </div>
       </div>
+
+      {/* ✅ 카드 본문 내용 */}
       <div className="text-sm text-gray-700">
         {payments.length === 0 ? (
           <div className="text-gray-400">결제 내역이 없습니다.</div>
