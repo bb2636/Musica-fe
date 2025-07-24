@@ -157,7 +157,7 @@ const Signup = () => {
                 <p className="text-center text-sm text-gray-600 mt-4">또는 소셜 미디어로 회원가입</p>
                 <button
                     type="button"
-                    onClick={() => window.location.href = "http://localhost:8080/oauth2/authorization/kakao"}
+                    onClick={() => window.location.href = "http://musica.o-r.kr:8080/oauth2/authorization/kakao"}
                     className="mt-2 w-full bg-yellow-400 text-black font-bold py-2 px-4 rounded-full hover:bg-yellow-300 transition"
                 >
                     Kakao로 회원가입
