@@ -4,6 +4,8 @@ import { lectureApi } from "../../apis/lectureApi";
 import type { LectureDetail, LectureSummary } from "../../types/lecture";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { createQuestion, getQuestionsByClass } from "../../apis/qna";
+import type { QuestionDto } from "../../types/qna";
 import Header from "../../components/Header";
 
 const LectureWatchPage = () => {
@@ -20,6 +22,9 @@ const LectureWatchPage = () => {
   const [watchedSeconds, setWatchedSeconds] = useState<number>(0);
   const [completed, setCompleted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+  const [questions, setQuestions] = useState<QuestionDto[]>([]);
+  const [newQuestion, setNewQuestion] = useState("");
+  const [qnaLoading, setQnaLoading] = useState(false);
 
   const saveProgress = useCallback(
     async (forceImmediate = false) => {
@@ -63,7 +68,6 @@ const LectureWatchPage = () => {
 
   const debouncedSaveProgress = useCallback(() => {
     if (!isMountedRef.current) return;
-
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
@@ -74,20 +78,44 @@ const LectureWatchPage = () => {
     }, 5000);
   }, [saveProgress]);
 
-  // ✅ 1. 시청 정보 초기화용 useEffect (여기에 추가!)
-  useEffect(() => {
-    // 강의 ID가 바뀌면 시청 정보 초기화
-    setWatchedSeconds(0);
-    setDuration(0);
-    setCompleted(false);
-
-    // 영상도 처음부터 시작하게 하려면 (선택 사항)
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
+  const fetchQuestions = useCallback(async () => {
+    if (!lecture?.classId) return;
+    setQnaLoading(true);
+    try {
+      const res = await getQuestionsByClass(lecture.classId);
+      setQuestions(res.data);
+    } catch {
+      toast.error("Q&A를 불러오지 못했습니다.");
+    } finally {
+      setQnaLoading(false);
     }
-  }, [parsedLectureId]);
+  }, [lecture?.classId]);
 
-  // ✅ 2. 강의 정보 불러오기 (이미 있는 코드)
+  useEffect(() => {
+    if (lecture?.classId) {
+      fetchQuestions();
+    }
+  }, [lecture?.classId, fetchQuestions]);
+
+  const handleCreateQuestion = async () => {
+    if (!newQuestion.trim() || !lecture?.classId || !lecture.lectureId) return;
+
+    const payload = {
+      classId: lecture.classId,
+      lectureId: lecture.lectureId,
+      question: newQuestion.trim(),
+    };
+
+    try {
+      await createQuestion(payload);
+      setNewQuestion("");
+      fetchQuestions();
+      toast.success("질문이 등록되었습니다.");
+    } catch {
+      toast.error("질문 등록에 실패했습니다.");
+    }
+  };
+
   useEffect(() => {
     const fetchLecture = async () => {
       try {
@@ -102,12 +130,9 @@ const LectureWatchPage = () => {
       }
     };
 
-    const fetchLectureList = async () => {
-      if (!parsedLectureId || isNaN(parsedLectureId)) return;
+    const fetchLectureList = async (classId: number) => {
       try {
-        const res = await lectureApi.getLectureListForStudent(
-          lecture?.classId || 0
-        );
+        const res = await lectureApi.getLectureListForStudent(classId);
         setLectureList(res);
       } catch {
         toast.error("강의 목록을 불러올 수 없습니다.");
@@ -115,11 +140,12 @@ const LectureWatchPage = () => {
     };
 
     fetchLecture().then(() => {
-      if (lecture?.classId) fetchLectureList();
+      if (lecture?.classId) {
+        fetchLectureList(lecture.classId);
+      }
     });
   }, [parsedLectureId, lecture?.classId]);
 
-  // ✅ 3. 마운트/언마운트 관리
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
@@ -193,6 +219,79 @@ const LectureWatchPage = () => {
               className="w-full h-2 mt-1"
             />
           </div>
+
+          {/* Q&A */}
+          <section className="mt-10">
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+              <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                <span role="img" aria-label="QnA">
+                  💬
+                </span>{" "}
+                Q&amp;A
+              </h2>
+              <div className="flex flex-col md:flex-row gap-4 items-end">
+                <textarea
+                  className="flex-1 border border-gray-300 rounded-lg px-3 py-2 h-20 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100"
+                  placeholder="이 강의에 대해 궁금한 점을 질문해보세요!"
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  disabled={qnaLoading}
+                  maxLength={300}
+                />
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleCreateQuestion}
+                  disabled={qnaLoading || !newQuestion.trim()}
+                >
+                  질문 등록
+                </button>
+              </div>
+              <div className="text-xs text-gray-400 mt-1 text-right">
+                {newQuestion.length}/300자
+              </div>
+            </div>
+            <div className="bg-white rounded-xl shadow p-6">
+              <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                <span role="img" aria-label="list">
+                  📋
+                </span>{" "}
+                이 강의의 Q&amp;A
+              </h3>
+              {qnaLoading ? (
+                <div className="text-gray-500 py-8 text-center">
+                  Q&amp;A 불러오는 중...
+                </div>
+              ) : (
+                <ul className="space-y-4">
+                  {questions.filter((q) => q.lectureId === lecture.lectureId)
+                    .length === 0 ? (
+                    <li className="text-gray-400 text-center py-8">
+                      아직 등록된 질문이 없습니다.
+                    </li>
+                  ) : (
+                    questions
+                      .filter((q) => q.lectureId === lecture.lectureId)
+                      .map((q) => (
+                        <li
+                          key={q.questionId}
+                          className="border border-gray-100 rounded-lg p-4 bg-gray-50 hover:bg-gray-100 transition"
+                        >
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-semibold text-blue-700">
+                              Q.
+                            </span>
+                            <span className="text-gray-800">{q.question}</span>
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1 flex justify-between">
+                            <span>작성일: {q.createdAt?.slice(0, 10)}</span>
+                          </div>
+                        </li>
+                      ))
+                  )}
+                </ul>
+              )}
+            </div>
+          </section>
         </div>
         <aside className="w-full lg:w-80">
           <div className="bg-white shadow rounded-lg p-4">
@@ -215,10 +314,7 @@ const LectureWatchPage = () => {
                   <div className="flex items-center justify-between">
                     <span className="truncate font-medium">{lec.title}</span>
                     {lec.isCompleted && (
-                      <span className="flex items-center gap-1 text-green-600 text-xs whitespace-nowrap">
-                        <span>✔</span>
-                        <span>완료</span>
-                      </span>
+                      <span className="text-green-600 text-xs">✔ 완료</span>
                     )}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
@@ -228,7 +324,7 @@ const LectureWatchPage = () => {
               ))}
             </ul>
           </div>
-        </aside>{" "}
+        </aside>
       </div>
     </>
   );
